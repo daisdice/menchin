@@ -1,0 +1,254 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #f0f0f0;
+    --primary-color: #e53935; /* Manzu Red */
+    --secondary-color: #4caf50;
+    --accent-color: #2196f3;
+    --tile-bg: #fdfdfd;
+    --tile-border: #e0e0e0;
+    --tile-shadow: #bbb;
+    --font-main: 'Noto Sans JP', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 800px;
+    height: 100vh;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.screen.active {
+    display: flex;
+    opacity: 1;
+    z-index: 10;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #ccc;
+}
+
+.btn {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    font-family: var(--font-main);
+    font-weight: 700;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+}
+
+.btn.primary:hover {
+    background-color: #d32f2f;
+}
+
+.btn.action {
+    background-color: var(--accent-color);
+    color: white;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Game Screen Layout */
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+}
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Tile Styling */
+.hand {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 40px;
+    perspective: 1000px;
+}
+
+.tile {
+    width: 48px;
+    height: 64px;
+    background: var(--tile-bg);
+    border-radius: 4px;
+    border: 1px solid var(--tile-border);
+    box-shadow: 0 4px 0 var(--tile-shadow), 0 5px 5px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color); /* Manzu Red */
+    user-select: none;
+    position: relative;
+    transition: transform 0.2s;
+    font-family: 'Times New Roman', serif; /* Classic look for numbers */
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+}
+
+/* Numpad Controls */
+.controls {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.num-btn {
+    aspect-ratio: 1;
+    border: 2px solid #555;
+    background: transparent;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.num-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(229, 57, 53, 0.1);
+}
+
+.num-btn.selected {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
+}
+
+/* Feedback */
+.feedback {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.feedback.success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+    border: 1px solid #4caf50;
+}
+
+.feedback.error {
+    background: rgba(244, 67, 54, 0.2);
+    color: #e57373;
+    border: 1px solid #f44336;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .tile {
+        width: 36px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+    
+    .numpad {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .numpad button:nth-child(n+6) {
+        grid-column: span 1;
+    }
+    
+    /* Center the last row of buttons if needed, or just let them flow */
+}
