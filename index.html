@@ -26,6 +26,8 @@
                     <!-- Ranking items will be injected here -->
                 </ul>
             </div>
+
+            <button id="stats-btn" class="btn secondary" style="margin-top: 20px;">📊 統計を見る</button>
         </div>
 
         <!-- Game Screen -->
@@ -70,6 +72,49 @@
             <button id="title-btn" class="btn secondary" style="margin-top: 10px;">タイトルに戻る</button>
             <button id="share-btn" class="btn secondary"
                 style="margin-top: 10px; background-color: #000; color: #fff;">Xで共有する</button>
+        </div>
+
+        <!-- Stats Screen -->
+        <div id="stats-screen" class="screen">
+            <h2>📊 統計情報</h2>
+
+            <div class="stats-container">
+                <h3>基本統計</h3>
+                <div class="stats-basic">
+                    <div class="stat-item">
+                        <span class="stat-label">総プレイ回数:</span>
+                        <span class="stat-value" id="stat-total-games">0</span>回
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">平均スコア:</span>
+                        <span class="stat-value" id="stat-avg-score">0.0</span>点
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">総正解数:</span>
+                        <span class="stat-value" id="stat-correct">0</span> / <span id="stat-total">0</span>
+                        (<span class="stat-value" id="stat-accuracy">0</span>%)
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">最高連続正解:</span>
+                        <span class="stat-value" id="stat-max-streak">0</span>問
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">平均回答時間:</span>
+                        <span class="stat-value" id="stat-avg-time">0.0</span>秒
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">待ちの数別正解率</h3>
+                <div class="stats-waits" id="stats-waits-container">
+                    <!-- Wait stats will be injected here -->
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button id="stats-back-btn" class="btn primary">タイトルに戻る</button>
+                <button id="stats-reset-btn" class="btn secondary"
+                    style="margin-top: 10px; background-color: #c62828; color: #fff;">統計をリセット</button>
+            </div>
         </div>
     </div>
 

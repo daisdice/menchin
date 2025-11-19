@@ -11,13 +11,24 @@ const Game = {
         currentWaits: [],
         selectedWaits: new Set(),
         timerInterval: null,
-        ranking: []
+        ranking: [],
+        stats: {
+            totalGames: 0,
+            totalQuestions: 0,
+            totalCorrect: 0,
+            totalTime: 0,
+            maxStreak: 0,
+            currentStreak: 0,
+            waitCountStats: {}  // { 1: {correct: 0, total: 0}, 2: {...}, ... 5: {...} }
+        },
+        questionStartTime: null
     },
 
     elements: {
         startScreen: document.getElementById('start-screen'),
         gameScreen: document.getElementById('game-screen'),
         resultScreen: document.getElementById('result-screen'),
+        statsScreen: document.getElementById('stats-screen'),
         startBtn: document.getElementById('start-btn'),
         restartBtn: document.getElementById('restart-btn'),
         timeLeft: document.getElementById('time-left'),
@@ -29,11 +40,15 @@ const Game = {
         feedback: document.getElementById('feedback'),
         rankingList: document.getElementById('ranking-list'),
         newRecordMsg: document.getElementById('new-record-msg'),
-        titleBtn: document.getElementById('title-btn')
+        titleBtn: document.getElementById('title-btn'),
+        statsBtn: document.getElementById('stats-btn'),
+        statsBackBtn: document.getElementById('stats-back-btn'),
+        statsResetBtn: document.getElementById('stats-reset-btn')
     },
 
     init: function () {
         this.loadRanking();
+        this.loadStats();
         this.updateRankingUI();
 
         this.elements.startBtn.addEventListener('click', () => this.startGame());
@@ -41,6 +56,18 @@ const Game = {
 
         if (this.elements.titleBtn) {
             this.elements.titleBtn.addEventListener('click', () => this.returnToTitle());
+        }
+
+        if (this.elements.statsBtn) {
+            this.elements.statsBtn.addEventListener('click', () => this.showStats());
+        }
+
+        if (this.elements.statsBackBtn) {
+            this.elements.statsBackBtn.addEventListener('click', () => this.returnToTitle());
+        }
+
+        if (this.elements.statsResetBtn) {
+            this.elements.statsResetBtn.addEventListener('click', () => this.resetStats());
         }
 
         this.elements.numBtns.forEach(btn => {
@@ -64,6 +91,144 @@ const Game = {
                 console.error("Failed to parse ranking", e);
                 this.state.ranking = [];
             }
+        }
+    },
+
+    loadStats: function () {
+        const stored = localStorage.getItem('menchin_stats');
+        if (stored) {
+            try {
+                const loadedStats = JSON.parse(stored);
+                // Migrate old stats if needed
+                if (loadedStats.waitStats && !loadedStats.waitCountStats) {
+                    this.initializeStats();
+                } else {
+                    this.state.stats = loadedStats;
+                }
+            } catch (e) {
+                console.error("Failed to parse stats", e);
+                this.initializeStats();
+            }
+        } else {
+            this.initializeStats();
+        }
+    },
+
+    initializeStats: function () {
+        this.state.stats = {
+            totalGames: 0,
+            totalQuestions: 0,
+            totalCorrect: 0,
+            totalTime: 0,
+            maxStreak: 0,
+            currentStreak: 0,
+            waitCountStats: {
+                1: { correct: 0, total: 0 },
+                2: { correct: 0, total: 0 },
+                3: { correct: 0, total: 0 },
+                4: { correct: 0, total: 0 },
+                5: { correct: 0, total: 0 }  // 5+ waits
+            }
+        };
+    },
+
+    saveStats: function () {
+        localStorage.setItem('menchin_stats', JSON.stringify(this.state.stats));
+    },
+
+    updateStats: function (isCorrect, waits, timeSpent) {
+        this.state.stats.totalQuestions++;
+        this.state.stats.totalTime += timeSpent;
+
+        if (isCorrect) {
+            this.state.stats.totalCorrect++;
+            this.state.stats.currentStreak++;
+            if (this.state.stats.currentStreak > this.state.stats.maxStreak) {
+                this.state.stats.maxStreak = this.state.stats.currentStreak;
+            }
+        } else {
+            this.state.stats.currentStreak = 0;
+        }
+
+        // Update wait-count stats
+        const waitCount = waits.length;
+        const countKey = waitCount >= 5 ? 5 : waitCount;  // 5+ waits grouped together
+
+        if (!this.state.stats.waitCountStats[countKey]) {
+            this.state.stats.waitCountStats[countKey] = { correct: 0, total: 0 };
+        }
+        this.state.stats.waitCountStats[countKey].total++;
+        if (isCorrect) {
+            this.state.stats.waitCountStats[countKey].correct++;
+        }
+
+        this.saveStats();
+    },
+
+    showStats: function () {
+        this.renderStatsUI();
+        this.switchScreen('stats-screen');
+    },
+
+    renderStatsUI: function () {
+        const stats = this.state.stats;
+
+        // Basic stats
+        document.getElementById('stat-total-games').textContent = stats.totalGames;
+
+        const avgScore = stats.totalGames > 0 ? (stats.totalCorrect / stats.totalGames).toFixed(1) : '0.0';
+        document.getElementById('stat-avg-score').textContent = avgScore;
+
+        document.getElementById('stat-correct').textContent = stats.totalCorrect;
+        document.getElementById('stat-total').textContent = stats.totalQuestions;
+
+        const accuracy = stats.totalQuestions > 0 ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0;
+        document.getElementById('stat-accuracy').textContent = accuracy;
+
+        document.getElementById('stat-max-streak').textContent = stats.maxStreak;
+
+        const avgTime = stats.totalQuestions > 0 ? (stats.totalTime / stats.totalQuestions).toFixed(1) : '0.0';
+        document.getElementById('stat-avg-time').textContent = avgTime;
+
+        // Wait count stats
+        const waitsContainer = document.getElementById('stats-waits-container');
+        waitsContainer.innerHTML = '';
+
+        const waitLabels = {
+            1: '1面待ち',
+            2: '2面待ち',
+            3: '3面待ち',
+            4: '4面待ち',
+            5: '5面待ち以上'
+        };
+
+        [1, 2, 3, 4, 5].forEach(count => {
+            const waitData = stats.waitCountStats[count] || { correct: 0, total: 0 };
+            const percentage = waitData.total > 0 ? Math.round((waitData.correct / waitData.total) * 100) : 0;
+
+            const item = document.createElement('div');
+            item.className = 'wait-stat-item';
+
+            item.innerHTML = `
+                <div class="wait-stat-label">${waitLabels[count]}</div>
+                <div class="wait-stat-bar-container">
+                    <div class="wait-stat-bar" style="width: ${percentage}%">
+                        ${percentage > 15 ? percentage + '%' : ''}
+                    </div>
+                </div>
+                <div class="wait-stat-count">${waitData.correct}/${waitData.total}</div>
+            `;
+
+            waitsContainer.appendChild(item);
+        });
+    },
+
+    resetStats: function () {
+        if (confirm('統計データをすべてリセットしますか？\nこの操作は取り消せません。')) {
+            this.initializeStats();
+            this.saveStats();
+            this.renderStatsUI();
+            alert('統計データをリセットしました。');
         }
     },
 
@@ -141,6 +306,10 @@ const Game = {
         clearInterval(this.state.timerInterval);
         this.elements.finalScore.textContent = this.state.score;
 
+        // Update game count
+        this.state.stats.totalGames++;
+        this.saveStats();
+
         const isNewRecord = this.saveScore(this.state.score);
         if (isNewRecord && this.elements.newRecordMsg) {
             this.elements.newRecordMsg.classList.remove('hidden');
@@ -162,6 +331,9 @@ const Game = {
         // Generate new hand
         this.state.currentHand = Mahjong.generateChinitsuHand();
         this.state.currentWaits = Mahjong.getWaits(this.state.currentHand);
+
+        // Record question start time
+        this.state.questionStartTime = Date.now();
 
         // Render hand
         this.renderHand();
@@ -206,10 +378,16 @@ const Game = {
     submitAnswer: function () {
         if (!this.state.isPlaying) return;
 
+        // Calculate time spent
+        const timeSpent = (Date.now() - this.state.questionStartTime) / 1000;
+
         const selected = Array.from(this.state.selectedWaits).sort((a, b) => a - b);
         const correct = this.state.currentWaits.sort((a, b) => a - b);
 
         const isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
+
+        // Update statistics
+        this.updateStats(isCorrect, correct, timeSpent);
 
         if (isCorrect) {
             this.state.score++;
