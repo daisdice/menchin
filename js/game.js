@@ -37,6 +37,17 @@ const Game = {
         });
 
         this.elements.submitBtn.addEventListener('click', () => this.submitAnswer());
+
+        const shareBtn = document.getElementById('share-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => this.shareResult());
+        }
+    },
+
+    shareResult: function () {
+        const text = `麻雀メンチン待ち当てクイズで${this.state.score}問正解しました！ #メンチンクイズ`;
+        const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+        window.open(url, '_blank');
     },
 
     startGame: function () {
