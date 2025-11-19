@@ -10,7 +10,8 @@ const Game = {
         currentHand: [],
         currentWaits: [],
         selectedWaits: new Set(),
-        timerInterval: null
+        timerInterval: null,
+        ranking: []
     },
 
     elements: {
@@ -25,12 +26,22 @@ const Game = {
         handContainer: document.getElementById('hand-container'),
         numBtns: document.querySelectorAll('.num-btn'),
         submitBtn: document.getElementById('submit-answer-btn'),
-        feedback: document.getElementById('feedback')
+        feedback: document.getElementById('feedback'),
+        rankingList: document.getElementById('ranking-list'),
+        newRecordMsg: document.getElementById('new-record-msg'),
+        titleBtn: document.getElementById('title-btn')
     },
 
     init: function () {
+        this.loadRanking();
+        this.updateRankingUI();
+
         this.elements.startBtn.addEventListener('click', () => this.startGame());
         this.elements.restartBtn.addEventListener('click', () => this.startGame());
+
+        if (this.elements.titleBtn) {
+            this.elements.titleBtn.addEventListener('click', () => this.returnToTitle());
+        }
 
         this.elements.numBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.toggleWait(e.target));
@@ -44,10 +55,62 @@ const Game = {
         }
     },
 
+    loadRanking: function () {
+        const stored = localStorage.getItem('menchin_ranking');
+        if (stored) {
+            try {
+                this.state.ranking = JSON.parse(stored);
+            } catch (e) {
+                console.error("Failed to parse ranking", e);
+                this.state.ranking = [];
+            }
+        }
+    },
+
+    saveScore: function (score) {
+        const now = new Date();
+        const date = `${now.toLocaleDateString()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // Check if it's a new record (strictly greater than previous best)
+        const previousBest = this.state.ranking.length > 0 ? this.state.ranking[0].score : 0;
+        const isNewRecord = score > previousBest;
+
+        this.state.ranking.push({ score, date });
+        this.state.ranking.sort((a, b) => b.score - a.score);
+        this.state.ranking = this.state.ranking.slice(0, 5); // Keep top 5
+        localStorage.setItem('menchin_ranking', JSON.stringify(this.state.ranking));
+        this.updateRankingUI();
+
+        return isNewRecord;
+    },
+
+    updateRankingUI: function () {
+        const list = this.elements.rankingList;
+        if (!list) return;
+
+        list.innerHTML = '';
+        if (this.state.ranking.length === 0) {
+            list.innerHTML = '<li>まだ記録はありません</li>';
+            return;
+        }
+
+        this.state.ranking.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${index + 1}位: ${item.score}点 (${item.date})`;
+            li.style.padding = '5px 0';
+            li.style.borderBottom = '1px solid #333';
+            list.appendChild(li);
+        });
+    },
+
     shareResult: function () {
         const text = `麻雀メンチン待ち当てクイズで${this.state.score}問正解しました！ #メンチンクイズ`;
         const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
         window.open(url, '_blank');
+    },
+
+    returnToTitle: function () {
+        this.switchScreen('start-screen');
     },
 
     startGame: function () {
@@ -77,6 +140,14 @@ const Game = {
         this.state.isPlaying = false;
         clearInterval(this.state.timerInterval);
         this.elements.finalScore.textContent = this.state.score;
+
+        const isNewRecord = this.saveScore(this.state.score);
+        if (isNewRecord && this.elements.newRecordMsg) {
+            this.elements.newRecordMsg.classList.remove('hidden');
+        } else if (this.elements.newRecordMsg) {
+            this.elements.newRecordMsg.classList.add('hidden');
+        }
+
         this.switchScreen('result-screen');
     },
 

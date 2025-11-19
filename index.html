@@ -18,6 +18,14 @@
             <h1>メンチン待ち当てクイズ</h1>
             <p>制限時間内に清一色の待ちをいくつ当てられるか？</p>
             <button id="start-btn" class="btn primary">ゲームスタート</button>
+
+            <div id="ranking-container" style="margin-top: 30px;">
+                <h3>ランキング (Top 5)</h3>
+                <ul id="ranking-list"
+                    style="list-style: none; padding: 0; text-align: left; display: inline-block; min-width: 200px;">
+                    <!-- Ranking items will be injected here -->
+                </ul>
+            </div>
         </div>
 
         <!-- Game Screen -->
@@ -54,8 +62,12 @@
         <!-- Result Screen -->
         <div id="result-screen" class="screen">
             <h2>ゲーム終了！</h2>
+            <div id="new-record-msg" class="hidden"
+                style="color: #ffd700; font-weight: bold; font-size: 1.5rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                NEW RECORD!</div>
             <div class="final-score">スコア: <span id="final-score-val">0</span></div>
             <button id="restart-btn" class="btn primary">もう一度遊ぶ</button>
+            <button id="title-btn" class="btn secondary" style="margin-top: 10px;">タイトルに戻る</button>
             <button id="share-btn" class="btn secondary"
                 style="margin-top: 10px; background-color: #000; color: #fff;">Xで共有する</button>
         </div>
