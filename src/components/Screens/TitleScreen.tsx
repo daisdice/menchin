@@ -16,6 +16,7 @@ export const TitleScreen: React.FC = () => {
                 className={styles.titleContainer}
             >
                 <h1 className={styles.title}>CHIN'IT</h1>
+                <span className={styles.alphaBadge}>ALPHA</span>
                 <p className={styles.subtitle}>チンイット</p>
             </motion.div>
 

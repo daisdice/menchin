@@ -9,15 +9,30 @@
 
 .titleContainer {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
 }
 
 .title {
     font-size: 5rem;
     color: var(--color-text);
-    margin-bottom: 0;
+    margin: 0;
     letter-spacing: -0.05em;
     line-height: 1;
     text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.alphaBadge {
+    display: inline-block;
+    background-color: var(--color-accent-cyan);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.15em;
 }
 
 .subtitle {
@@ -25,7 +40,7 @@
     color: var(--color-text-light);
     font-weight: 700;
     letter-spacing: 0.2rem;
-    margin-top: var(--spacing-xs);
+    margin: 0;
 }
 
 .menuContainer {
