@@ -17,7 +17,24 @@
         <div id="start-screen" class="screen active">
             <h1>メンチン待ち当てクイズ</h1>
             <p>制限時間内に清一色の待ちをいくつ当てられるか？</p>
-            <button id="start-btn" class="btn primary">ゲームスタート</button>
+
+            <div class="difficulty-select" style="margin-bottom: 20px;">
+                <p style="margin-bottom: 10px; font-size: 1rem;">難易度を選択してスタート</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn primary difficulty-btn" data-diff="easy"
+                        style="background-color: #4caf50;">初級<br><span
+                            style="font-size: 0.8rem">(1-2面待ち)</span></button>
+                    <button class="btn primary difficulty-btn" data-diff="normal"
+                        style="background-color: #2196f3;">中級<br><span
+                            style="font-size: 0.8rem">(3-4面待ち)</span></button>
+                    <button class="btn primary difficulty-btn" data-diff="hard"
+                        style="background-color: #f44336;">上級<br><span
+                            style="font-size: 0.8rem">(5面待ち以上)</span></button>
+                </div>
+            </div>
+
+            <button id="training-mode-btn" class="btn secondary"
+                style="margin-top: 10px; background-color: #ff9800; color: white;">💪 特訓モード</button>
 
             <div id="ranking-container" style="margin-top: 30px;">
                 <h3>ランキング (Top 5)</h3>
@@ -28,6 +45,27 @@
             </div>
 
             <button id="stats-btn" class="btn secondary" style="margin-top: 20px;">📊 統計を見る</button>
+        </div>
+
+        <!-- Training Settings Screen -->
+        <div id="training-screen" class="screen">
+            <h2>💪 特訓モード設定</h2>
+            <p>苦手な待ち数を指定して集中練習！</p>
+
+            <div class="training-options" style="margin: 30px 0;">
+                <p>待ちの数を選択:</p>
+                <div class="wait-select-container"
+                    style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                    <button class="btn secondary training-wait-btn" data-wait="1">1面</button>
+                    <button class="btn secondary training-wait-btn" data-wait="2">2面</button>
+                    <button class="btn secondary training-wait-btn" data-wait="3">3面</button>
+                    <button class="btn secondary training-wait-btn" data-wait="4">4面</button>
+                    <button class="btn secondary training-wait-btn" data-wait="5">5面+</button>
+                </div>
+            </div>
+
+            <button id="start-training-btn" class="btn primary" disabled>特訓開始</button>
+            <button id="training-back-btn" class="btn secondary" style="margin-top: 20px;">戻る</button>
         </div>
 
         <!-- Game Screen -->
@@ -107,6 +145,11 @@
                 <h3 style="margin-top: 30px;">待ちの数別正解率</h3>
                 <div class="stats-waits" id="stats-waits-container">
                     <!-- Wait stats will be injected here -->
+                </div>
+
+                <h3 style="margin-top: 30px;">🏆 実績・称号</h3>
+                <div id="achievements-list" style="text-align: left; margin-top: 10px;">
+                    <!-- Achievements will be injected here -->
                 </div>
             </div>
 

@@ -12,6 +12,9 @@ const Game = {
         selectedWaits: new Set(),
         timerInterval: null,
         ranking: [],
+        difficulty: 'normal', // easy, normal, hard
+        gameMode: 'challenge', // challenge, training
+        trainingWaitCount: 0, // 0 = any, 1-5 = specific
         stats: {
             totalGames: 0,
             totalQuestions: 0,
@@ -19,10 +22,20 @@ const Game = {
             totalTime: 0,
             maxStreak: 0,
             currentStreak: 0,
-            waitCountStats: {}  // { 1: {correct: 0, total: 0}, 2: {...}, ... 5: {...} }
+            waitCountStats: {},  // { 1: {correct: 0, total: 0}, ... }
+            achievements: [] // Array of unlocked achievement IDs
         },
         questionStartTime: null
     },
+
+    achievementsList: [
+        { id: 'beginner', name: 'メンチン初心者', description: '初めてクイズに正解する', icon: '🔰' },
+        { id: 'streak_10', name: '集中力', description: '10問連続正解する', icon: '🔥' },
+        { id: 'score_20', name: 'メンチン初段', description: '1プレイで20点以上獲得する', icon: '🥋' },
+        { id: 'hard_mode', name: '上級者への道', description: '上級モードでプレイする', icon: '🏔️' },
+        { id: 'multi_wait_master', name: '多面張マスター', description: '5面待ち以上を累計10回正解する', icon: '👑' },
+        { id: 'speed_star', name: 'スピードスター', description: '平均回答時間3秒以内で10問以上正解して終了', icon: '⚡' }
+    ],
 
     elements: {
         startScreen: document.getElementById('start-screen'),
@@ -51,8 +64,41 @@ const Game = {
         this.loadStats();
         this.updateRankingUI();
 
-        this.elements.startBtn.addEventListener('click', () => this.startGame());
-        this.elements.restartBtn.addEventListener('click', () => this.startGame());
+        // Difficulty buttons
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const diff = e.currentTarget.dataset.diff;
+                this.startGame(diff);
+            });
+        });
+
+        // Training mode
+        const trainingBtn = document.getElementById('training-mode-btn');
+        if (trainingBtn) {
+            trainingBtn.addEventListener('click', () => this.switchScreen('training-screen'));
+        }
+
+        const trainingBackBtn = document.getElementById('training-back-btn');
+        if (trainingBackBtn) {
+            trainingBackBtn.addEventListener('click', () => this.returnToTitle());
+        }
+
+        const startTrainingBtn = document.getElementById('start-training-btn');
+        if (startTrainingBtn) {
+            startTrainingBtn.addEventListener('click', () => this.startTraining());
+        }
+
+        // Training wait selection
+        document.querySelectorAll('.training-wait-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.training-wait-btn').forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                this.state.trainingWaitCount = parseInt(e.target.dataset.wait);
+                document.getElementById('start-training-btn').disabled = false;
+            });
+        });
+
+        this.elements.restartBtn.addEventListener('click', () => this.returnToTitle()); // Restart goes to title now to pick diff
 
         if (this.elements.titleBtn) {
             this.elements.titleBtn.addEventListener('click', () => this.returnToTitle());
@@ -70,11 +116,6 @@ const Game = {
             this.elements.statsResetBtn.addEventListener('click', () => this.resetStats());
         }
 
-        const statsShareBtn = document.getElementById('stats-share-btn');
-        if (statsShareBtn) {
-            statsShareBtn.addEventListener('click', () => this.shareStats());
-        }
-
         this.elements.numBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.toggleWait(e.target));
         });
@@ -84,6 +125,11 @@ const Game = {
         const shareBtn = document.getElementById('share-btn');
         if (shareBtn) {
             shareBtn.addEventListener('click', () => this.shareResult());
+        }
+
+        const statsShareBtn = document.getElementById('stats-share-btn');
+        if (statsShareBtn) {
+            statsShareBtn.addEventListener('click', () => this.shareStats());
         }
     },
 
@@ -142,6 +188,8 @@ const Game = {
     },
 
     updateStats: function (isCorrect, waits, timeSpent) {
+        if (this.state.gameMode === 'training') return;
+
         this.state.stats.totalQuestions++;
         this.state.stats.totalTime += timeSpent;
 
@@ -167,7 +215,43 @@ const Game = {
             this.state.stats.waitCountStats[countKey].correct++;
         }
 
+        this.checkAchievements(isCorrect, waits, timeSpent);
         this.saveStats();
+    },
+
+    checkAchievements: function (isCorrect, waits, timeSpent) {
+        const stats = this.state.stats;
+        const newUnlocks = [];
+
+        // Helper to unlock
+        const unlock = (id) => {
+            if (!stats.achievements) stats.achievements = [];
+            if (!stats.achievements.includes(id)) {
+                stats.achievements.push(id);
+                newUnlocks.push(this.achievementsList.find(a => a.id === id));
+            }
+        };
+
+        if (isCorrect) {
+            unlock('beginner');
+
+            if (stats.currentStreak >= 10) unlock('streak_10');
+
+            if (this.state.score >= 20) unlock('score_20');
+
+            if (this.state.difficulty === 'hard') unlock('hard_mode');
+
+            // Multi-wait master
+            const multiWaitCorrect = (stats.waitCountStats[5]?.correct || 0);
+            if (multiWaitCorrect >= 10) unlock('multi_wait_master');
+        }
+
+        // Show notifications for new unlocks
+        if (newUnlocks.length > 0) {
+            newUnlocks.forEach(ach => {
+                alert(`🏆 実績解除: ${ach.icon} ${ach.name}\n${ach.description}`);
+            });
+        }
     },
 
     showStats: function () {
@@ -226,6 +310,31 @@ const Game = {
 
             waitsContainer.appendChild(item);
         });
+
+        // Achievements
+        const achList = document.getElementById('achievements-list');
+        achList.innerHTML = '';
+
+        const unlockedIds = stats.achievements || [];
+
+        this.achievementsList.forEach(ach => {
+            const isUnlocked = unlockedIds.includes(ach.id);
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.marginBottom = '5px';
+            div.style.borderRadius = '8px';
+            div.style.background = isUnlocked ? 'rgba(255, 215, 0, 0.1)' : 'rgba(255, 255, 255, 0.05)';
+            div.style.border = isUnlocked ? '1px solid #ffd700' : '1px solid #555';
+            div.style.opacity = isUnlocked ? '1' : '0.5';
+
+            div.innerHTML = `
+                <div style="font-weight: bold; color: ${isUnlocked ? '#ffd700' : '#aaa'}">
+                    ${isUnlocked ? ach.icon : '🔒'} ${ach.name}
+                </div>
+                <div style="font-size: 0.8rem; color: #ccc;">${ach.description}</div>
+            `;
+            achList.appendChild(div);
+        });
     },
 
     resetStats: function () {
@@ -274,7 +383,17 @@ const Game = {
     },
 
     shareResult: function () {
-        const text = `麻雀メンチン待ち当てクイズで${this.state.score}問正解しました！ #メンチンクイズ`;
+        let text = '';
+        if (this.state.gameMode === 'training') {
+            text = `麻雀メンチン待ち当てクイズ【特訓モード】で練習中！ #メンチンクイズ`;
+        } else {
+            const diffLabel = {
+                'easy': '初級',
+                'normal': '中級',
+                'hard': '上級'
+            }[this.state.difficulty];
+            text = `麻雀メンチン待ち当てクイズ【${diffLabel}】で${this.state.score}問正解しました！ #メンチンクイズ`;
+        }
         const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
         window.open(url, '_blank');
     },
@@ -285,6 +404,7 @@ const Game = {
         // Calculate basic stats
         const avgScore = stats.totalGames > 0 ? (stats.totalCorrect / stats.totalGames).toFixed(1) : '0.0';
         const accuracy = stats.totalQuestions > 0 ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0;
+        const unlockedCount = stats.achievements ? stats.achievements.length : 0;
 
         // Format wait count stats with visual bars
         const waitLabels = {
@@ -311,7 +431,7 @@ const Game = {
             `🎮 総プレイ回数: ${stats.totalGames}回\n` +
             `⭐ 平均スコア: ${avgScore}点\n` +
             `✅ 正解率: ${accuracy}% (${stats.totalCorrect}/${stats.totalQuestions})\n` +
-            `🔥 最高連続正解: ${stats.maxStreak}問\n` +
+            `🏆 実績解除: ${unlockedCount}/${this.achievementsList.length}\n` +
             `\n【待ちの数別正解率】${waitStatsText}\n\n` +
             `#メンチンクイズ`;
 
@@ -323,10 +443,12 @@ const Game = {
         this.switchScreen('start-screen');
     },
 
-    startGame: function () {
+    startGame: function (difficulty = 'normal') {
         this.state.score = 0;
         this.state.timeLeft = 60;
         this.state.isPlaying = true;
+        this.state.difficulty = difficulty;
+        this.state.gameMode = 'challenge';
 
         this.updateUI();
         this.switchScreen('game-screen');
@@ -337,7 +459,26 @@ const Game = {
         this.state.timerInterval = setInterval(() => this.tick(), 1000);
     },
 
+    startTraining: function () {
+        this.state.score = 0;
+        this.state.timeLeft = 999; // Unlimited time effectively
+        this.state.isPlaying = true;
+        this.state.gameMode = 'training';
+        // difficulty is ignored in training, uses trainingWaitCount
+
+        this.updateUI();
+        document.getElementById('time-left').textContent = "∞";
+        this.switchScreen('game-screen');
+
+        this.nextHand();
+
+        if (this.state.timerInterval) clearInterval(this.state.timerInterval);
+        // No timer tick for training or maybe just count up? Let's keep it simple for now
+    },
+
     tick: function () {
+        if (this.state.gameMode === 'training') return;
+
         this.state.timeLeft--;
         this.elements.timeLeft.textContent = this.state.timeLeft;
 
@@ -348,8 +489,14 @@ const Game = {
 
     endGame: function () {
         this.state.isPlaying = false;
-        clearInterval(this.state.timerInterval);
+        if (this.state.timerInterval) clearInterval(this.state.timerInterval);
         this.elements.finalScore.textContent = this.state.score;
+
+        // Skip stats and ranking for training mode
+        if (this.state.gameMode === 'training') {
+            this.switchScreen('result-screen');
+            return;
+        }
 
         // Update game count
         this.state.stats.totalGames++;
@@ -374,7 +521,34 @@ const Game = {
         this.elements.feedback.classList.add('hidden');
 
         // Generate new hand
-        this.state.currentHand = Mahjong.generateChinitsuHand();
+        // Generate new hand based on difficulty or training settings
+        let options = {};
+
+        if (this.state.gameMode === 'training') {
+            if (this.state.trainingWaitCount > 0) {
+                if (this.state.trainingWaitCount === 5) {
+                    options.minWaits = 5;
+                } else {
+                    options.exactWaits = this.state.trainingWaitCount;
+                }
+            }
+        } else {
+            // Challenge mode difficulty
+            switch (this.state.difficulty) {
+                case 'easy':
+                    options.maxWaits = 2;
+                    break;
+                case 'normal':
+                    options.minWaits = 3;
+                    options.maxWaits = 4;
+                    break;
+                case 'hard':
+                    options.minWaits = 5;
+                    break;
+            }
+        }
+
+        this.state.currentHand = Mahjong.generateChinitsuHand(options);
         this.state.currentWaits = Mahjong.getWaits(this.state.currentHand);
 
         // Record question start time
