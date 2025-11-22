@@ -106,18 +106,20 @@
 .numpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-sm);
-    width: 100%;
-    max-width: 300px;
+    gap: var(--spacing-md);
+    max-width: 360px;
 }
 
+/* Make numpad tiles larger for better touch targets */
 .numpad>div {
-    width: 100%;
+    width: 100% !important;
+    min-width: 70px !important;
+    max-width: 100px !important;
     margin-bottom: 0;
 }
 
 .submitBtn {
-    max-width: 300px;
+    max-width: 360px;
     margin-top: var(--spacing-sm);
 }
 
@@ -170,6 +172,10 @@
     }
 
     .numpad {
-        gap: 4px;
+        gap: var(--spacing-sm);
+    }
+
+    .numpad>div {
+        min-width: 60px !important;
     }
 }
