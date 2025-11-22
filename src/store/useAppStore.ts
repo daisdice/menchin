@@ -75,7 +75,17 @@ export const useAppStore = create<AppState>()(
             },
         }),
         {
-            name: 'menchin-storage', // unique name for localStorage
+            name: 'menchin-storage',
+            version: 1,
+            migrate: (persistedState: any) => {
+                // Ensure beginner is always unlocked
+                if (persistedState && Array.isArray(persistedState.unlockedDifficulties)) {
+                    if (!persistedState.unlockedDifficulties.includes('beginner')) {
+                        persistedState.unlockedDifficulties = ['beginner', ...persistedState.unlockedDifficulties];
+                    }
+                }
+                return persistedState;
+            },
         }
     )
 );
