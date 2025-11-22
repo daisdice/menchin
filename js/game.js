@@ -11,7 +11,13 @@ const Game = {
         currentWaits: [],
         selectedWaits: new Set(),
         timerInterval: null,
-        ranking: [],
+        timerInterval: null,
+        ranking: {
+            easy: [],
+            normal: [],
+            hard: []
+        },
+        currentRankingTab: 'normal',
         difficulty: 'normal', // easy, normal, hard
         gameMode: 'challenge', // challenge, training
         trainingWaitCount: 0, // 0 = any, 1-5 = specific
@@ -62,7 +68,25 @@ const Game = {
     init: function () {
         this.loadRanking();
         this.loadStats();
-        this.updateRankingUI();
+        // this.updateRankingUI(); // Removed, ranking is now on separate screen
+
+        // Ranking Screen Events
+        const rankingBtn = document.getElementById('ranking-btn');
+        if (rankingBtn) {
+            rankingBtn.addEventListener('click', () => this.showRanking());
+        }
+
+        const rankingBackBtn = document.getElementById('ranking-back-btn');
+        if (rankingBackBtn) {
+            rankingBackBtn.addEventListener('click', () => this.returnToTitle());
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tab = e.target.dataset.tab;
+                this.switchRankingTab(tab);
+            });
+        });
 
         // Difficulty buttons
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
@@ -137,12 +161,25 @@ const Game = {
         const stored = localStorage.getItem('menchin_ranking');
         if (stored) {
             try {
-                this.state.ranking = JSON.parse(stored);
+                const parsed = JSON.parse(stored);
+                // If it's the old array format, just reset it (user requested to discard old data)
+                if (Array.isArray(parsed)) {
+                    this.state.ranking = { easy: [], normal: [], hard: [] };
+                    this.saveRanking();
+                } else {
+                    this.state.ranking = parsed;
+                }
             } catch (e) {
                 console.error("Failed to parse ranking", e);
-                this.state.ranking = [];
+                this.state.ranking = { easy: [], normal: [], hard: [] };
             }
+        } else {
+            this.state.ranking = { easy: [], normal: [], hard: [] };
         }
+    },
+
+    saveRanking: function () {
+        localStorage.setItem('menchin_ranking', JSON.stringify(this.state.ranking));
     },
 
     loadStats: function () {
@@ -349,34 +386,64 @@ const Game = {
     saveScore: function (score) {
         const now = new Date();
         const date = `${now.toLocaleDateString()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const diff = this.state.difficulty;
+
+        // Get current ranking for this difficulty
+        let currentRankList = this.state.ranking[diff] || [];
 
         // Check if it's a new record (strictly greater than previous best)
-        const previousBest = this.state.ranking.length > 0 ? this.state.ranking[0].score : 0;
+        const previousBest = currentRankList.length > 0 ? currentRankList[0].score : 0;
         const isNewRecord = score > previousBest;
 
-        this.state.ranking.push({ score, date });
-        this.state.ranking.sort((a, b) => b.score - a.score);
-        this.state.ranking = this.state.ranking.slice(0, 5); // Keep top 5
-        localStorage.setItem('menchin_ranking', JSON.stringify(this.state.ranking));
-        this.updateRankingUI();
+        currentRankList.push({ score, date });
+        currentRankList.sort((a, b) => b.score - a.score);
+        currentRankList = currentRankList.slice(0, 5); // Keep top 5
+
+        this.state.ranking[diff] = currentRankList;
+        this.saveRanking();
 
         return isNewRecord;
     },
 
-    updateRankingUI: function () {
-        const list = this.elements.rankingList;
+    showRanking: function () {
+        // Default to current difficulty if set, otherwise normal
+        this.state.currentRankingTab = this.state.difficulty || 'normal';
+        this.renderRankingUI();
+        this.switchScreen('ranking-screen');
+    },
+
+    switchRankingTab: function (tab) {
+        this.state.currentRankingTab = tab;
+        this.renderRankingUI();
+    },
+
+    renderRankingUI: function () {
+        const tab = this.state.currentRankingTab;
+        const list = document.getElementById('ranking-list');
+
+        // Update tab active state
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.dataset.tab === tab) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
         if (!list) return;
 
         list.innerHTML = '';
-        if (this.state.ranking.length === 0) {
-            list.innerHTML = '<li>まだ記録はありません</li>';
+        const rankData = this.state.ranking[tab] || [];
+
+        if (rankData.length === 0) {
+            list.innerHTML = '<li style="padding: 10px; color: #aaa;">まだ記録はありません</li>';
             return;
         }
 
-        this.state.ranking.forEach((item, index) => {
+        rankData.forEach((item, index) => {
             const li = document.createElement('li');
-            li.textContent = `${index + 1}位: ${item.score}点 (${item.date})`;
-            li.style.padding = '5px 0';
+            li.innerHTML = `<span style="font-weight:bold; color:${index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#fff'}">${index + 1}位</span>: ${item.score}点 <span style="font-size:0.8em; color:#aaa; margin-left:10px;">(${item.date})</span>`;
+            li.style.padding = '10px 0';
             li.style.borderBottom = '1px solid #333';
             list.appendChild(li);
         });

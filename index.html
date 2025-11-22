@@ -36,15 +36,30 @@
             <button id="training-mode-btn" class="btn secondary"
                 style="margin-top: 10px; background-color: #ff9800; color: white;">💪 特訓モード</button>
 
-            <div id="ranking-container" style="margin-top: 30px;">
-                <h3>ランキング (Top 5)</h3>
+            <div style="margin-top: 30px;">
+                <button id="ranking-btn" class="btn secondary">🏆 ランキング</button>
+                <button id="stats-btn" class="btn secondary" style="margin-left: 10px;">📊 統計を見る</button>
+            </div>
+        </div>
+
+        <!-- Ranking Screen -->
+        <div id="ranking-screen" class="screen">
+            <h2>🏆 ランキング</h2>
+
+            <div class="tabs" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button class="btn secondary tab-btn active" data-tab="easy">初級</button>
+                <button class="btn secondary tab-btn" data-tab="normal">中級</button>
+                <button class="btn secondary tab-btn" data-tab="hard">上級</button>
+            </div>
+
+            <div id="ranking-content">
                 <ul id="ranking-list"
-                    style="list-style: none; padding: 0; text-align: left; display: inline-block; min-width: 200px;">
+                    style="list-style: none; padding: 0; text-align: left; display: inline-block; min-width: 250px;">
                     <!-- Ranking items will be injected here -->
                 </ul>
             </div>
 
-            <button id="stats-btn" class="btn secondary" style="margin-top: 20px;">📊 統計を見る</button>
+            <button id="ranking-back-btn" class="btn primary" style="margin-top: 30px;">タイトルに戻る</button>
         </div>
 
         <!-- Training Settings Screen -->
