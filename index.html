@@ -4,26 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>メンチン待ち当てクイズ</title>
-    <!DOCTYPE html>
-    <html lang="ja">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>メンチン待ち当てクイズ</title>
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    </head>
+    <title>瞬解！メンチン道場</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
 
 <body>
     <div id="toast-container"></div>
     <div id="app">
         <!-- Start Screen -->
         <div id="start-screen" class="screen active">
-            <h1>メンチン待ち当てクイズ</h1>
+            <h1>瞬解！メンチン道場</h1>
             <p>制限時間内に清一色の待ちをいくつ当てられるか？</p>
 
             <div class="difficulty-select" style="margin-bottom: 20px;">
@@ -46,9 +39,10 @@
             <button id="training-mode-btn" class="btn secondary"
                 style="margin-top: 10px; background-color: #ff9800; color: white;">💪 特訓モード</button>
 
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                 <button id="ranking-btn" class="btn secondary">🏆 ランキング</button>
-                <button id="stats-btn" class="btn secondary" style="margin-left: 10px;">📊 スタッツ</button>
+                <button id="stats-btn" class="btn secondary">📊 プレイデータ</button>
+                <button id="achievements-btn" class="btn secondary">🏆 トロフィー</button>
             </div>
         </div>
 
@@ -125,6 +119,12 @@
                 </div>
             </div>
             <div id="feedback" class="feedback hidden"></div>
+            <div id="time-up-overlay" class="time-up-overlay hidden">
+                <div class="time-up-content">
+                    <div class="time-up-text">終了！</div>
+                    <div class="time-up-answer">正解は... <span id="time-up-correct-waits"></span></div>
+                </div>
+            </div>
         </div>
 
         <!-- Result Screen -->
@@ -140,17 +140,17 @@
                 style="margin-top: 10px; background-color: #000; color: #fff;">Xで共有する</button>
         </div>
 
-        <!-- Stats Screen -->
+        <!-- Stats Screen (Renamed to Play Data) -->
         <div id="stats-screen" class="screen">
             <h2>📊 プレイデータ</h2>
 
             <div class="stats-tabs">
-                <button class="stats-tab-btn active" data-target="stats-data">スタッツ</button>
-                <button class="stats-tab-btn" data-target="stats-achievements">実績</button>
+                <button class="stats-tab-btn active" data-target="stats-summary">総合</button>
+                <button class="stats-tab-btn" data-target="stats-details">詳細</button>
             </div>
 
-            <!-- Stats Data Section -->
-            <div id="stats-data" class="stats-content-section active">
+            <!-- Stats Summary Section (Renamed to General) -->
+            <div id="stats-summary" class="stats-content-section active">
                 <div class="stats-container">
                     <h3>基本統計</h3>
                     <div class="stats-basic">
@@ -176,8 +176,13 @@
                             <span class="stat-value" id="stat-avg-time">0.0</span>秒
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <h3 style="margin-top: 30px;">難易度別成績</h3>
+            <!-- Stats Details Section -->
+            <div id="stats-details" class="stats-content-section">
+                <div class="stats-container">
+                    <h3>難易度別成績</h3>
                     <div id="diff-stats-container">
                         <!-- Difficulty stats table will be injected here -->
                     </div>
@@ -189,19 +194,27 @@
                 </div>
             </div>
 
-            <!-- Achievements Section -->
-            <div id="stats-achievements" class="stats-content-section">
+            <div style="margin-top: 20px; padding-bottom: 20px;">
+                <button id="stats-back-btn" class="btn primary">タイトルに戻る</button>
+                <button id="stats-share-btn" class="btn secondary"
+                    style="margin-top: 10px; background-color: #000; color: #fff;">📊 Xでデータを共有する</button>
+                <button id="stats-reset-btn" class="btn secondary"
+                    style="margin-top: 10px; background-color: #c62828; color: #fff;">データをリセット</button>
+            </div>
+        </div>
+
+        <!-- Achievements Screen (Renamed to Trophies) -->
+        <div id="achievements-screen" class="screen">
+            <h2>🏆 トロフィー</h2>
+
+            <div class="stats-container" style="flex: 1; overflow-y: auto;">
                 <div id="achievements-list" style="text-align: left; margin-top: 10px;">
                     <!-- Achievements will be injected here -->
                 </div>
             </div>
 
-            <div style="margin-top: 30px;">
-                <button id="stats-back-btn" class="btn primary">タイトルに戻る</button>
-                <button id="stats-share-btn" class="btn secondary"
-                    style="margin-top: 10px; background-color: #000; color: #fff;">📊 Xでスタッツを共有する</button>
-                <button id="stats-reset-btn" class="btn secondary"
-                    style="margin-top: 10px; background-color: #c62828; color: #fff;">データをリセット</button>
+            <div style="margin-top: 20px; padding-bottom: 20px;">
+                <button id="achievements-back-btn" class="btn primary">タイトルに戻る</button>
             </div>
         </div>
     </div>
