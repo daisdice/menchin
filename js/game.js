@@ -70,6 +70,11 @@ const Game = {
             this.elements.statsResetBtn.addEventListener('click', () => this.resetStats());
         }
 
+        const statsShareBtn = document.getElementById('stats-share-btn');
+        if (statsShareBtn) {
+            statsShareBtn.addEventListener('click', () => this.shareStats());
+        }
+
         this.elements.numBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.toggleWait(e.target));
         });
@@ -270,6 +275,46 @@ const Game = {
 
     shareResult: function () {
         const text = `麻雀メンチン待ち当てクイズで${this.state.score}問正解しました！ #メンチンクイズ`;
+        const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+        window.open(url, '_blank');
+    },
+
+    shareStats: function () {
+        const stats = this.state.stats;
+
+        // Calculate basic stats
+        const avgScore = stats.totalGames > 0 ? (stats.totalCorrect / stats.totalGames).toFixed(1) : '0.0';
+        const accuracy = stats.totalQuestions > 0 ? Math.round((stats.totalCorrect / stats.totalQuestions) * 100) : 0;
+
+        // Format wait count stats with visual bars
+        const waitLabels = {
+            1: '1面待ち',
+            2: '2面待ち',
+            3: '3面待ち',
+            4: '4面待ち',
+            5: '5面待ち以上'
+        };
+
+        let waitStatsText = '';
+        [1, 2, 3, 4, 5].forEach(count => {
+            const waitData = stats.waitCountStats[count] || { correct: 0, total: 0 };
+            const percentage = waitData.total > 0 ? Math.round((waitData.correct / waitData.total) * 100) : 0;
+
+            // Create visual bar using blocks (10% increments)
+            const blocks = Math.round(percentage / 10);
+            const bar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
+
+            waitStatsText += `\n${waitLabels[count]}: ${bar} ${percentage}%`;
+        });
+
+        const text = `📊 メンチンクイズ統計\n\n` +
+            `🎮 総プレイ回数: ${stats.totalGames}回\n` +
+            `⭐ 平均スコア: ${avgScore}点\n` +
+            `✅ 正解率: ${accuracy}% (${stats.totalCorrect}/${stats.totalQuestions})\n` +
+            `🔥 最高連続正解: ${stats.maxStreak}問\n` +
+            `\n【待ちの数別正解率】${waitStatsText}\n\n` +
+            `#メンチンクイズ`;
+
         const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
         window.open(url, '_blank');
     },
