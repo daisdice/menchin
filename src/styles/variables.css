@@ -1,0 +1,35 @@
+:root {
+  /* Colors */
+  --color-sumi: #1a1a1a;
+  --color-paper: #f4f1e8;
+  --color-vermilion: #e53935;
+  --color-gold: #c5a059;
+  --color-gold-light: #e6cca0;
+  --color-ink-splash: rgba(26, 26, 26, 0.8);
+  
+  /* Text Colors */
+  --text-primary: var(--color-sumi);
+  --text-secondary: #555555;
+  --text-inverted: var(--color-paper);
+  
+  /* Fonts */
+  --font-brush: 'Yuji Syuku', serif;
+  --font-body: 'Shippori Mincho', serif;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Borders */
+  --border-width-thick: 3px;
+  --border-width-thin: 1px;
+  
+  /* Z-Index */
+  --z-background: -1;
+  --z-content: 1;
+  --z-overlay: 100;
+  --z-toast: 1000;
+}

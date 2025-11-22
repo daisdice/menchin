@@ -1,0 +1,87 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--spacing-xl);
+}
+
+.titleContainer {
+    text-align: center;
+}
+
+.title {
+    font-size: 5rem;
+    color: var(--color-vermilion);
+    text-shadow: 4px 4px 0 var(--color-sumi);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.2rem;
+    font-weight: bold;
+}
+
+.menuContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    width: 100%;
+    max-width: 600px;
+}
+
+.difficultySection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    color: var(--color-sumi);
+    border-bottom: 2px solid var(--color-vermilion);
+    padding-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.buttonGroup {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.menuSection {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.lockIcon {
+    margin-left: var(--spacing-sm);
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 3.5rem;
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+}
