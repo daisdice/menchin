@@ -24,11 +24,13 @@ export const useAppStore = create<AppState>()(
     persist(
         (set, get) => ({
             highScores: {
-                easy: [],
+                beginner: [],
                 normal: [],
-                hard: []
+                advanced: [],
+                expert: [],
+                master: []
             },
-            unlockedDifficulties: ['easy'], // Start with easy unlocked
+            unlockedDifficulties: ['beginner'], // Start with beginner unlocked
             settings: {
                 soundEnabled: true,
             },

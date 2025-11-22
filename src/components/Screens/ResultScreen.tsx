@@ -9,7 +9,7 @@ import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { score, difficulty, resetGame } = useGameStore();
+    const { score, difficulty, mode, resetGame } = useGameStore();
     const { saveScore, unlockDifficulty, unlockedDifficulties } = useAppStore();
 
     const isNewRecord = React.useMemo(() => {
@@ -22,16 +22,24 @@ export const ResultScreen: React.FC = () => {
         saveScore(difficulty, score);
 
         // Unlock logic
-        if (difficulty === 'easy' && score >= 10) {
+        // Beginner -> Normal (Score >= 10)
+        // Normal -> Advanced (Score >= 15)
+        // Advanced -> Expert (Score >= 20)
+        // Expert -> Master (Score >= 25)
+        if (difficulty === 'beginner' && score >= 10) {
             unlockDifficulty('normal');
         } else if (difficulty === 'normal' && score >= 15) {
-            unlockDifficulty('hard');
+            unlockDifficulty('advanced');
+        } else if (difficulty === 'advanced' && score >= 20) {
+            unlockDifficulty('expert');
+        } else if (difficulty === 'expert' && score >= 25) {
+            unlockDifficulty('master');
         }
     }, [score, difficulty, saveScore, unlockDifficulty]);
 
     const handleRetry = () => {
         resetGame();
-        useGameStore.getState().startGame(difficulty);
+        useGameStore.getState().startGame(mode, difficulty);
         navigate('/game');
     };
 
@@ -67,11 +75,17 @@ export const ResultScreen: React.FC = () => {
                 )}
 
                 {/* Unlock Notification */}
-                {difficulty === 'easy' && score >= 10 && !unlockedDifficulties.includes('normal') && (
+                {difficulty === 'beginner' && score >= 10 && !unlockedDifficulties.includes('normal') && (
                     <div className={styles.unlockMessage}>NORMAL UNLOCKED!</div>
                 )}
-                {difficulty === 'normal' && score >= 15 && !unlockedDifficulties.includes('hard') && (
-                    <div className={styles.unlockMessage}>HARD UNLOCKED!</div>
+                {difficulty === 'normal' && score >= 15 && !unlockedDifficulties.includes('advanced') && (
+                    <div className={styles.unlockMessage}>ADVANCED UNLOCKED!</div>
+                )}
+                {difficulty === 'advanced' && score >= 20 && !unlockedDifficulties.includes('expert') && (
+                    <div className={styles.unlockMessage}>EXPERT UNLOCKED!</div>
+                )}
+                {difficulty === 'expert' && score >= 25 && !unlockedDifficulties.includes('master') && (
+                    <div className={styles.unlockMessage}>MASTER UNLOCKED!</div>
                 )}
 
                 <div className={styles.actions}>

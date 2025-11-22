@@ -17,9 +17,10 @@ export const Mahjong = {
         let hand: Hand;
         let waits: Tile[];
         let attempts = 0;
-        const MAX_ATTEMPTS = 200; // Increased attempts for harder constraints
+        const MAX_ATTEMPTS = 500;
 
         do {
+            attempts++;
             // Create a pool of tiles: 4 of each 1-9
             let pool: Tile[] = [];
             for (let i = 1; i <= 9; i++) {
@@ -34,51 +35,51 @@ export const Mahjong = {
                 [pool[i], pool[j]] = [pool[j], pool[i]];
             }
 
-            // Take 13 tiles
+            // Draw 13 tiles
             hand = pool.slice(0, 13).sort((a, b) => a - b);
-            waits = this.getWaits(hand);
-            attempts++;
+
+            // Calculate waits
+            waits = this.calculateWaits(hand);
 
             // Check constraints
-            let isValid = true;
+            let valid = waits.length > 0; // Must be tenpai (have waits)
 
-            // Must be tenpai (ready to win)
-            if (waits.length === 0) isValid = false;
-
-            // Check wait count constraints
-            if (isValid) {
-                if (options.exactWaits !== undefined && waits.length !== options.exactWaits) isValid = false;
-                if (options.minWaits !== undefined && waits.length < options.minWaits) isValid = false;
-                if (options.maxWaits !== undefined && waits.length > options.maxWaits) isValid = false;
+            if (valid && options.minWaits !== undefined) {
+                valid = waits.length >= options.minWaits;
+            }
+            if (valid && options.maxWaits !== undefined) {
+                valid = waits.length <= options.maxWaits;
+            }
+            if (valid && options.exactWaits !== undefined) {
+                valid = waits.length === options.exactWaits;
             }
 
-            if (isValid) return hand;
+            if (valid) {
+                return hand;
+            }
 
         } while (attempts < MAX_ATTEMPTS);
 
-        // Fallback if constraints are too hard (return any tenpai hand)
-        console.warn("Could not generate hand meeting constraints, returning random tenpai");
-        // Recursive call without options as fallback, but prevent infinite recursion by checking options
-        if (Object.keys(options).length > 0) {
-            return this.generateChinitsuHand({});
+        // Fallback if constraints not met (return a simple hand or the last generated one)
+        // Ideally we should ensure we always return something valid-ish, 
+        // but for now returning the last hand (even if not matching strict constraints) 
+        // is better than crashing or infinite loop.
+        // However, let's try to force at least one wait if possible.
+        if (waits.length === 0) {
+            // Fallback: return a known simple tenpai hand if everything failed
+            return [1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9];
         }
-        return hand!; // Should theoretically be unreachable if fallback works, but for TS safety
+        return hand;
     },
 
-    // Calculate waiting tiles for a 13-tile hand
-    // Returns array of valid winning tiles [1, 4, 7]
-    getWaits: function (hand: Hand): Tile[] {
+    // Calculate winning tiles for a 13-tile hand
+    calculateWaits: function (hand: Hand): Tile[] {
         let waits: Tile[] = [];
-        // Check every possible tile 1-9
-        for (let tile = 1; tile <= 9; tile++) {
-            // Check if adding this tile makes a winning hand
-            // First, check if we have more than 4 of this tile (impossible)
-            let count = hand.filter(t => t === tile).length;
-            if (count >= 4) continue;
-
-            let newHand = [...hand, tile].sort((a, b) => a - b);
-            if (this.canWin(newHand)) {
-                waits.push(tile);
+        for (let i = 1; i <= 9; i++) {
+            // Try adding tile i
+            let tempHand = [...hand, i].sort((a, b) => a - b);
+            if (this.canWin(tempHand)) {
+                waits.push(i);
             }
         }
         return waits;
@@ -91,6 +92,7 @@ export const Mahjong = {
         let counts = new Array(10).fill(0);
         for (let tile of hand) {
             counts[tile]++;
+            if (counts[tile] > 4) return false; // Impossible hand
         }
 
         // Check Chiitoitsu (7 pairs)

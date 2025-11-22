@@ -37,27 +37,9 @@
     max-width: 400px;
 }
 
-.difficultySection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-    width: 100%;
-}
-
-.sectionTitle {
-    font-size: 1rem;
-    color: var(--color-text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: var(--spacing-xs);
-}
-
-.buttonGroup {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    width: 100%;
+.startButton {
+    height: 80px !important;
+    font-size: 2rem !important;
 }
 
 .menuSection {
@@ -70,14 +52,4 @@
 .menuSection>button {
     flex: 1;
     font-size: 0.8rem;
-}
-
-.locked {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(1);
-}
-
-.lockIcon {
-    margin-left: var(--spacing-sm);
 }

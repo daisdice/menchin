@@ -18,7 +18,9 @@ export const GameScreen: React.FC = () => {
         selectedWaits,
         toggleWait,
         submitAnswer,
-        tick
+        tick,
+        mode,
+        difficulty
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string } | null>(null);
@@ -36,10 +38,21 @@ export const GameScreen: React.FC = () => {
     }, [isPlaying, navigate, tick]);
 
     useEffect(() => {
-        if (timeLeft <= 0 || lives <= 0) {
-            navigate('/result');
+        if (!isPlaying) return;
+
+        // Check end conditions based on mode
+        if (mode === 'sprint') {
+            // SPRINT: End when time runs out
+            if (timeLeft <= 0) {
+                navigate('/result');
+            }
+        } else {
+            // CLASSIC, SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
+            if (lives <= 0) {
+                navigate('/result');
+            }
         }
-    }, [timeLeft, lives, navigate]);
+    }, [timeLeft, lives, navigate, isPlaying, mode]);
 
     const handleSubmit = () => {
         const result = submitAnswer();
@@ -63,17 +76,24 @@ export const GameScreen: React.FC = () => {
         <div className={styles.container}>
             {/* Header */}
             <div className={styles.header}>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>TIME</span>
-                    <span className={styles.statValue}>{timeLeft}</span>
+                <div className={styles.modeInfo}>
+                    <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
+                    <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>SCORE</span>
-                    <span className={styles.statValue}>{Math.floor(score)}</span>
-                </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>LIFE</span>
-                    <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+
+                <div className={styles.statsGroup}>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>TIME</span>
+                        <span className={styles.statValue}>{timeLeft}</span>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>SCORE</span>
+                        <span className={styles.statValue}>{Math.floor(score)}</span>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>LIFE</span>
+                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+                    </div>
                 </div>
             </div>
 
