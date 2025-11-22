@@ -23,7 +23,7 @@ interface GameState {
     toggleWait: (tile: Tile) => void;
     submitAnswer: () => { correct: boolean; correctWaits: Tile[] };
     tick: () => void;
-    reset: () => void;
+    resetGame: () => void;
 }
 
 const INITIAL_LIVES = 3;
@@ -134,7 +134,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
     },
 
-    reset: () => {
+    resetGame: () => {
         set({
             isPlaying: false,
             score: 0,

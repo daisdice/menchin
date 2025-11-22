@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/useGameStore';
 import { Tile } from '../UI/Tile';
-import { BrushButton } from '../UI/BrushButton';
+import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
 import styles from './GameScreen.module.css';
 
@@ -25,7 +25,6 @@ export const GameScreen: React.FC = () => {
 
     useEffect(() => {
         if (!isPlaying) {
-            // If accessed directly without starting game, redirect to title
             navigate('/');
         }
 
@@ -46,13 +45,13 @@ export const GameScreen: React.FC = () => {
         const result = submitAnswer();
 
         if (result.correct) {
-            setFeedback({ type: 'correct', message: '正解！' });
+            setFeedback({ type: 'correct', message: 'CORRECT!' });
             setTimeout(() => {
                 setFeedback(null);
                 useGameStore.getState().nextHand();
             }, 500);
         } else {
-            setFeedback({ type: 'incorrect', message: `不正解... 正解は ${result.correctWaits.join(', ')}` });
+            setFeedback({ type: 'incorrect', message: `WRONG... ANSWER: ${result.correctWaits.join(', ')}` });
             setTimeout(() => {
                 setFeedback(null);
                 useGameStore.getState().nextHand();
@@ -65,15 +64,15 @@ export const GameScreen: React.FC = () => {
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.statItem}>
-                    <span className={styles.statLabel}>残り時間</span>
+                    <span className={styles.statLabel}>TIME</span>
                     <span className={styles.statValue}>{timeLeft}</span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statLabel}>スコア</span>
+                    <span className={styles.statLabel}>SCORE</span>
                     <span className={styles.statValue}>{Math.floor(score)}</span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statLabel}>ライフ</span>
+                    <span className={styles.statLabel}>LIFE</span>
                     <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
                 </div>
             </div>
@@ -89,7 +88,7 @@ export const GameScreen: React.FC = () => {
                 </Card>
 
                 <div className={styles.controls}>
-                    <p className={styles.instruction}>待ち牌を選択してください（複数選択可）</p>
+                    <p className={styles.instruction}>SELECT WAITS</p>
 
                     <div className={styles.numpad}>
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
@@ -102,14 +101,15 @@ export const GameScreen: React.FC = () => {
                         ))}
                     </div>
 
-                    <BrushButton
+                    <GameButton
                         variant="primary"
                         size="lg"
                         onClick={handleSubmit}
                         className={styles.submitBtn}
+                        fullWidth
                     >
-                        回答する
-                    </BrushButton>
+                        ANSWER
+                    </GameButton>
                 </div>
             </div>
 

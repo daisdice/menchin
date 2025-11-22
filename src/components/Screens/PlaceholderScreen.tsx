@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BrushButton } from '../UI/BrushButton';
+import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
 import styles from './PlaceholderScreen.module.css';
 
@@ -21,12 +21,11 @@ export const PlaceholderScreen: React.FC<PlaceholderScreenProps> = ({ title }) =
             >
                 <Card title={title} className={styles.card}>
                     <div className={styles.message}>
-                        <p>鋭意制作中...</p>
-                        <p className={styles.subMessage}>Coming Soon</p>
+                        <p>COMING SOON</p>
                     </div>
-                    <BrushButton variant="secondary" onClick={() => navigate('/')}>
-                        タイトルへ戻る
-                    </BrushButton>
+                    <GameButton variant="secondary" onClick={() => navigate('/')}>
+                        TITLE
+                    </GameButton>
                 </Card>
             </motion.div>
         </div>

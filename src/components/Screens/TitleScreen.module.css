@@ -13,17 +13,19 @@
 
 .title {
     font-size: 5rem;
-    color: var(--color-vermilion);
-    text-shadow: 4px 4px 0 var(--color-sumi);
-    margin-bottom: var(--spacing-sm);
-    letter-spacing: 0.5rem;
+    color: var(--color-text);
+    margin-bottom: 0;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
-    font-size: 1.5rem;
-    color: var(--text-secondary);
+    font-size: 1.2rem;
+    color: var(--color-text-light);
+    font-weight: 700;
     letter-spacing: 0.2rem;
-    font-weight: bold;
+    margin-top: var(--spacing-xs);
 }
 
 .menuContainer {
@@ -32,7 +34,7 @@
     align-items: center;
     gap: var(--spacing-xl);
     width: 100%;
-    max-width: 600px;
+    max-width: 400px;
 }
 
 .difficultySection {
@@ -44,24 +46,30 @@
 }
 
 .sectionTitle {
-    font-size: 1.2rem;
-    color: var(--color-sumi);
-    border-bottom: 2px solid var(--color-vermilion);
-    padding-bottom: var(--spacing-xs);
-    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--spacing-xs);
 }
 
 .buttonGroup {
     display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
 }
 
 .menuSection {
     display: flex;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-lg);
+    gap: var(--spacing-sm);
+    width: 100%;
+    justify-content: center;
+}
+
+.menuSection>button {
+    flex: 1;
+    font-size: 0.8rem;
 }
 
 .locked {
@@ -72,16 +80,4 @@
 
 .lockIcon {
     margin-left: var(--spacing-sm);
-}
-
-@media (max-width: 600px) {
-    .title {
-        font-size: 3.5rem;
-    }
-
-    .buttonGroup {
-        flex-direction: column;
-        width: 100%;
-        align-items: center;
-    }
 }

@@ -15,7 +15,6 @@ export const Card: React.FC<CardProps> = ({ children, className, title }) => {
             <div className={styles.content}>
                 {children}
             </div>
-            <div className={styles.borderOverlay}></div>
         </div>
     );
 };

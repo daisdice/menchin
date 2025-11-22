@@ -8,7 +8,7 @@
 
 .content {
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
 }
 
 .card {
@@ -21,13 +21,7 @@
 
 .message {
     font-size: 1.5rem;
-    color: var(--color-sumi);
-    font-family: var(--font-brush);
-}
-
-.subMessage {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin-top: var(--spacing-sm);
-    font-family: var(--font-body);
+    color: var(--color-text-light);
+    font-weight: 800;
+    letter-spacing: 0.1em;
 }

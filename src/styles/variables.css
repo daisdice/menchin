@@ -1,32 +1,41 @@
 :root {
-  /* Colors */
-  --color-sumi: #1a1a1a;
-  --color-paper: #f4f1e8;
-  --color-vermilion: #e53935;
-  --color-gold: #c5a059;
-  --color-gold-light: #e6cca0;
-  --color-ink-splash: rgba(26, 26, 26, 0.8);
-  
-  /* Text Colors */
-  --text-primary: var(--color-sumi);
-  --text-secondary: #555555;
-  --text-inverted: var(--color-paper);
-  
+  /* Colors - Pop & Smart Theme */
+  --color-bg: #F7F7F0;
+  /* Pale Cream */
+  --color-surface: #FFFFFF;
+  /* White */
+  --color-text: #2D3436;
+  /* Dark Gray */
+  --color-text-light: #636E72;
+
+  /* Accents */
+  --color-accent-red: #FF6B6B;
+  /* Vermilion equivalent */
+  --color-accent-cyan: #4ECDC4;
+  /* Primary action */
+  --color-accent-yellow: #FFE66D;
+  /* Highlight */
+
+  /* Shadows */
+  --shadow-sm: 0 2px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 0 rgba(0, 0, 0, 0.1);
+
   /* Fonts */
-  --font-brush: 'Yuji Syuku', serif;
-  --font-body: 'Shippori Mincho', serif;
-  
+  --font-main: 'M PLUS Rounded 1c', sans-serif;
+
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-  
+
   /* Borders */
-  --border-width-thick: 3px;
-  --border-width-thin: 1px;
-  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
   /* Z-Index */
   --z-background: -1;
   --z-content: 1;

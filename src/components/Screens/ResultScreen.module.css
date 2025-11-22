@@ -1,34 +1,25 @@
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100%;
     width: 100%;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xl);
-    width: 100%;
-    max-width: 600px;
-}
-
-.title {
-    font-size: 4rem;
-    color: var(--color-sumi);
-    margin-bottom: var(--spacing-md);
-}
-
 .resultCard {
     width: 100%;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-lg);
-    padding: var(--spacing-xl) !important;
+}
+
+.title {
+    font-size: 2rem;
+    color: var(--color-text);
+    margin: 0;
+    letter-spacing: 0.1em;
 }
 
 .scoreContainer {
@@ -38,33 +29,33 @@
 }
 
 .scoreLabel {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
+    font-size: 1rem;
+    color: var(--color-text-light);
+    font-weight: 700;
+    letter-spacing: 0.1em;
 }
 
 .scoreValue {
-    font-size: 5rem;
-    font-weight: bold;
-    color: var(--color-vermilion);
-    font-family: var(--font-brush);
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--color-accent-cyan);
     line-height: 1;
 }
 
 .newRecord {
-    font-size: 1.5rem;
-    color: var(--color-gold);
-    font-weight: bold;
-    text-shadow: 1px 1px 0 var(--color-sumi);
-    animation: pulse 1s infinite;
+    background-color: var(--color-accent-yellow);
+    color: var(--color-text);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+    font-size: 1.2rem;
+    transform: rotate(-5deg);
 }
 
-.unlockMsg {
+.unlockMessage {
+    color: var(--color-accent-red);
+    font-weight: 800;
     font-size: 1.2rem;
-    color: var(--color-sumi);
-    background: var(--color-gold-light);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: 4px;
-    border: 1px solid var(--color-gold);
 }
 
 .actions {
@@ -72,19 +63,4 @@
     flex-direction: column;
     gap: var(--spacing-md);
     width: 100%;
-    align-items: center;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
-    }
 }

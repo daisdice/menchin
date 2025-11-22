@@ -21,7 +21,7 @@ export const Tile: React.FC<TileProps> = ({ tile, onClick, selected, disabled })
             layout
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            whileHover={!disabled ? { y: -5 } : undefined}
+            whileHover={!disabled ? { y: -4 } : undefined}
             whileTap={!disabled ? { scale: 0.95 } : undefined}
             className={clsx(styles.tile, selected && styles.selected, disabled && styles.disabled)}
             onClick={!disabled ? onClick : undefined}
