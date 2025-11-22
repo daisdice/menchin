@@ -8,7 +8,9 @@ import styles from './ModeSelectScreen.module.css';
 export const ModeSelectScreen: React.FC = () => {
     const navigate = useNavigate();
 
-    const handleModeSelect = (mode: GameMode) => {
+    const handleModeSelect = (mode: GameMode, locked?: boolean) => {
+        if (locked) return; // Don't navigate if mode is locked
+
         // For now, all modes go to difficulty select, except maybe Practice?
         // Let's keep it consistent: Mode -> Difficulty -> Game
         // We can pass the selected mode via state or URL params, but since we use a store,
@@ -18,11 +20,11 @@ export const ModeSelectScreen: React.FC = () => {
         navigate(`/difficulty/${mode}`);
     };
 
-    const modes: { id: GameMode; label: string; desc: string; color: 'primary' | 'secondary' | 'accent' | 'danger' }[] = [
+    const modes: { id: GameMode; label: string; desc: string; color: 'primary' | 'secondary' | 'accent' | 'danger'; locked?: boolean }[] = [
         { id: 'classic', label: 'CLASSIC', desc: 'Standard Rules. 3 Lives.', color: 'primary' },
-        { id: 'sprint', label: 'SPRINT', desc: '60 Seconds Time Attack.', color: 'accent' },
-        { id: 'survival', label: 'SURVIVAL', desc: 'One Mistake = Game Over.', color: 'danger' },
-        { id: 'practice', label: 'PRACTICE', desc: 'No Limits. Just Practice.', color: 'secondary' },
+        { id: 'sprint', label: 'SPRINT', desc: '60 Seconds Time Attack.', color: 'accent', locked: true },
+        { id: 'survival', label: 'SURVIVAL', desc: 'One Mistake = Game Over.', color: 'danger', locked: true },
+        { id: 'practice', label: 'PRACTICE', desc: 'No Limits. Just Practice.', color: 'secondary', locked: true },
     ];
 
     return (
@@ -46,12 +48,16 @@ export const ModeSelectScreen: React.FC = () => {
                     >
                         <GameButton
                             variant={mode.color}
-                            onClick={() => handleModeSelect(mode.id)}
+                            onClick={() => handleModeSelect(mode.id, mode.locked)}
+                            disabled={mode.locked}
                             fullWidth
                             className={styles.modeButton}
                         >
                             <div className={styles.buttonContent}>
-                                <span className={styles.modeLabel}>{mode.label}</span>
+                                <span className={styles.modeLabel}>
+                                    {mode.label}
+                                    {mode.locked && <span style={{ marginLeft: '8px' }}>🔒</span>}
+                                </span>
                                 <span className={styles.modeDesc}>{mode.desc}</span>
                             </div>
                         </GameButton>
