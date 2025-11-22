@@ -352,3 +352,185 @@ p {
 
     /* Center the last row of buttons if needed, or just let them flow */
 }
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 300px;
+    animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+    border-left: 5px solid #4caf50; /* Default color */
+    pointer-events: auto;
+}
+
+.toast.bronze { border-left-color: #cd7f32; }
+.toast.silver { border-left-color: #c0c0c0; }
+.toast.gold { border-left-color: #ffd700; }
+
+.toast-icon {
+    font-size: 2rem;
+}
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.toast-title {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.toast-desc {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Training Mode Selection */
+.training-wait-btn.selected {
+    background-color: #ff9800 !important;
+    color: white !important;
+    border: 2px solid #fff !important;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+/* Stats Tabs */
+.stats-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.stats-tab-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.stats-tab-btn:hover {
+    color: #fff;
+}
+
+.stats-tab-btn.active {
+    color: #fff;
+    border-bottom-color: #2196f3;
+}
+
+.stats-content-section {
+    display: none;
+}
+
+.stats-content-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Achievement Item Styles */
+.achievement-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid #444;
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+.achievement-item.unlocked {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #666;
+}
+
+.achievement-item.bronze.unlocked { border-color: #cd7f32; box-shadow: 0 0 5px rgba(205, 127, 50, 0.2); }
+.achievement-item.silver.unlocked { border-color: #c0c0c0; box-shadow: 0 0 5px rgba(192, 192, 192, 0.2); }
+.achievement-item.gold.unlocked { border-color: #ffd700; box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+
+.achievement-icon {
+    font-size: 2rem;
+    margin-right: 15px;
+    width: 50px;
+    text-align: center;
+}
+
+.achievement-info {
+    flex: 1;
+    text-align: left;
+}
+
+.achievement-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #aaa;
+}
+
+.achievement-item.unlocked .achievement-name {
+    color: #fff;
+}
+
+.achievement-desc {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Difficulty Stats Table */
+.diff-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.diff-stats-table th, .diff-stats-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+
+.diff-stats-table th {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.diff-stats-table td {
+    font-size: 1rem;
+}

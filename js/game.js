@@ -11,14 +11,14 @@ const Game = {
         currentWaits: [],
         selectedWaits: new Set(),
         timerInterval: null,
-        timerInterval: null,
         ranking: {
             easy: [],
             normal: [],
-            hard: []
+            hard: [],
+            random: []
         },
         currentRankingTab: 'normal',
-        difficulty: 'normal', // easy, normal, hard
+        difficulty: 'normal', // easy, normal, hard, random
         gameMode: 'challenge', // challenge, training
         trainingWaitCount: 0, // 0 = any, 1-5 = specific
         stats: {
@@ -29,18 +29,30 @@ const Game = {
             maxStreak: 0,
             currentStreak: 0,
             waitCountStats: {},  // { 1: {correct: 0, total: 0}, ... }
+            difficultyStats: {}, // { easy: {correct: 0, total: 0}, ... }
             achievements: [] // Array of unlocked achievement IDs
         },
         questionStartTime: null
     },
 
     achievementsList: [
-        { id: 'beginner', name: 'メンチン初心者', description: '初めてクイズに正解する', icon: '🔰' },
-        { id: 'streak_10', name: '集中力', description: '10問連続正解する', icon: '🔥' },
-        { id: 'score_20', name: 'メンチン初段', description: '1プレイで20点以上獲得する', icon: '🥋' },
-        { id: 'hard_mode', name: '上級者への道', description: '上級モードでプレイする', icon: '🏔️' },
-        { id: 'multi_wait_master', name: '多面張マスター', description: '5面待ち以上を累計10回正解する', icon: '👑' },
-        { id: 'speed_star', name: 'スピードスター', description: '平均回答時間3秒以内で10問以上正解して終了', icon: '⚡' }
+        // Bronze
+        { id: 'beginner', name: 'メンチン初心者', description: '初めてクイズに正解する', icon: '🔰', rank: 'bronze' },
+        { id: 'score_10', name: '見習い雀士', description: '1プレイで10点以上獲得する', icon: '🐣', rank: 'bronze' },
+        { id: 'streak_5', name: 'プチ連荘', description: '5問連続正解する', icon: '🔥', rank: 'bronze' },
+
+        // Silver
+        { id: 'score_20', name: 'メンチン初段', description: '1プレイで20点以上獲得する', icon: '🥋', rank: 'silver' },
+        { id: 'streak_10', name: '集中力', description: '10問連続正解する', icon: '⚡', rank: 'silver' },
+        { id: 'hard_mode', name: '上級者への道', description: '上級モードでプレイして正解する', icon: '🏔️', rank: 'silver' },
+        { id: 'total_50', name: '努力家', description: '累計50問正解する', icon: '📚', rank: 'silver' },
+
+        // Gold
+        { id: 'score_30', name: 'メンチンマスター', description: '1プレイで30点以上獲得する', icon: '👑', rank: 'gold' },
+        { id: 'streak_20', name: 'ゾーン突入', description: '20問連続正解する', icon: '🌈', rank: 'gold' },
+        { id: 'multi_wait_master', name: '多面張マスター', description: '5面待ち以上を累計10回正解する', icon: '👁️', rank: 'gold' },
+        { id: 'speed_star', name: 'スピードスター', description: '平均回答時間2秒以内で10問以上正解して終了', icon: '🚀', rank: 'gold' },
+        { id: 'total_100', name: '百人組手', description: '累計100問正解する', icon: '💯', rank: 'gold' }
     ],
 
     elements: {
@@ -62,13 +74,13 @@ const Game = {
         titleBtn: document.getElementById('title-btn'),
         statsBtn: document.getElementById('stats-btn'),
         statsBackBtn: document.getElementById('stats-back-btn'),
-        statsResetBtn: document.getElementById('stats-reset-btn')
+        statsResetBtn: document.getElementById('stats-reset-btn'),
+        quitTrainingBtn: document.getElementById('quit-training-btn')
     },
 
     init: function () {
         this.loadRanking();
         this.loadStats();
-        // this.updateRankingUI(); // Removed, ranking is now on separate screen
 
         // Ranking Screen Events
         const rankingBtn = document.getElementById('ranking-btn');
@@ -112,6 +124,11 @@ const Game = {
             startTrainingBtn.addEventListener('click', () => this.startTraining());
         }
 
+        const quitTrainingBtn = document.getElementById('quit-training-btn');
+        if (quitTrainingBtn) {
+            quitTrainingBtn.addEventListener('click', () => this.quitTraining());
+        }
+
         // Training wait selection
         document.querySelectorAll('.training-wait-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -119,6 +136,21 @@ const Game = {
                 e.target.classList.add('selected');
                 this.state.trainingWaitCount = parseInt(e.target.dataset.wait);
                 document.getElementById('start-training-btn').disabled = false;
+            });
+        });
+
+        // Stats Tabs
+        document.querySelectorAll('.stats-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target.dataset.target;
+
+                // Update tab buttons
+                document.querySelectorAll('.stats-tab-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Update content sections
+                document.querySelectorAll('.stats-content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
             });
         });
 
@@ -162,19 +194,20 @@ const Game = {
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                // If it's the old array format, just reset it (user requested to discard old data)
-                if (Array.isArray(parsed)) {
-                    this.state.ranking = { easy: [], normal: [], hard: [] };
-                    this.saveRanking();
-                } else {
+                // Check if structure matches (has random key)
+                if (parsed.random) {
                     this.state.ranking = parsed;
+                } else {
+                    // Reset if structure doesn't match
+                    this.state.ranking = { easy: [], normal: [], hard: [], random: [] };
+                    this.saveRanking();
                 }
             } catch (e) {
                 console.error("Failed to parse ranking", e);
-                this.state.ranking = { easy: [], normal: [], hard: [] };
+                this.state.ranking = { easy: [], normal: [], hard: [], random: [] };
             }
         } else {
-            this.state.ranking = { easy: [], normal: [], hard: [] };
+            this.state.ranking = { easy: [], normal: [], hard: [], random: [] };
         }
     },
 
@@ -187,11 +220,12 @@ const Game = {
         if (stored) {
             try {
                 const loadedStats = JSON.parse(stored);
-                // Migrate old stats if needed
-                if (loadedStats.waitStats && !loadedStats.waitCountStats) {
-                    this.initializeStats();
-                } else {
+                // Check if structure matches (has difficultyStats)
+                if (loadedStats.difficultyStats) {
                     this.state.stats = loadedStats;
+                } else {
+                    this.initializeStats();
+                    this.saveStats();
                 }
             } catch (e) {
                 console.error("Failed to parse stats", e);
@@ -216,7 +250,14 @@ const Game = {
                 3: { correct: 0, total: 0 },
                 4: { correct: 0, total: 0 },
                 5: { correct: 0, total: 0 }  // 5+ waits
-            }
+            },
+            difficultyStats: {
+                easy: { correct: 0, total: 0 },
+                normal: { correct: 0, total: 0 },
+                hard: { correct: 0, total: 0 },
+                random: { correct: 0, total: 0 }
+            },
+            achievements: []
         };
     },
 
@@ -252,6 +293,16 @@ const Game = {
             this.state.stats.waitCountStats[countKey].correct++;
         }
 
+        // Update difficulty stats
+        const diff = this.state.difficulty;
+        if (!this.state.stats.difficultyStats[diff]) {
+            this.state.stats.difficultyStats[diff] = { correct: 0, total: 0 };
+        }
+        this.state.stats.difficultyStats[diff].total++;
+        if (isCorrect) {
+            this.state.stats.difficultyStats[diff].correct++;
+        }
+
         this.checkAchievements(isCorrect, waits, timeSpent);
         this.saveStats();
     },
@@ -272,23 +323,57 @@ const Game = {
         if (isCorrect) {
             unlock('beginner');
 
+            if (stats.currentStreak >= 5) unlock('streak_5');
             if (stats.currentStreak >= 10) unlock('streak_10');
+            if (stats.currentStreak >= 20) unlock('streak_20');
 
+            if (this.state.score >= 10) unlock('score_10');
             if (this.state.score >= 20) unlock('score_20');
+            if (this.state.score >= 30) unlock('score_30');
 
             if (this.state.difficulty === 'hard') unlock('hard_mode');
+
+            if (stats.totalCorrect >= 50) unlock('total_50');
+            if (stats.totalCorrect >= 100) unlock('total_100');
 
             // Multi-wait master
             const multiWaitCorrect = (stats.waitCountStats[5]?.correct || 0);
             if (multiWaitCorrect >= 10) unlock('multi_wait_master');
+
+            // Speed star (check at end of game usually, but here we check per question for simplicity or modify logic)
+            // For speed star description says "average time within 2s and 10+ correct at end"
+            // So we should check this at endGame, not here. But let's leave it for now or move it.
+            // Let's move speed star check to endGame
         }
 
         // Show notifications for new unlocks
         if (newUnlocks.length > 0) {
             newUnlocks.forEach(ach => {
-                alert(`🏆 実績解除: ${ach.icon} ${ach.name}\n${ach.description}`);
+                this.showToast(ach);
             });
         }
+    },
+
+    showToast: function (achievement) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${achievement.rank || 'bronze'}`;
+        toast.innerHTML = `
+            <div class="toast-icon">${achievement.icon}</div>
+            <div class="toast-content">
+                <div class="toast-title">実績解除: ${achievement.name}</div>
+                <div class="toast-desc">${achievement.description}</div>
+            </div>
+        `;
+
+        container.appendChild(toast);
+
+        // Remove after animation
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 3500);
     },
 
     showStats: function () {
@@ -315,6 +400,21 @@ const Game = {
 
         const avgTime = stats.totalQuestions > 0 ? (stats.totalTime / stats.totalQuestions).toFixed(1) : '0.0';
         document.getElementById('stat-avg-time').textContent = avgTime;
+
+        // Difficulty Stats
+        const diffContainer = document.getElementById('diff-stats-container');
+        if (diffContainer) {
+            const diffLabels = { easy: '初級', normal: '中級', hard: '上級', random: 'ランダム' };
+            let diffHtml = '<table class="diff-stats-table"><thead><tr><th>難易度</th><th>正解数</th><th>正解率</th></tr></thead><tbody>';
+
+            ['easy', 'normal', 'hard', 'random'].forEach(diff => {
+                const dStat = stats.difficultyStats[diff] || { correct: 0, total: 0 };
+                const dAcc = dStat.total > 0 ? Math.round((dStat.correct / dStat.total) * 100) : 0;
+                diffHtml += `<tr><td>${diffLabels[diff]}</td><td>${dStat.correct}/${dStat.total}</td><td>${dAcc}%</td></tr>`;
+            });
+            diffHtml += '</tbody></table>';
+            diffContainer.innerHTML = diffHtml;
+        }
 
         // Wait count stats
         const waitsContainer = document.getElementById('stats-waits-container');
@@ -357,18 +457,14 @@ const Game = {
         this.achievementsList.forEach(ach => {
             const isUnlocked = unlockedIds.includes(ach.id);
             const div = document.createElement('div');
-            div.style.padding = '10px';
-            div.style.marginBottom = '5px';
-            div.style.borderRadius = '8px';
-            div.style.background = isUnlocked ? 'rgba(255, 215, 0, 0.1)' : 'rgba(255, 255, 255, 0.05)';
-            div.style.border = isUnlocked ? '1px solid #ffd700' : '1px solid #555';
-            div.style.opacity = isUnlocked ? '1' : '0.5';
+            div.className = `achievement-item ${ach.rank} ${isUnlocked ? 'unlocked' : ''}`;
 
             div.innerHTML = `
-                <div style="font-weight: bold; color: ${isUnlocked ? '#ffd700' : '#aaa'}">
-                    ${isUnlocked ? ach.icon : '🔒'} ${ach.name}
+                <div class="achievement-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+                <div class="achievement-info">
+                    <div class="achievement-name">${ach.name}</div>
+                    <div class="achievement-desc">${ach.description}</div>
                 </div>
-                <div style="font-size: 0.8rem; color: #ccc;">${ach.description}</div>
             `;
             achList.appendChild(div);
         });
@@ -457,7 +553,8 @@ const Game = {
             const diffLabel = {
                 'easy': '初級',
                 'normal': '中級',
-                'hard': '上級'
+                'hard': '上級',
+                'random': 'ランダム'
             }[this.state.difficulty];
             text = `麻雀メンチン待ち当てクイズ【${diffLabel}】で${this.state.score}問正解しました！ #メンチンクイズ`;
         }
@@ -537,10 +634,21 @@ const Game = {
         document.getElementById('time-left').textContent = "∞";
         this.switchScreen('game-screen');
 
+        // Show quit button
+        if (this.elements.quitTrainingBtn) {
+            this.elements.quitTrainingBtn.classList.remove('hidden');
+        }
+
         this.nextHand();
 
         if (this.state.timerInterval) clearInterval(this.state.timerInterval);
-        // No timer tick for training or maybe just count up? Let's keep it simple for now
+        // No timer tick for training
+    },
+
+    quitTraining: function () {
+        this.state.isPlaying = false;
+        if (this.state.timerInterval) clearInterval(this.state.timerInterval);
+        this.returnToTitle();
     },
 
     tick: function () {
@@ -558,6 +666,20 @@ const Game = {
         this.state.isPlaying = false;
         if (this.state.timerInterval) clearInterval(this.state.timerInterval);
         this.elements.finalScore.textContent = this.state.score;
+
+        // Check speed star achievement
+        if (this.state.gameMode !== 'training' && this.state.score >= 10) {
+            const avgTime = this.state.stats.totalQuestions > 0 ? (this.state.stats.totalTime / this.state.stats.totalQuestions) : 999;
+            if (avgTime <= 2.0) {
+                // Manually trigger unlock since checkAchievements is usually called per question
+                const stats = this.state.stats;
+                if (!stats.achievements.includes('speed_star')) {
+                    stats.achievements.push('speed_star');
+                    this.showToast(this.achievementsList.find(a => a.id === 'speed_star'));
+                    this.saveStats();
+                }
+            }
+        }
 
         // Skip stats and ranking for training mode
         if (this.state.gameMode === 'training') {
@@ -586,6 +708,7 @@ const Game = {
         this.state.selectedWaits.clear();
         this.updateSelectionUI();
         this.elements.feedback.classList.add('hidden');
+        this.questionStartTime = Date.now();
 
         // Generate new hand
         // Generate new hand based on difficulty or training settings
@@ -612,48 +735,48 @@ const Game = {
                 case 'hard':
                     options.minWaits = 5;
                     break;
+                case 'random':
+                    // No restrictions
+                    break;
             }
         }
 
         this.state.currentHand = Mahjong.generateChinitsuHand(options);
         this.state.currentWaits = Mahjong.getWaits(this.state.currentHand);
 
-        // Record question start time
-        this.state.questionStartTime = Date.now();
-
-        // Render hand
         this.renderHand();
     },
 
     renderHand: function () {
-        const container = this.elements.handContainer;
-        container.innerHTML = '';
+        this.elements.handContainer.innerHTML = '';
+        // Sort hand for display
+        const sortedHand = [...this.state.currentHand].sort((a, b) => a - b);
 
-        this.state.currentHand.forEach(tileVal => {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.dataset.value = tileVal;
-            // Simple visual representation for now
-            // We can replace this with SVG or images later
-            tile.textContent = tileVal;
-            container.appendChild(tile);
+        sortedHand.forEach(tile => {
+            const img = document.createElement('img');
+            img.src = `img/man${tile}.png`; // Assuming images are named man1.png, etc.
+            img.alt = `${tile}万`;
+            img.className = 'tile';
+            this.elements.handContainer.appendChild(img);
         });
     },
 
     toggleWait: function (btn) {
-        const val = parseInt(btn.dataset.value);
-        if (this.state.selectedWaits.has(val)) {
-            this.state.selectedWaits.delete(val);
+        if (!this.state.isPlaying) return;
+
+        const value = parseInt(btn.dataset.value);
+        if (this.state.selectedWaits.has(value)) {
+            this.state.selectedWaits.delete(value);
         } else {
-            this.state.selectedWaits.add(val);
+            this.state.selectedWaits.add(value);
         }
         this.updateSelectionUI();
     },
 
     updateSelectionUI: function () {
         this.elements.numBtns.forEach(btn => {
-            const val = parseInt(btn.dataset.value);
-            if (this.state.selectedWaits.has(val)) {
+            const value = parseInt(btn.dataset.value);
+            if (this.state.selectedWaits.has(value)) {
                 btn.classList.add('selected');
             } else {
                 btn.classList.remove('selected');
@@ -664,48 +787,57 @@ const Game = {
     submitAnswer: function () {
         if (!this.state.isPlaying) return;
 
-        // Calculate time spent
-        const timeSpent = (Date.now() - this.state.questionStartTime) / 1000;
+        // Check answer
+        const correctWaits = this.state.currentWaits;
+        const selectedWaits = Array.from(this.state.selectedWaits).sort((a, b) => a - b);
 
-        const selected = Array.from(this.state.selectedWaits).sort((a, b) => a - b);
-        const correct = this.state.currentWaits.sort((a, b) => a - b);
-
-        const isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
-
-        // Update statistics
-        this.updateStats(isCorrect, correct, timeSpent);
+        const isCorrect = JSON.stringify(correctWaits) === JSON.stringify(selectedWaits);
+        const timeSpent = (Date.now() - this.questionStartTime) / 1000;
 
         if (isCorrect) {
             this.state.score++;
-            this.elements.currentScore.textContent = this.state.score;
-            this.showFeedback(true, '正解！');
+            this.elements.feedback.textContent = "正解！";
+            this.elements.feedback.className = "feedback correct";
+
+            // Update stats only if not training
+            if (this.state.gameMode !== 'training') {
+                this.updateStats(true, correctWaits, timeSpent);
+            }
+
             setTimeout(() => this.nextHand(), 500);
         } else {
-            this.showFeedback(false, `不正解... 正解は: ${correct.join(', ')}`);
-            // Penalty? Or just move on? Let's wait a bit longer so they can see the answer
+            this.elements.feedback.textContent = `不正解... 正解は ${correctWaits.join(', ')}`;
+            this.elements.feedback.className = "feedback incorrect";
+
+            // Update stats only if not training
+            if (this.state.gameMode !== 'training') {
+                this.updateStats(false, correctWaits, timeSpent);
+            }
+
+            // Penalty? Or just next hand? Let's wait a bit longer for user to see answer
             setTimeout(() => this.nextHand(), 2000);
         }
+
+        this.elements.feedback.classList.remove('hidden');
+        this.updateUI();
     },
 
-    showFeedback: function (isSuccess, message) {
-        const fb = this.elements.feedback;
-        fb.textContent = message;
-        fb.className = `feedback ${isSuccess ? 'success' : 'error'}`;
-        fb.classList.remove('hidden');
+    updateUI: function () {
+        this.elements.currentScore.textContent = this.state.score;
+
+        // Hide quit training button if not in training
+        if (this.state.gameMode !== 'training' && this.elements.quitTrainingBtn) {
+            this.elements.quitTrainingBtn.classList.add('hidden');
+        }
     },
 
     switchScreen: function (screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
-    },
-
-    updateUI: function () {
-        this.elements.currentScore.textContent = this.state.score;
-        this.elements.timeLeft.textContent = this.state.timeLeft;
     }
 };
 
-// Initialize game when DOM is ready
+// Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     Game.init();
 });
