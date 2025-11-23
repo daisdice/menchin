@@ -1,0 +1,9 @@
+﻿---
+description: GitHub development workflow
+---
+
+1. Check status: `git status`
+2. Create branch: `git checkout -b <branch-name>` (naming: feature/*, fix/*, chore/*)
+3. Commit changes: `git add .` and `git commit -m "<message>"` 
+4. Push: `git push origin <branch-name>`
+5. Create PR: Use GitHub interface
