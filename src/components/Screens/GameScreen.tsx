@@ -20,10 +20,11 @@ export const GameScreen: React.FC = () => {
         submitAnswer,
         tick,
         mode,
-        difficulty
+        difficulty,
+        correctCount
     } = useGameStore();
 
-    const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string } | null>(null);
+    const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
 
     useEffect(() => {
         if (!isPlaying) {
@@ -46,8 +47,13 @@ export const GameScreen: React.FC = () => {
             if (timeLeft <= 0) {
                 navigate('/result');
             }
+        } else if (mode === 'classic') {
+            // CLASSIC: End handled in store (10 wins) or lives run out
+            if (lives <= 0) {
+                navigate('/result');
+            }
         } else {
-            // CLASSIC, SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
+            // SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
             if (lives <= 0) {
                 navigate('/result');
             }
@@ -58,16 +64,30 @@ export const GameScreen: React.FC = () => {
         const result = submitAnswer();
 
         if (result.correct) {
-            setFeedback({ type: 'correct', message: 'CORRECT!' });
+            const bonusText = result.bonuses?.join(' & ') || '';
+            setFeedback({
+                type: 'correct',
+                message: 'CORRECT!',
+                subMessage: bonusText ? `${bonusText} BONUS! +${result.points}` : `+${result.points}`
+            });
             setTimeout(() => {
                 setFeedback(null);
-                useGameStore.getState().nextHand();
-            }, 500);
+                // Only next hand if game is still playing (store might have ended it)
+                if (useGameStore.getState().isPlaying) {
+                    useGameStore.getState().nextHand();
+                } else {
+                    navigate('/result');
+                }
+            }, 1000);
         } else {
             setFeedback({ type: 'incorrect', message: `WRONG... ANSWER: ${result.correctWaits.join(', ')}` });
             setTimeout(() => {
                 setFeedback(null);
-                useGameStore.getState().nextHand();
+                if (useGameStore.getState().isPlaying) {
+                    useGameStore.getState().nextHand();
+                } else {
+                    navigate('/result');
+                }
             }, 2000);
         }
     };
@@ -90,10 +110,17 @@ export const GameScreen: React.FC = () => {
                         <span className={styles.statLabel}>SCORE</span>
                         <span className={styles.statValue}>{Math.floor(score)}</span>
                     </div>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>LIFE</span>
-                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
-                    </div>
+                    {mode === 'classic' ? (
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>PROGRESS</span>
+                            <span className={styles.statValue}>{correctCount}/10</span>
+                        </div>
+                    ) : (
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>LIFE</span>
+                            <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -147,6 +174,9 @@ export const GameScreen: React.FC = () => {
                                 {feedback.type === 'correct' ? '⭕' : '❌'}
                             </span>
                             <span className={styles.feedbackMessage}>{feedback.message}</span>
+                            {feedback.subMessage && (
+                                <span className={styles.feedbackSubMessage}>{feedback.subMessage}</span>
+                            )}
                         </div>
                     </motion.div>
                 )}

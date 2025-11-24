@@ -9,7 +9,7 @@ import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { score, difficulty, mode, resetGame } = useGameStore();
+    const { score, difficulty, mode, resetGame, lastScoreBreakdown } = useGameStore();
     const { saveScore, unlockDifficulty, unlockedDifficulties } = useAppStore();
 
     const isNewRecord = React.useMemo(() => {
@@ -22,10 +22,6 @@ export const ResultScreen: React.FC = () => {
         saveScore(difficulty, score);
 
         // Unlock logic
-        // Beginner -> Normal (Score >= 10)
-        // Normal -> Advanced (Score >= 15)
-        // Advanced -> Expert (Score >= 20)
-        // Expert -> Master (Score >= 25)
         if (difficulty === 'beginner' && score >= 10) {
             unlockDifficulty('normal');
         } else if (difficulty === 'normal' && score >= 15) {
@@ -60,8 +56,35 @@ export const ResultScreen: React.FC = () => {
                 <h2 className={styles.title}>RESULT</h2>
 
                 <div className={styles.scoreContainer}>
-                    <span className={styles.scoreLabel}>SCORE</span>
-                    <span className={styles.scoreValue}>{Math.floor(score)}</span>
+                    {lastScoreBreakdown ? (
+                        <div className={styles.breakdown}>
+                            <div className={styles.breakdownItem}>
+                                <span>BASE SCORE</span>
+                                <span>{Math.floor(lastScoreBreakdown.baseScore)}</span>
+                            </div>
+                            <div className={styles.breakdownItem}>
+                                <span>TIME BONUS</span>
+                                <span>+{Math.floor(lastScoreBreakdown.timeBonus)}</span>
+                            </div>
+                            <div className={styles.breakdownItem}>
+                                <span>LIFE BONUS</span>
+                                <span>+{Math.floor(lastScoreBreakdown.lifeBonus)}</span>
+                            </div>
+                            <div className={styles.breakdownItem}>
+                                <span>CLEAR BONUS</span>
+                                <span>+{Math.floor(lastScoreBreakdown.clearBonus)}</span>
+                            </div>
+                            <div className={styles.totalScore}>
+                                <span>TOTAL</span>
+                                <span className={styles.scoreValue}>{Math.floor(score)}</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <span className={styles.scoreLabel}>SCORE</span>
+                            <span className={styles.scoreValue}>{Math.floor(score)}</span>
+                        </>
+                    )}
                 </div>
 
                 {isNewRecord && (

@@ -185,3 +185,16 @@
         padding: var(--spacing-xs) 2px !important;
     }
 }
+.feedbackSubMessage {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    font-weight: 700;
+    margin-top: var(--spacing-xs);
+}
+
+.feedbackSubMessage {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    font-weight: 700;
+    margin-top: var(--spacing-xs);
+}
