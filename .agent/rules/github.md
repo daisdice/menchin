@@ -1,4 +1,4 @@
----
+﻿---
 trigger: always_on
 ---
 
@@ -9,3 +9,4 @@ trigger: always_on
   - fix/**
   - chore/**
 - 開発完了後にmainブランチにmergeする
+- mainブランチにmergeする前に、必ずローカルで動作確認を行う
