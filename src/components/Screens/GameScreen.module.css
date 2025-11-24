@@ -169,6 +169,7 @@
 @media (max-width: 600px) {
     .handContainer {
         gap: 1px;
+        padding: 0 var(--spacing-xs);
     }
 
     .numpad {
@@ -177,5 +178,10 @@
 
     .numpad>div {
         min-width: 60px !important;
+        height: 50px !important;
+    }
+
+    .handCard {
+        padding: var(--spacing-xs) 2px !important;
     }
 }
