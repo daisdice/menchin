@@ -35,14 +35,6 @@
     letter-spacing: 0.15em;
 }
 
-.subtitle {
-    font-size: 1.2rem;
-    color: var(--color-text-light);
-    font-weight: 700;
-    letter-spacing: 0.2rem;
-    margin: 0;
-}
-
 .menuContainer {
     display: flex;
     flex-direction: column;
