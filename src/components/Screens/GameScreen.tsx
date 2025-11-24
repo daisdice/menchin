@@ -11,7 +11,6 @@ export const GameScreen: React.FC = () => {
     const navigate = useNavigate();
     const {
         currentHand,
-        timeLeft,
         gameEndTime,
         score,
         lives,

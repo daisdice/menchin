@@ -51,17 +51,6 @@ export const ResultScreen: React.FC = () => {
     };
 
     // Animation variants
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.3
-            }
-        }
-    };
-
     const itemVariants = {
         hidden: { opacity: 0, x: -20 },
         visible: { opacity: 1, x: 0 }
@@ -71,7 +60,6 @@ export const ResultScreen: React.FC = () => {
 
     useEffect(() => {
         if (lastScoreBreakdown) {
-            let current = 0;
             const sequence = [
                 { val: lastScoreBreakdown.baseScore, delay: 500 },
                 { val: lastScoreBreakdown.clearBonus, delay: 1000 },
