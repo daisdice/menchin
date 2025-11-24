@@ -18,6 +18,7 @@ interface GameState {
     mode: GameMode;
     questionStartTime: number;
     correctCount: number;
+    isGameOver: boolean;
     lastScoreBreakdown: {
         baseScore: number;
         timeBonus: number;
@@ -57,6 +58,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     mode: 'classic',
     questionStartTime: 0,
     correctCount: 0,
+    isGameOver: false,
     lastScoreBreakdown: null,
 
     startGame: (mode, difficulty) => {
@@ -93,13 +95,14 @@ export const useGameStore = create<GameState>((set, get) => ({
             mode,
             selectedWaits: [],
             correctCount: 0,
+            isGameOver: false,
             lastScoreBreakdown: null,
         });
         get().nextHand();
     },
 
     endGame: () => {
-        set({ isPlaying: false });
+        set({ isPlaying: false, isGameOver: true });
     },
 
     nextHand: () => {
@@ -258,6 +261,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             selectedWaits: [],
             combo: 0,
             correctCount: 0,
+            isGameOver: false,
             lastScoreBreakdown: null,
         });
     }

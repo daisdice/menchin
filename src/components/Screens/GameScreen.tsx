@@ -21,14 +21,23 @@ export const GameScreen: React.FC = () => {
         tick,
         mode,
         difficulty,
-        correctCount
+        correctCount,
+        isGameOver
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
 
     useEffect(() => {
+        // If game is over, go to result
+        if (isGameOver) {
+            navigate('/result');
+            return;
+        }
+
+        // If not playing and not game over, go to title (prevent direct access)
         if (!isPlaying) {
             navigate('/');
+            return;
         }
 
         const interval = setInterval(() => {
@@ -36,7 +45,7 @@ export const GameScreen: React.FC = () => {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isPlaying, navigate, tick]);
+    }, [isPlaying, isGameOver, navigate, tick]);
 
     useEffect(() => {
         if (!isPlaying) return;
@@ -45,17 +54,17 @@ export const GameScreen: React.FC = () => {
         if (mode === 'sprint') {
             // SPRINT: End when time runs out
             if (timeLeft <= 0) {
-                navigate('/result');
+                // Handled by store tick/endGame now
             }
         } else if (mode === 'classic') {
             // CLASSIC: End handled in store (10 wins) or lives run out
             if (lives <= 0) {
-                navigate('/result');
+                // Handled by store submitAnswer/endGame now
             }
         } else {
             // SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
             if (lives <= 0) {
-                navigate('/result');
+                // Handled by store submitAnswer/endGame now
             }
         }
     }, [timeLeft, lives, navigate, isPlaying, mode]);
@@ -76,7 +85,7 @@ export const GameScreen: React.FC = () => {
                 if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
                 } else {
-                    navigate('/result');
+                    // If game ended (e.g. cleared), store sets isGameOver=true, useEffect handles nav
                 }
             }, 1000);
         } else {
@@ -86,7 +95,7 @@ export const GameScreen: React.FC = () => {
                 if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
                 } else {
-                    navigate('/result');
+                    // If game ended (lives=0), store sets isGameOver=true, useEffect handles nav
                 }
             }, 2000);
         }
