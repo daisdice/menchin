@@ -25,8 +25,8 @@ export const useAppStore = create<AppState>()(
         (set, get) => ({
             highScores: {
                 beginner: [],
+                amateur: [],
                 normal: [],
-                advanced: [],
                 expert: [],
                 master: []
             },

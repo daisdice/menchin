@@ -23,10 +23,10 @@ export const ResultScreen: React.FC = () => {
 
         // Unlock logic
         if (difficulty === 'beginner' && score >= 10) {
+            unlockDifficulty('amateur');
+        } else if (difficulty === 'amateur' && score >= 15) {
             unlockDifficulty('normal');
-        } else if (difficulty === 'normal' && score >= 15) {
-            unlockDifficulty('advanced');
-        } else if (difficulty === 'advanced' && score >= 20) {
+        } else if (difficulty === 'normal' && score >= 20) {
             unlockDifficulty('expert');
         } else if (difficulty === 'expert' && score >= 25) {
             unlockDifficulty('master');
@@ -198,13 +198,13 @@ export const ResultScreen: React.FC = () => {
                 </div>
 
                 {/* Unlock Notification */}
-                {difficulty === 'beginner' && score >= 10 && !unlockedDifficulties.includes('normal') && (
+                {difficulty === 'beginner' && score >= 10 && !unlockedDifficulties.includes('amateur') && (
+                    <div className={styles.unlockMessage}>AMATEUR UNLOCKED!</div>
+                )}
+                {difficulty === 'amateur' && score >= 15 && !unlockedDifficulties.includes('normal') && (
                     <div className={styles.unlockMessage}>NORMAL UNLOCKED!</div>
                 )}
-                {difficulty === 'normal' && score >= 15 && !unlockedDifficulties.includes('advanced') && (
-                    <div className={styles.unlockMessage}>ADVANCED UNLOCKED!</div>
-                )}
-                {difficulty === 'advanced' && score >= 20 && !unlockedDifficulties.includes('expert') && (
+                {difficulty === 'normal' && score >= 20 && !unlockedDifficulties.includes('expert') && (
                     <div className={styles.unlockMessage}>EXPERT UNLOCKED!</div>
                 )}
                 {difficulty === 'expert' && score >= 25 && !unlockedDifficulties.includes('master') && (

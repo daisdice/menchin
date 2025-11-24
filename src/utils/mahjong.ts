@@ -9,6 +9,7 @@ export interface HandGenerationOptions {
     minWaits?: number;
     maxWaits?: number;
     exactWaits?: number;
+    tiles?: number;
 }
 
 export const Mahjong = {
@@ -18,6 +19,7 @@ export const Mahjong = {
         let waits: Tile[];
         let attempts = 0;
         const MAX_ATTEMPTS = 500;
+        const handSize = options.tiles || 13;
 
         do {
             attempts++;
@@ -35,8 +37,8 @@ export const Mahjong = {
                 [pool[i], pool[j]] = [pool[j], pool[i]];
             }
 
-            // Draw 13 tiles
-            hand = pool.slice(0, 13).sort((a, b) => a - b);
+            // Draw tiles
+            hand = pool.slice(0, handSize).sort((a, b) => a - b);
 
             // Calculate waits
             waits = this.calculateWaits(hand);
@@ -60,19 +62,17 @@ export const Mahjong = {
 
         } while (attempts < MAX_ATTEMPTS);
 
-        // Fallback if constraints not met (return a simple hand or the last generated one)
-        // Ideally we should ensure we always return something valid-ish, 
-        // but for now returning the last hand (even if not matching strict constraints) 
-        // is better than crashing or infinite loop.
-        // However, let's try to force at least one wait if possible.
+        // Fallback
         if (waits.length === 0) {
-            // Fallback: return a known simple tenpai hand if everything failed
+            // Return a simple hand based on size
+            if (handSize === 7) return [1, 1, 1, 2, 3, 4, 5];
+            if (handSize === 10) return [1, 1, 1, 2, 3, 4, 5, 6, 7, 8];
             return [1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9];
         }
         return hand;
     },
 
-    // Calculate winning tiles for a 13-tile hand
+    // Calculate winning tiles
     calculateWaits: function (hand: Hand): Tile[] {
         let waits: Tile[] = [];
         for (let i = 1; i <= 9; i++) {
@@ -85,9 +85,10 @@ export const Mahjong = {
         return waits;
     },
 
-    // Check if a 14-tile hand is a winning hand
+    // Check if a hand (handSize + 1) is a winning hand
     canWin: function (hand: Hand): boolean {
-        if (hand.length !== 14) return false;
+        // Standard Mahjong hand size check: (n * 3) + 2
+        if (hand.length % 3 !== 2) return false;
 
         let counts = new Array(10).fill(0);
         for (let tile of hand) {
@@ -95,11 +96,11 @@ export const Mahjong = {
             if (counts[tile] > 4) return false; // Impossible hand
         }
 
-        // Check Chiitoitsu (7 pairs)
-        if (this.isChiitoitsu(counts)) return true;
+        // Check Chiitoitsu (7 pairs) - Only for 14 tiles
+        if (hand.length === 14 && this.isChiitoitsu(counts)) return true;
 
-        // Check Standard Win (4 sets + 1 pair)
-        return this.isStandardWin(counts);
+        // Check Standard Win
+        return this.isStandardWin(counts, (hand.length - 2) / 3);
     },
 
     isChiitoitsu: function (counts: number[]): boolean {
@@ -111,7 +112,7 @@ export const Mahjong = {
         return pairs === 7;
     },
 
-    isStandardWin: function (counts: number[]): boolean {
+    isStandardWin: function (counts: number[], requiredSets: number): boolean {
         // Iterate over all possible pairs
         for (let i = 1; i <= 9; i++) {
             if (counts[i] >= 2) {
@@ -119,7 +120,7 @@ export const Mahjong = {
                 let tempCounts = [...counts];
                 tempCounts[i] -= 2;
 
-                if (this.decomposeSets(tempCounts, 0)) {
+                if (this.decomposeSets(tempCounts, 0, requiredSets)) {
                     return true;
                 }
             }
@@ -127,21 +128,20 @@ export const Mahjong = {
         return false;
     },
 
-    // Recursive function to remove sets (koutsu or shuntsu)
-    // remainingSets needed: 4
-    decomposeSets: function (counts: number[], setsFound: number): boolean {
-        if (setsFound === 4) return true;
+    // Recursive function to remove sets
+    decomposeSets: function (counts: number[], setsFound: number, requiredSets: number): boolean {
+        if (setsFound === requiredSets) return true;
 
         // Find first available tile
         let i = 1;
         while (i <= 9 && counts[i] === 0) i++;
 
-        if (i > 9) return true; // Should be caught by setsFound check, but safe guard
+        if (i > 9) return true; // Should be caught by setsFound check
 
         // Try Koutsu (Triplet)
         if (counts[i] >= 3) {
             counts[i] -= 3;
-            if (this.decomposeSets(counts, setsFound + 1)) return true;
+            if (this.decomposeSets(counts, setsFound + 1, requiredSets)) return true;
             counts[i] += 3; // Backtrack
         }
 
@@ -150,7 +150,7 @@ export const Mahjong = {
             counts[i]--;
             counts[i + 1]--;
             counts[i + 2]--;
-            if (this.decomposeSets(counts, setsFound + 1)) return true;
+            if (this.decomposeSets(counts, setsFound + 1, requiredSets)) return true;
             counts[i]++;
             counts[i + 1]++;
             counts[i + 2]++; // Backtrack

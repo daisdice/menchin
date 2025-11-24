@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { Tile, Hand } from '../utils/mahjong';
 import { Mahjong } from '../utils/mahjong';
 
-export type Difficulty = 'beginner' | 'normal' | 'advanced' | 'expert' | 'master';
+export type Difficulty = 'beginner' | 'amateur' | 'normal' | 'expert' | 'master';
 export type GameMode = 'classic' | 'sprint' | 'survival' | 'practice';
 
 interface GameState {
@@ -104,8 +104,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             let difficultyMultiplier = 1.0;
             switch (difficulty) {
                 case 'beginner': difficultyMultiplier = 1.0; break;
-                case 'normal': difficultyMultiplier = 1.2; break;
-                case 'advanced': difficultyMultiplier = 1.5; break;
+                case 'amateur': difficultyMultiplier = 1.2; break;
+                case 'normal': difficultyMultiplier = 1.5; break;
                 case 'expert': difficultyMultiplier = 2.0; break;
                 case 'master': difficultyMultiplier = 3.0; break;
             }
@@ -129,18 +129,26 @@ export const useGameStore = create<GameState>((set, get) => ({
                 }
             });
         } else {
-            const { score } = get();
-            set({
-                isPlaying: false,
-                isGameOver: true,
-                lastScoreBreakdown: {
-                    baseScore: score,
-                    clearBonus: 0,
-                    lifeBonus: 0,
-                    timeBonus: 0,
-                    totalScore: score
-                }
-            });
+            const { score, isClear, lastScoreBreakdown } = get();
+
+            if (isClear && lastScoreBreakdown) {
+                set({
+                    isPlaying: false,
+                    isGameOver: true
+                });
+            } else {
+                set({
+                    isPlaying: false,
+                    isGameOver: true,
+                    lastScoreBreakdown: {
+                        baseScore: score,
+                        clearBonus: 0,
+                        lifeBonus: 0,
+                        timeBonus: 0,
+                        totalScore: score
+                    }
+                });
+            }
         }
     },
 
@@ -150,19 +158,19 @@ export const useGameStore = create<GameState>((set, get) => ({
 
         switch (difficulty) {
             case 'beginner':
-                options = { maxWaits: 2 };
+                options = { tiles: 7, minWaits: 1, maxWaits: 5 };
+                break;
+            case 'amateur':
+                options = { tiles: 10, minWaits: 1, maxWaits: 5 };
                 break;
             case 'normal':
-                options = { minWaits: 2, maxWaits: 3 };
-                break;
-            case 'advanced':
-                options = { minWaits: 3, maxWaits: 4 };
+                options = { tiles: 13, minWaits: 1, maxWaits: 5 };
                 break;
             case 'expert':
-                options = { minWaits: 4, maxWaits: 5 };
+                options = { tiles: 13, minWaits: 3, maxWaits: 7 };
                 break;
             case 'master':
-                options = { minWaits: 5 };
+                options = { tiles: 13, minWaits: 5, maxWaits: 9 };
                 break;
         }
 
@@ -200,8 +208,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             let difficultyMultiplier = 1.0;
             switch (difficulty) {
                 case 'beginner': difficultyMultiplier = 1.0; break;
-                case 'normal': difficultyMultiplier = 1.2; break;
-                case 'advanced': difficultyMultiplier = 1.5; break;
+                case 'amateur': difficultyMultiplier = 1.2; break;
+                case 'normal': difficultyMultiplier = 1.5; break;
                 case 'expert': difficultyMultiplier = 2.0; break;
                 case 'master': difficultyMultiplier = 3.0; break;
             }

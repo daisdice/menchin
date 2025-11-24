@@ -126,17 +126,16 @@ export const GameScreen: React.FC = () => {
                         <span className={styles.statLabel}>SCORE</span>
                         <span className={styles.statValue}>{Math.floor(score)}</span>
                     </div>
-                    {mode === 'classic' ? (
+                    {mode === 'classic' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>PROGRESS</span>
                             <span className={styles.statValue}>{correctCount}/10</span>
                         </div>
-                    ) : (
-                        <div className={styles.statItem}>
-                            <span className={styles.statLabel}>LIFE</span>
-                            <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
-                        </div>
                     )}
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>LIFE</span>
+                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+                    </div>
                 </div>
             </div>
 

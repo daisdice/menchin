@@ -21,11 +21,11 @@ export const DifficultySelectScreen: React.FC = () => {
     };
 
     const difficulties: { id: Difficulty; label: string; waits: string; color: 'secondary' | 'primary' | 'accent' | 'danger' }[] = [
-        { id: 'beginner', label: 'BEGINNER', waits: '2 Waits', color: 'secondary' },
-        { id: 'normal', label: 'NORMAL', waits: '2-3 Waits', color: 'primary' },
-        { id: 'advanced', label: 'ADVANCED', waits: '3-4 Waits', color: 'accent' },
-        { id: 'expert', label: 'EXPERT', waits: '4-5 Waits', color: 'danger' },
-        { id: 'master', label: 'MASTER', waits: '5+ Waits', color: 'danger' }, // Reusing danger for master, maybe add a custom class
+        { id: 'beginner', label: 'BEGINNER', waits: '1-5 Waits', color: 'secondary' },
+        { id: 'amateur', label: 'AMATEUR', waits: '1-5 Waits', color: 'primary' },
+        { id: 'normal', label: 'NORMAL', waits: '1-5 Waits', color: 'primary' },
+        { id: 'expert', label: 'EXPERT', waits: '3-7 Waits', color: 'accent' },
+        { id: 'master', label: 'MASTER', waits: '5-9 Waits', color: 'danger' },
     ];
 
     return (
