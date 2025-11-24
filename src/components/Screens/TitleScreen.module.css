@@ -39,7 +39,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
     width: 100%;
     max-width: 400px;
 }
@@ -47,6 +47,7 @@
 .startButton {
     height: 80px !important;
     font-size: 2rem !important;
+    margin-bottom: var(--spacing-md);
 }
 
 .menuSection {
@@ -59,4 +60,8 @@
 .menuSection>button {
     flex: 1;
     font-size: 0.8rem;
+}
+
+.optionsButton {
+    margin-top: var(--spacing-sm);
 }

@@ -1,0 +1,71 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-xl);
+}
+
+.header {
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 0.1em;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 500px;
+}
+
+.section {
+    background-color: var(--color-surface);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+}
+
+.confirmBox {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.confirmMessage {
+    color: var(--color-text-light);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.confirmButtons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.confirmButtons button {
+    flex: 1;
+}
+
+.footer {
+    width: 100%;
+    max-width: 300px;
+}

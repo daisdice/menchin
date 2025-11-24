@@ -5,6 +5,7 @@ import { ModeSelectScreen } from './components/Screens/ModeSelectScreen';
 import { DifficultySelectScreen } from './components/Screens/DifficultySelectScreen';
 import { GameScreen } from './components/Screens/GameScreen';
 import { ResultScreen } from './components/Screens/ResultScreen';
+import { OptionsScreen } from './components/Screens/OptionsScreen';
 import { PlaceholderScreen } from './components/Screens/PlaceholderScreen';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/difficulty/:mode" element={<DifficultySelectScreen />} />
           <Route path="/game" element={<GameScreen />} />
           <Route path="/result" element={<ResultScreen />} />
+          <Route path="/options" element={<OptionsScreen />} />
           <Route path="/ranking" element={<PlaceholderScreen title="RANKING" />} />
           <Route path="/stats" element={<PlaceholderScreen title="RECORD" />} />
           <Route path="/trophies" element={<PlaceholderScreen title="COLLECTION" />} />

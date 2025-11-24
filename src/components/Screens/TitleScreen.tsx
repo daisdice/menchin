@@ -46,6 +46,16 @@ export const TitleScreen: React.FC = () => {
                         COLLECTION
                     </GameButton>
                 </div>
+
+                <GameButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate('/options')}
+                    fullWidth
+                    className={styles.optionsButton}
+                >
+                    OPTIONS
+                </GameButton>
             </motion.div>
         </div>
     );
