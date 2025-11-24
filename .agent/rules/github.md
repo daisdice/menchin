@@ -8,5 +8,4 @@ trigger: always_on
   - feature/**
   - fix/**
   - chore/**
-- 開発完了後にブランチをpushする
-- mainブランチに向けたPRを作成する
+- 開発完了後にmainブランチにmergeする
