@@ -12,6 +12,7 @@ export const GameScreen: React.FC = () => {
     const {
         currentHand,
         timeLeft,
+        gameEndTime,
         score,
         lives,
         isPlaying,
@@ -26,6 +27,70 @@ export const GameScreen: React.FC = () => {
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
+    const [displayTime, setDisplayTime] = useState('120.00');
+    const [countdown, setCountdown] = useState<number | null>(null);
+
+    // Reset countdown when game starts
+    useEffect(() => {
+        if (isPlaying && gameEndTime === 0) {
+            setCountdown(3);
+        }
+    }, [isPlaying, gameEndTime]);
+
+    // Countdown effect
+    useEffect(() => {
+        if (!isPlaying || countdown === null) return;
+
+        if (countdown > 0) {
+            const timer = setTimeout(() => {
+                setCountdown(countdown - 1);
+            }, 1000);
+            return () => clearTimeout(timer);
+        } else {
+            // Countdown finished, start the game timer
+            const timer = setTimeout(() => {
+                setCountdown(null);
+                // Initialize game timer after countdown
+                const duration = mode === 'classic' ? 120 : mode === 'sprint' ? 60 : 0;
+                if (duration > 0) {
+                    const newEndTime = Date.now() + duration * 1000;
+                    useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
+                }
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [countdown, isPlaying, mode]);
+
+    // High precision timer
+    useEffect(() => {
+        // Don't run during countdown
+        if (countdown !== null) {
+            setDisplayTime('120.00');
+            return;
+        }
+
+        if (!isPlaying || gameEndTime === 0) return;
+
+        let animationFrameId: number;
+
+        const updateTimer = () => {
+            const now = Date.now();
+            const remaining = Math.max(0, gameEndTime - now);
+            const seconds = Math.floor(remaining / 1000);
+            const centiseconds = Math.floor((remaining % 1000) / 10);
+            setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
+
+            if (remaining > 0) {
+                animationFrameId = requestAnimationFrame(updateTimer);
+            }
+        };
+
+        updateTimer();
+
+        return () => {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        };
+    }, [isPlaying, gameEndTime, countdown]);
 
     useEffect(() => {
         // If game is over, go to result
@@ -40,44 +105,42 @@ export const GameScreen: React.FC = () => {
             return;
         }
 
+        // Don't tick during countdown
+        if (countdown !== null) return;
+
         const interval = setInterval(() => {
             tick();
-        }, 1000);
+        }, 100); // Check tick more frequently for end condition
 
         return () => clearInterval(interval);
-    }, [isPlaying, isGameOver, navigate, tick]);
+    }, [isPlaying, isGameOver, navigate, tick, countdown]);
 
     useEffect(() => {
         if (!isPlaying) return;
 
         // Check end conditions based on mode
-        if (mode === 'sprint') {
-            // SPRINT: End when time runs out
-            if (timeLeft <= 0) {
-                // Handled by store tick/endGame now
-            }
-        } else if (mode === 'classic') {
-            // CLASSIC: End handled in store (10 wins) or lives run out
-            if (lives <= 0) {
-                // Handled by store submitAnswer/endGame now
-            }
+        if (mode === 'sprint' || mode === 'classic') {
+            // Time check handled by tick/gameEndTime
         } else {
             // SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
             if (lives <= 0) {
                 // Handled by store submitAnswer/endGame now
             }
         }
-    }, [timeLeft, lives, navigate, isPlaying, mode]);
+    }, [lives, navigate, isPlaying, mode]);
 
     const handleSubmit = () => {
         const result = submitAnswer();
 
         if (result.correct) {
             const bonusText = result.bonuses?.join(' & ') || '';
+            const baseScoreDisplay = `+${result.points! - (bonusText.includes('FAST') ? 300 : 0)}`;
+            const bonusDisplay = bonusText ? `FAST BONUS +300` : '';
+
             setFeedback({
                 type: 'correct',
                 message: 'CORRECT!',
-                subMessage: bonusText ? `${bonusText} BONUS! +${result.points}` : `+${result.points}`
+                subMessage: bonusDisplay ? `${baseScoreDisplay}  ${bonusDisplay}` : baseScoreDisplay
             });
             setTimeout(() => {
                 setFeedback(null);
@@ -118,13 +181,10 @@ export const GameScreen: React.FC = () => {
                 </div>
 
                 <div className={styles.statsGroup}>
+                    {/* Time removed from here, moved to prominent display */}
                     <div className={styles.statItem}>
-                        <span className={styles.statLabel}>TIME</span>
-                        <span className={styles.statValue}>{timeLeft}</span>
-                    </div>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>SCORE</span>
-                        <span className={styles.statValue}>{Math.floor(score)}</span>
+                        <span className={styles.statLabel}>LIFE</span>
+                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
                     </div>
                     {mode === 'classic' && (
                         <div className={styles.statItem}>
@@ -133,11 +193,19 @@ export const GameScreen: React.FC = () => {
                         </div>
                     )}
                     <div className={styles.statItem}>
-                        <span className={styles.statLabel}>LIFE</span>
-                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+                        <span className={styles.statLabel}>SCORE</span>
+                        <span className={styles.statValue}>{Math.floor(score)}</span>
                     </div>
                 </div>
             </div>
+
+            {/* Prominent Time Display */}
+            {(mode === 'classic' || mode === 'sprint') && (
+                <div className={styles.timerDisplay}>
+                    <div className={styles.timerLabel}>TIME</div>
+                    <div className={styles.timerValue}>{displayTime}</div>
+                </div>
+            )}
 
             {/* Game Area */}
             <div className={styles.gameArea}>
@@ -174,6 +242,19 @@ export const GameScreen: React.FC = () => {
                     </GameButton>
                 </div>
             </div>
+
+            {/* Countdown Overlay */}
+            {countdown !== null && (
+                <div className={styles.countdownOverlay}>
+                    <div className={styles.countdownContent}>
+                        {countdown > 0 ? (
+                            <span className={styles.countdownNumber}>{countdown}</span>
+                        ) : (
+                            <span className={styles.countdownStart}>START!</span>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Feedback Overlay */}
             <AnimatePresence>

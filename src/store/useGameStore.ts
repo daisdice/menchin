@@ -10,6 +10,7 @@ interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
+    gameEndTime: number;
     currentHand: Hand;
     currentWaits: Tile[];
     selectedWaits: Tile[];
@@ -56,35 +57,40 @@ export const useGameStore = create<GameState>((set, get) => ({
     isClear: false,
     lastScoreBreakdown: null,
 
+    gameEndTime: 0,
+
     startGame: (mode, difficulty) => {
         let lives = INITIAL_LIVES;
-        let timeLeft = 0;
+        let duration = 0;
 
         switch (mode) {
             case 'sprint':
                 lives = 99;
-                timeLeft = TIME_LIMIT_SPRINT;
+                duration = TIME_LIMIT_SPRINT;
                 break;
             case 'survival':
                 lives = 1;
-                timeLeft = 0;
+                duration = 0; // Infinite? Or handled differently
                 break;
             case 'practice':
                 lives = 99;
-                timeLeft = 0;
+                duration = 0;
                 break;
             case 'classic':
             default:
                 lives = 3;
-                timeLeft = 60; // 60 seconds time limit
+                duration = 120; // 120 seconds time limit
                 break;
         }
+
+        const gameEndTime = 0; // Don't start timer yet, wait for countdown
 
         set({
             isPlaying: true,
             score: 0,
             lives,
-            timeLeft,
+            timeLeft: duration,
+            gameEndTime,
             difficulty,
             mode,
             selectedWaits: [],
@@ -283,14 +289,18 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     tick: () => {
-        const { timeLeft, isPlaying, mode } = get();
+        const { isPlaying, mode, gameEndTime } = get();
         if (!isPlaying) return;
 
         if (mode === 'sprint' || mode === 'classic') {
-            if (timeLeft > 0) {
-                set({ timeLeft: timeLeft - 1 });
-            } else {
-                get().endGame();
+            const now = Date.now();
+            if (gameEndTime > 0) {
+                const remaining = Math.max(0, Math.ceil((gameEndTime - now) / 1000));
+                set({ timeLeft: remaining });
+
+                if (remaining <= 0) {
+                    get().endGame();
+                }
             }
         }
     },

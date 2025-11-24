@@ -20,12 +20,12 @@ export const DifficultySelectScreen: React.FC = () => {
         }
     };
 
-    const difficulties: { id: Difficulty; label: string; waits: string; color: 'secondary' | 'primary' | 'accent' | 'danger' }[] = [
-        { id: 'beginner', label: 'BEGINNER', waits: '1-5 Waits', color: 'secondary' },
-        { id: 'amateur', label: 'AMATEUR', waits: '1-5 Waits', color: 'primary' },
-        { id: 'normal', label: 'NORMAL', waits: '1-5 Waits', color: 'primary' },
-        { id: 'expert', label: 'EXPERT', waits: '3-7 Waits', color: 'accent' },
-        { id: 'master', label: 'MASTER', waits: '5-9 Waits', color: 'danger' },
+    const difficulties: { id: Difficulty; label: string; color: 'secondary' | 'primary' | 'accent' | 'danger' | string }[] = [
+        { id: 'beginner', label: 'BEGINNER', color: '#4ECDC4' }, // Teal
+        { id: 'amateur', label: 'AMATEUR', color: '#45B7D1' },   // Sky Blue
+        { id: 'normal', label: 'NORMAL', color: '#FFD93D' },     // Yellow
+        { id: 'expert', label: 'EXPERT', color: '#FF8C42' },     // Orange
+        { id: 'master', label: 'MASTER', color: '#FF6B6B' }      // Red
     ];
 
     return (
@@ -51,7 +51,8 @@ export const DifficultySelectScreen: React.FC = () => {
                             className={styles.item}
                         >
                             <GameButton
-                                variant={diff.color}
+                                variant={diff.color.startsWith('#') ? 'custom' : diff.color as any}
+                                customColor={diff.color.startsWith('#') ? diff.color : undefined}
                                 onClick={() => isUnlocked && handleStart(diff.id)}
                                 disabled={!isUnlocked}
                                 className={!isUnlocked ? styles.locked : ''}
@@ -62,7 +63,6 @@ export const DifficultySelectScreen: React.FC = () => {
                                         {diff.label}
                                         {!isUnlocked && <span className={styles.lockIcon}>🔒</span>}
                                     </span>
-                                    <span className={styles.waits}>{diff.waits}</span>
                                 </div>
                             </GameButton>
                         </motion.div>
