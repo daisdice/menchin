@@ -71,8 +71,8 @@
 
 .timerDisplay {
     text-align: center;
-    margin-bottom: 1.5rem;
-    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-sm);
     background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1));
     border-radius: var(--radius-lg);
     border: 2px solid rgba(78, 205, 196, 0.3);
@@ -88,7 +88,7 @@
 
 .timerValue {
     font-family: 'Roboto Mono', monospace;
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 700;
     color: #4ECDC4;
     text-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
