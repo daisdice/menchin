@@ -50,7 +50,7 @@ export const GameScreen: React.FC = () => {
             const timer = setTimeout(() => {
                 setCountdown(null);
                 // Initialize game timer after countdown
-                const duration = mode === 'classic' ? 120 : mode === 'sprint' ? 60 : 0;
+                const duration = mode === 'challenge' ? 120 : mode === 'sprint' ? 60 : 0;
                 if (duration > 0) {
                     const newEndTime = Date.now() + duration * 1000;
                     useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
@@ -118,7 +118,7 @@ export const GameScreen: React.FC = () => {
         if (!isPlaying) return;
 
         // Check end conditions based on mode
-        if (mode === 'sprint' || mode === 'classic') {
+        if (mode === 'sprint' || mode === 'challenge') {
             // Time check handled by tick/gameEndTime
         } else {
             // SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
@@ -185,7 +185,7 @@ export const GameScreen: React.FC = () => {
                         <span className={styles.statLabel}>LIFE</span>
                         <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
                     </div>
-                    {mode === 'classic' && (
+                    {mode === 'challenge' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>PROGRESS</span>
                             <span className={styles.statValue}>{correctCount}/10</span>
@@ -199,7 +199,7 @@ export const GameScreen: React.FC = () => {
             </div>
 
             {/* Prominent Time Display */}
-            {(mode === 'classic' || mode === 'sprint') && (
+            {(mode === 'challenge' || mode === 'sprint') && (
                 <div className={styles.timerDisplay}>
                     <div className={styles.timerLabel}>TIME</div>
                     <div className={styles.timerValue}>{displayTime}</div>

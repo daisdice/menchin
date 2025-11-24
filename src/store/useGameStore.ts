@@ -3,7 +3,7 @@ import type { Tile, Hand } from '../utils/mahjong';
 import { Mahjong } from '../utils/mahjong';
 
 export type Difficulty = 'beginner' | 'amateur' | 'normal' | 'expert' | 'master';
-export type GameMode = 'classic' | 'sprint' | 'survival' | 'practice';
+export type GameMode = 'challenge' | 'sprint' | 'survival' | 'practice';
 
 interface GameState {
     isPlaying: boolean;
@@ -50,7 +50,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     currentWaits: [],
     selectedWaits: [],
     difficulty: 'normal',
-    mode: 'classic',
+    mode: 'challenge',
     questionStartTime: 0,
     correctCount: 0,
     isGameOver: false,
@@ -76,7 +76,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 lives = 99;
                 duration = 0;
                 break;
-            case 'classic':
+            case 'challenge':
             default:
                 lives = 3;
                 duration = 120; // 120 seconds time limit
@@ -234,7 +234,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             });
 
             // Check Clear Condition for CLASSIC
-            if (mode === 'classic' && newCorrectCount >= 10) {
+            if (mode === 'challenge' && newCorrectCount >= 10) {
                 // Calculate Result Bonuses
                 const timeBonus = timeLeft * 100;
                 const lifeBonus = lives * 500;
@@ -292,7 +292,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         const { isPlaying, mode, gameEndTime } = get();
         if (!isPlaying) return;
 
-        if (mode === 'sprint' || mode === 'classic') {
+        if (mode === 'sprint' || mode === 'challenge') {
             const now = Date.now();
             if (gameEndTime > 0) {
                 const remaining = Math.max(0, Math.ceil((gameEndTime - now) / 1000));
