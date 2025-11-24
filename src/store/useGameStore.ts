@@ -13,23 +13,23 @@ interface GameState {
     currentHand: Hand;
     currentWaits: Tile[];
     selectedWaits: Tile[];
-    combo: number;
     difficulty: Difficulty;
     mode: GameMode;
     questionStartTime: number;
     correctCount: number;
     isGameOver: boolean;
+    isClear: boolean;
     lastScoreBreakdown: {
         baseScore: number;
-        timeBonus: number;
-        lifeBonus: number;
         clearBonus: number;
+        lifeBonus: number;
+        timeBonus: number;
         totalScore: number;
     } | null;
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
-    endGame: () => void;
+    endGame: (forceClear?: boolean) => void;
     nextHand: () => void;
     toggleWait: (tile: Tile) => void;
     submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; bonuses?: string[] };
@@ -39,11 +39,6 @@ interface GameState {
 
 const INITIAL_LIVES = 3;
 const TIME_LIMIT_SPRINT = 60;
-// Actually, let's keep it simple:
-// SPRINT: 60s total time
-// CLASSIC: No time limit per question (or generous), lives matter
-// SURVIVAL: 1 life, no time limit
-// PRACTICE: Infinite lives, no time limit
 
 export const useGameStore = create<GameState>((set, get) => ({
     isPlaying: false,
@@ -53,12 +48,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     currentHand: [],
     currentWaits: [],
     selectedWaits: [],
-    combo: 0,
     difficulty: 'normal',
     mode: 'classic',
     questionStartTime: 0,
     correctCount: 0,
     isGameOver: false,
+    isClear: false,
     lastScoreBreakdown: null,
 
     startGame: (mode, difficulty) => {
@@ -90,19 +85,63 @@ export const useGameStore = create<GameState>((set, get) => ({
             score: 0,
             lives,
             timeLeft,
-            combo: 0,
             difficulty,
             mode,
             selectedWaits: [],
             correctCount: 0,
             isGameOver: false,
+            isClear: false,
             lastScoreBreakdown: null,
         });
         get().nextHand();
     },
 
-    endGame: () => {
-        set({ isPlaying: false, isGameOver: true });
+    endGame: (forceClear: boolean = false) => {
+        if (forceClear) {
+            const { score, timeLeft, lives, difficulty } = get();
+
+            // Calculate dummy bonuses for debug clear
+            let difficultyMultiplier = 1.0;
+            switch (difficulty) {
+                case 'beginner': difficultyMultiplier = 1.0; break;
+                case 'normal': difficultyMultiplier = 1.2; break;
+                case 'advanced': difficultyMultiplier = 1.5; break;
+                case 'expert': difficultyMultiplier = 2.0; break;
+                case 'master': difficultyMultiplier = 3.0; break;
+            }
+
+            const timeBonus = timeLeft * 100;
+            const lifeBonus = lives * 500;
+            const clearBonus = 1000 * difficultyMultiplier;
+            const totalScore = score + timeBonus + lifeBonus + clearBonus;
+
+            set({
+                isPlaying: false,
+                isGameOver: true,
+                isClear: true,
+                score: totalScore,
+                lastScoreBreakdown: {
+                    baseScore: score,
+                    clearBonus,
+                    lifeBonus,
+                    timeBonus,
+                    totalScore
+                }
+            });
+        } else {
+            const { score } = get();
+            set({
+                isPlaying: false,
+                isGameOver: true,
+                lastScoreBreakdown: {
+                    baseScore: score,
+                    clearBonus: 0,
+                    lifeBonus: 0,
+                    timeBonus: 0,
+                    totalScore: score
+                }
+            });
+        }
     },
 
     nextHand: () => {
@@ -148,7 +187,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     submitAnswer: () => {
-        const { currentWaits, selectedWaits, questionStartTime, combo, score, lives, mode, difficulty, correctCount, timeLeft } = get();
+        const { currentWaits, selectedWaits, questionStartTime, score, lives, mode, difficulty, correctCount, timeLeft } = get();
 
         // Check if arrays are equal
         const isCorrect = JSON.stringify(currentWaits.sort((a, b) => a - b)) ===
@@ -169,15 +208,14 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             const baseScore = currentWaits.length * 100 * difficultyMultiplier;
             const fastBonus = timeSpent <= 5 ? 300 : 0;
-            const comboBonus = combo * 100;
+            // Combo bonus removed
 
-            const points = baseScore + fastBonus + comboBonus;
+            const points = baseScore + fastBonus;
 
             const newCorrectCount = correctCount + 1;
 
             set({
                 score: score + points,
-                combo: combo + 1,
                 correctCount: newCorrectCount,
             });
 
@@ -191,11 +229,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 
                 set({
                     score: totalScore,
+                    isClear: true,
                     lastScoreBreakdown: {
                         baseScore: score + points,
-                        timeBonus,
-                        lifeBonus,
                         clearBonus,
+                        lifeBonus,
+                        timeBonus,
                         totalScore
                     }
                 });
@@ -207,8 +246,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 correctWaits: currentWaits,
                 points,
                 bonuses: [
-                    fastBonus > 0 ? 'FAST' : '',
-                    comboBonus > 0 ? 'COMBO' : ''
+                    fastBonus > 0 ? 'FAST' : ''
                 ].filter(Boolean)
             };
 
@@ -221,7 +259,6 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             set({
                 lives: newLives,
-                combo: 0,
             });
 
             if (newLives <= 0) {
@@ -259,9 +296,9 @@ export const useGameStore = create<GameState>((set, get) => ({
             currentHand: [],
             currentWaits: [],
             selectedWaits: [],
-            combo: 0,
             correctCount: 0,
             isGameOver: false,
+            isClear: false,
             lastScoreBreakdown: null,
         });
     }

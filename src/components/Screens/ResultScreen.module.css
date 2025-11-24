@@ -13,6 +13,16 @@
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+}
+
+/* Header */
+.headerSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
 }
 
 .title {
@@ -20,74 +30,166 @@
     color: var(--color-text);
     margin: 0;
     letter-spacing: 0.1em;
+    font-weight: 800;
 }
 
-.scoreContainer {
+.badges {
     display: flex;
-    flex-direction: column;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.modeBadge,
+.difficultyBadge {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    font-weight: 700;
+    border: 1px solid var(--color-border);
+}
+
+/* Status */
+.statusSection {
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
-.scoreLabel {
-    font-size: 1rem;
-    color: var(--color-text-light);
-    font-weight: 700;
-    letter-spacing: 0.1em;
+.statusClear {
+    font-size: 2.5rem;
+    color: var(--color-accent-yellow);
+    margin: 0;
+    font-weight: 900;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.scoreValue {
-    font-size: 4rem;
+.statusFailed {
+    font-size: 2rem;
+    color: var(--color-text-light);
+    margin: 0;
     font-weight: 800;
+}
+
+/* Score List */
+.scoreList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.scoreRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+.label {
+    font-weight: 600;
+    color: var(--color-text-light);
+    letter-spacing: 0.05em;
+}
+
+.value {
+    font-weight: 700;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.divider {
+    height: 2px;
+    background-color: var(--color-border);
+    margin: 8px 0;
+    width: 100%;
+    opacity: 0.5;
+}
+
+/* Total Row */
+.totalRow {
+    margin-top: 4px;
+    align-items: flex-end;
+}
+
+.totalLabel {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-text);
+}
+
+.totalValueContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.totalValue {
+    font-size: 2rem;
+    font-weight: 900;
     color: var(--color-accent-cyan);
     line-height: 1;
 }
 
-.newRecord {
+.newRecordBadge {
+    font-size: 0.7rem;
     background-color: var(--color-accent-yellow);
     color: var(--color-text);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-sm);
+    padding: 2px 6px;
+    border-radius: 4px;
     font-weight: 800;
-    font-size: 1.2rem;
-    transform: rotate(-5deg);
+    margin-top: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Unlock Message */
 .unlockMessage {
     color: var(--color-accent-red);
     font-weight: 800;
-    font-size: 1.2rem;
+    font-size: 1rem;
+    text-align: center;
+    animation: pulse 2s infinite;
 }
 
+/* Actions */
 .actions {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
     width: 100%;
-}
-.breakdown {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    width: 100%;
-    margin-bottom: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }
 
-.breakdownItem {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    font-weight: 700;
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-.totalScore {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
-    border-top: 2px solid #f0f0f0;
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--color-text);
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
