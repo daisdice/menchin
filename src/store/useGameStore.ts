@@ -210,7 +210,8 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             // Calculate Score (New Formula)
             const baseScore = currentWaits.length * 100;
-            const fastBonus = timeSpent <= 5 ? Math.floor(baseScore * 0.3) : 0;
+            const fastThreshold = 2 + currentWaits.length * 1; // 2秒 + 待ちの数 * 1秒
+            const fastBonus = timeSpent <= fastThreshold ? Math.floor(baseScore * 0.3) : 0;
 
             const points = baseScore + fastBonus;
 
