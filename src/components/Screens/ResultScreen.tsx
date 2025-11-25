@@ -49,7 +49,11 @@ export const ResultScreen: React.FC = () => {
     // Animation variants
     const itemVariants = {
         hidden: { opacity: 0, x: -20 },
-        visible: { opacity: 1, x: 0 }
+        visible: (i: number) => ({
+            opacity: 1,
+            x: 0,
+            transition: { delay: i * 0.5 }
+        })
     };
 
     const [displayScore, setDisplayScore] = React.useState(0);
@@ -57,10 +61,10 @@ export const ResultScreen: React.FC = () => {
     useEffect(() => {
         if (lastScoreBreakdown) {
             const sequence = [
-                { val: lastScoreBreakdown.baseScore, delay: 500 },
-                { val: lastScoreBreakdown.clearBonus, delay: 1000 },
-                { val: lastScoreBreakdown.lifeBonus, delay: 1500 },
-                { val: lastScoreBreakdown.timeBonus, delay: 2000 }
+                { val: lastScoreBreakdown.baseScore, delay: 0 },
+                { val: lastScoreBreakdown.clearBonus, delay: 500 },
+                { val: lastScoreBreakdown.lifeBonus, delay: 1000 },
+                { val: lastScoreBreakdown.timeBonus, delay: 1500 }
             ];
 
             sequence.forEach((item) => {
