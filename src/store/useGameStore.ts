@@ -33,7 +33,7 @@ interface GameState {
     endGame: (forceClear?: boolean) => void;
     nextHand: () => void;
     toggleWait: (tile: Tile) => void;
-    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; bonuses?: string[] };
+    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; bonuses?: string[] };
     tick: () => void;
     resetGame: () => void;
 }
