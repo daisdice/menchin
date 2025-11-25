@@ -67,7 +67,7 @@ export const useAppStore = create<AppState>()(
         {
             name: 'menchin-storage',
             version: 2, // Increment version to trigger migration
-            migrate: (persistedState: any, version: number) => {
+            migrate: (persistedState: any) => {
                 // Remove unlockedDifficulties from old data
                 if (persistedState && persistedState.unlockedDifficulties) {
                     delete persistedState.unlockedDifficulties;
