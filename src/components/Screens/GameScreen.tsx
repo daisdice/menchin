@@ -22,7 +22,7 @@ export const GameScreen: React.FC = () => {
         mode,
         difficulty,
         correctCount,
-        isGameOver
+        isGameOver,
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
@@ -39,17 +39,12 @@ export const GameScreen: React.FC = () => {
     // Countdown effect
     useEffect(() => {
         if (!isPlaying || countdown === null) return;
-
         if (countdown > 0) {
-            const timer = setTimeout(() => {
-                setCountdown(countdown - 1);
-            }, 1000);
+            const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
             return () => clearTimeout(timer);
         } else {
-            // Countdown finished, start the game timer
             const timer = setTimeout(() => {
                 setCountdown(null);
-                // Initialize game timer after countdown
                 const duration = mode === 'challenge' ? 120 : mode === 'sprint' ? 60 : 0;
                 if (duration > 0) {
                     const newEndTime = Date.now() + duration * 1000;
@@ -62,102 +57,75 @@ export const GameScreen: React.FC = () => {
 
     // High precision timer
     useEffect(() => {
-        // Don't run during countdown
         if (countdown !== null) {
             setDisplayTime('120.00');
             return;
         }
-
         if (!isPlaying || gameEndTime === 0) return;
-
         let animationFrameId: number;
-
         const updateTimer = () => {
             const now = Date.now();
             const remaining = Math.max(0, gameEndTime - now);
             const seconds = Math.floor(remaining / 1000);
             const centiseconds = Math.floor((remaining % 1000) / 10);
             setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
-
-            if (remaining > 0) {
-                animationFrameId = requestAnimationFrame(updateTimer);
-            }
+            if (remaining > 0) animationFrameId = requestAnimationFrame(updateTimer);
         };
-
         updateTimer();
-
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, [isPlaying, gameEndTime, countdown]);
 
+    // Navigation on game over / not playing
     useEffect(() => {
-        // If game is over, go to result
         if (isGameOver) {
             navigate('/result');
             return;
         }
-
-        // If not playing and not game over, go to title (prevent direct access)
         if (!isPlaying) {
             navigate('/');
             return;
         }
-
-        // Don't tick during countdown
         if (countdown !== null) return;
-
-        const interval = setInterval(() => {
-            tick();
-        }, 100); // Check tick more frequently for end condition
-
+        const interval = setInterval(() => tick(), 100);
         return () => clearInterval(interval);
     }, [isPlaying, isGameOver, navigate, tick, countdown]);
 
+    // End condition for survival/practice
     useEffect(() => {
         if (!isPlaying) return;
-
-        // Check end conditions based on mode
-        if (mode === 'sprint' || mode === 'challenge') {
-            // Time check handled by tick/gameEndTime
-        } else {
-            // SURVIVAL, PRACTICE: End when lives run out (except practice has infinite lives)
-            if (lives <= 0) {
-                // Handled by store submitAnswer/endGame now
-            }
+        if (mode !== 'sprint' && mode !== 'challenge' && lives <= 0) {
+            // Handled by store
         }
-    }, [lives, navigate, isPlaying, mode]);
+    }, [lives, isPlaying, mode]);
 
     const handleSubmit = () => {
         const result = submitAnswer();
-
         if (result.correct) {
-            const bonusText = result.bonuses?.join(' & ') || '';
-            const baseScoreDisplay = `+${result.points! - (bonusText.includes('FAST') ? 300 : 0)}`;
-            const bonusDisplay = bonusText ? `FAST BONUS +300` : '';
-
+            const baseScore = result.points! - (result.fastBonus || 0);
+            const baseScoreDisplay = `+${baseScore}`;
+            const bonusDisplay = result.fastBonus ? `FAST BONUS +${result.fastBonus}` : '';
             setFeedback({
                 type: 'correct',
                 message: 'CORRECT!',
-                subMessage: bonusDisplay ? `${baseScoreDisplay}  ${bonusDisplay}` : baseScoreDisplay
+                subMessage: bonusDisplay ? `${baseScoreDisplay}\n${bonusDisplay}` : baseScoreDisplay,
             });
             setTimeout(() => {
                 setFeedback(null);
-                // Only next hand if game is still playing (store might have ended it)
                 if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
-                } else {
-                    // If game ended (e.g. cleared), store sets isGameOver=true, useEffect handles nav
                 }
             }, 1000);
         } else {
-            setFeedback({ type: 'incorrect', message: `WRONG... ANSWER: ${result.correctWaits.join(', ')}` });
+            setFeedback({
+                type: 'incorrect',
+                message: `WRONG... ANSWER: ${result.correctWaits.join(', ')}`,
+            });
             setTimeout(() => {
                 setFeedback(null);
                 if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
-                } else {
-                    // If game ended (lives=0), store sets isGameOver=true, useEffect handles nav
                 }
             }, 2000);
         }
@@ -165,12 +133,10 @@ export const GameScreen: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            {/* Debug Win Button (Top Left) */}
+            {/* Debug Win Button */}
             <div
                 style={{ position: 'absolute', top: 0, left: 0, width: 50, height: 50, zIndex: 9999, cursor: 'pointer' }}
-                onClick={() => {
-                    useGameStore.getState().endGame(true); // Force clear
-                }}
+                onClick={() => useGameStore.getState().endGame(true)}
             />
             {/* Header */}
             <div className={styles.header}>
@@ -178,9 +144,7 @@ export const GameScreen: React.FC = () => {
                     <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
                     <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
-
                 <div className={styles.statsGroup}>
-                    {/* Time removed from here, moved to prominent display */}
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>LIFE</span>
                         <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
@@ -197,15 +161,13 @@ export const GameScreen: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Prominent Time Display */}
+            {/* Timer */}
             {(mode === 'challenge' || mode === 'sprint') && (
                 <div className={styles.timerDisplay}>
                     <div className={styles.timerLabel}>TIME</div>
                     <div className={styles.timerValue}>{displayTime}</div>
                 </div>
             )}
-
             {/* Game Area */}
             <div className={styles.gameArea}>
                 <Card className={styles.handCard}>
@@ -215,33 +177,18 @@ export const GameScreen: React.FC = () => {
                         ))}
                     </div>
                 </Card>
-
                 <div className={styles.controls}>
                     <p className={styles.instruction}>SELECT WAITS</p>
-
                     <div className={styles.numpad}>
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                            <Tile
-                                key={num}
-                                tile={num}
-                                onClick={() => toggleWait(num)}
-                                selected={selectedWaits.includes(num)}
-                            />
+                            <Tile key={num} tile={num} onClick={() => toggleWait(num)} selected={selectedWaits.includes(num)} />
                         ))}
                     </div>
-
-                    <GameButton
-                        variant="primary"
-                        size="lg"
-                        onClick={handleSubmit}
-                        className={styles.submitBtn}
-                        fullWidth
-                    >
+                    <GameButton variant="primary" size="lg" onClick={handleSubmit} className={styles.submitBtn} fullWidth>
                         ANSWER
                     </GameButton>
                 </div>
             </div>
-
             {/* Countdown Overlay */}
             {countdown !== null && (
                 <div className={styles.countdownOverlay}>
@@ -254,7 +201,6 @@ export const GameScreen: React.FC = () => {
                     </div>
                 </div>
             )}
-
             {/* Feedback Overlay */}
             <AnimatePresence>
                 {feedback && (
@@ -265,9 +211,7 @@ export const GameScreen: React.FC = () => {
                         className={`${styles.feedbackOverlay} ${styles[feedback.type]}`}
                     >
                         <div className={styles.feedbackContent}>
-                            <span className={styles.feedbackIcon}>
-                                {feedback.type === 'correct' ? '⭕' : '❌'}
-                            </span>
+                            <span className={styles.feedbackIcon}>{feedback.type === 'correct' ? '⭕' : '❌'}</span>
                             <span className={styles.feedbackMessage}>{feedback.message}</span>
                             {feedback.subMessage && (
                                 <span className={styles.feedbackSubMessage}>{feedback.subMessage}</span>
