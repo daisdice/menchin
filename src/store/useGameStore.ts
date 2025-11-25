@@ -26,6 +26,8 @@ interface GameState {
         lifeBonus: number;
         timeBonus: number;
         totalScore: number;
+        timeLeft: number;
+        lives: number;
     } | null;
 
     // Actions
@@ -129,7 +131,9 @@ export const useGameStore = create<GameState>((set, get) => ({
                     clearBonus,
                     lifeBonus,
                     timeBonus,
-                    totalScore
+                    totalScore,
+                    timeLeft,
+                    lives
                 }
             });
         } else {
@@ -149,7 +153,9 @@ export const useGameStore = create<GameState>((set, get) => ({
                         clearBonus: 0,
                         lifeBonus: 0,
                         timeBonus: 0,
-                        totalScore: score
+                        totalScore: score,
+                        timeLeft: 0,
+                        lives: 0
                     }
                 });
             }
@@ -245,7 +251,9 @@ export const useGameStore = create<GameState>((set, get) => ({
                         clearBonus,
                         lifeBonus,
                         timeBonus,
-                        totalScore
+                        totalScore,
+                        timeLeft,
+                        lives
                     }
                 });
                 get().endGame();

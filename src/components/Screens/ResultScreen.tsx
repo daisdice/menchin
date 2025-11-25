@@ -34,7 +34,14 @@ export const ResultScreen: React.FC = () => {
     };
 
     const handleShare = () => {
-        const text = `CHIN'IT (${difficulty.toUpperCase()}) SCORE: ${Math.floor(score)} pts! #CHINIT #Mahjong`;
+        const status = isClear ? 'CLEARED! 🎉' : 'FAILED... 😢';
+        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
+
+        if (lastScoreBreakdown) {
+            text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
+        }
+
+        text += `#CHINIT #Mahjong`;
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
@@ -115,6 +122,19 @@ export const ResultScreen: React.FC = () => {
                                 <span className={styles.value}>+{Math.floor(lastScoreBreakdown.clearBonus)}</span>
                             </motion.div>
 
+                            {lastScoreBreakdown.lives > 0 && (
+                                <motion.div
+                                    className={styles.scoreRow}
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    custom={1.5}
+                                >
+                                    <span className={styles.label}>LIVES LEFT</span>
+                                    <span className={styles.value}>{lastScoreBreakdown.lives}</span>
+                                </motion.div>
+                            )}
+
                             <motion.div
                                 className={styles.scoreRow}
                                 variants={itemVariants}
@@ -125,6 +145,19 @@ export const ResultScreen: React.FC = () => {
                                 <span className={styles.label}>LIFE BONUS</span>
                                 <span className={styles.value}>+{Math.floor(lastScoreBreakdown.lifeBonus)}</span>
                             </motion.div>
+
+                            {lastScoreBreakdown.timeLeft > 0 && (
+                                <motion.div
+                                    className={styles.scoreRow}
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    custom={2.5}
+                                >
+                                    <span className={styles.label}>TIME LEFT</span>
+                                    <span className={styles.value}>{lastScoreBreakdown.timeLeft}s</span>
+                                </motion.div>
+                            )}
 
                             <motion.div
                                 className={styles.scoreRow}
@@ -150,26 +183,28 @@ export const ResultScreen: React.FC = () => {
                         animate="visible"
                         custom={4}
                     >
-                        <span className={styles.totalLabel}>TOTAL SCORE</span>
-                        <div className={styles.totalValueContainer}>
-                            <motion.span
-                                className={styles.totalValue}
-                                key={displayScore}
-                                initial={{ scale: 1.1 }}
-                                animate={{ scale: 1 }}
-                                transition={{ duration: 0.1 }}
-                            >
-                                {Math.floor(displayScore)}
-                            </motion.span>
-                            {isNewRecord && (
+                        <div className={styles.totalScoreContainer}>
+                            <span className={styles.totalLabel}>TOTAL SCORE</span>
+                            <div className={styles.totalValueContainer}>
                                 <motion.span
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className={styles.newRecordBadge}
+                                    className={styles.totalValue}
+                                    key={displayScore}
+                                    initial={{ scale: 1.1 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ duration: 0.1 }}
                                 >
-                                    NEW RECORD!
+                                    {Math.floor(displayScore)}
                                 </motion.span>
-                            )}
+                                {isNewRecord && (
+                                    <motion.span
+                                        initial={{ scale: 0, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        className={styles.newRecordBadge}
+                                    >
+                                        NEW RECORD!
+                                    </motion.span>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 </div>
