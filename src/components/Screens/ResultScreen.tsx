@@ -10,7 +10,7 @@ import styles from './ResultScreen.module.css';
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
     const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear } = useGameStore();
-    const { saveScore, unlockDifficulty, unlockedDifficulties } = useAppStore();
+    const { saveScore } = useAppStore();
 
     const isNewRecord = React.useMemo(() => {
         const currentScores = useAppStore.getState().highScores[difficulty] || [];
@@ -20,18 +20,7 @@ export const ResultScreen: React.FC = () => {
 
     useEffect(() => {
         saveScore(difficulty, score);
-
-        // Unlock logic
-        if (difficulty === 'beginner' && score >= 10) {
-            unlockDifficulty('amateur');
-        } else if (difficulty === 'amateur' && score >= 15) {
-            unlockDifficulty('normal');
-        } else if (difficulty === 'normal' && score >= 20) {
-            unlockDifficulty('expert');
-        } else if (difficulty === 'expert' && score >= 25) {
-            unlockDifficulty('master');
-        }
-    }, [score, difficulty, saveScore, unlockDifficulty]);
+    }, [score, difficulty, saveScore]);
 
     const handleRetry = () => {
         resetGame();
@@ -184,20 +173,6 @@ export const ResultScreen: React.FC = () => {
                         </div>
                     </motion.div>
                 </div>
-
-                {/* Unlock Notification */}
-                {difficulty === 'beginner' && score >= 10 && !unlockedDifficulties.includes('amateur') && (
-                    <div className={styles.unlockMessage}>AMATEUR UNLOCKED!</div>
-                )}
-                {difficulty === 'amateur' && score >= 15 && !unlockedDifficulties.includes('normal') && (
-                    <div className={styles.unlockMessage}>NORMAL UNLOCKED!</div>
-                )}
-                {difficulty === 'normal' && score >= 20 && !unlockedDifficulties.includes('expert') && (
-                    <div className={styles.unlockMessage}>EXPERT UNLOCKED!</div>
-                )}
-                {difficulty === 'expert' && score >= 25 && !unlockedDifficulties.includes('master') && (
-                    <div className={styles.unlockMessage}>MASTER UNLOCKED!</div>
-                )}
 
                 <div className={styles.actions}>
                     <GameButton variant="primary" onClick={handleRetry} fullWidth>

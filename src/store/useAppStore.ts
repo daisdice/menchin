@@ -9,14 +9,12 @@ interface ScoreRecord {
 
 interface AppState {
     highScores: Record<Difficulty, ScoreRecord[]>;
-    unlockedDifficulties: Difficulty[];
     settings: {
         soundEnabled: boolean;
     };
 
     // Actions
     saveScore: (difficulty: Difficulty, score: number) => boolean; // Returns true if new record
-    unlockDifficulty: (difficulty: Difficulty) => void;
     toggleSound: () => void;
 }
 
@@ -30,7 +28,6 @@ export const useAppStore = create<AppState>()(
                 expert: [],
                 master: []
             },
-            unlockedDifficulties: ['beginner'], // Start with beginner unlocked
             settings: {
                 soundEnabled: true,
             },
@@ -61,13 +58,6 @@ export const useAppStore = create<AppState>()(
                 return isNewRecord;
             },
 
-            unlockDifficulty: (difficulty) => {
-                const { unlockedDifficulties } = get();
-                if (!unlockedDifficulties.includes(difficulty)) {
-                    set({ unlockedDifficulties: [...unlockedDifficulties, difficulty] });
-                }
-            },
-
             toggleSound: () => {
                 set((state) => ({
                     settings: { ...state.settings, soundEnabled: !state.settings.soundEnabled },
@@ -76,13 +66,11 @@ export const useAppStore = create<AppState>()(
         }),
         {
             name: 'menchin-storage',
-            version: 1,
-            migrate: (persistedState: any) => {
-                // Ensure beginner is always unlocked
-                if (persistedState && Array.isArray(persistedState.unlockedDifficulties)) {
-                    if (!persistedState.unlockedDifficulties.includes('beginner')) {
-                        persistedState.unlockedDifficulties = ['beginner', ...persistedState.unlockedDifficulties];
-                    }
+            version: 2, // Increment version to trigger migration
+            migrate: (persistedState: any, version: number) => {
+                // Remove unlockedDifficulties from old data
+                if (persistedState && persistedState.unlockedDifficulties) {
+                    delete persistedState.unlockedDifficulties;
                 }
                 return persistedState;
             },

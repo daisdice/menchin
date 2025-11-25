@@ -4,14 +4,12 @@ import { motion } from 'framer-motion';
 import { GameButton } from '../UI/GameButton';
 import { useGameStore } from '../../store/useGameStore';
 import type { Difficulty, GameMode } from '../../store/useGameStore';
-import { useAppStore } from '../../store/useAppStore';
 import styles from './DifficultySelectScreen.module.css';
 
 export const DifficultySelectScreen: React.FC = () => {
     const navigate = useNavigate();
     const { mode } = useParams<{ mode: GameMode }>();
     const startGame = useGameStore(state => state.startGame);
-    const unlockedDifficulties = useAppStore(state => state.unlockedDifficulties);
 
     const handleStart = (difficulty: Difficulty) => {
         if (mode) {
@@ -40,34 +38,28 @@ export const DifficultySelectScreen: React.FC = () => {
             </motion.div>
 
             <div className={styles.list}>
-                {difficulties.map((diff, index) => {
-                    const isUnlocked = unlockedDifficulties.includes(diff.id);
-                    return (
-                        <motion.div
-                            key={diff.id}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className={styles.item}
+                {difficulties.map((diff, index) => (
+                    <motion.div
+                        key={diff.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className={styles.item}
+                    >
+                        <GameButton
+                            variant={diff.color.startsWith('#') ? 'custom' : diff.color as any}
+                            customColor={diff.color.startsWith('#') ? diff.color : undefined}
+                            onClick={() => handleStart(diff.id)}
+                            fullWidth
                         >
-                            <GameButton
-                                variant={diff.color.startsWith('#') ? 'custom' : diff.color as any}
-                                customColor={diff.color.startsWith('#') ? diff.color : undefined}
-                                onClick={() => isUnlocked && handleStart(diff.id)}
-                                disabled={!isUnlocked}
-                                className={!isUnlocked ? styles.locked : ''}
-                                fullWidth
-                            >
-                                <div className={styles.buttonContent}>
-                                    <span className={styles.label}>
-                                        {diff.label}
-                                        {!isUnlocked && <span className={styles.lockIcon}>🔒</span>}
-                                    </span>
-                                </div>
-                            </GameButton>
-                        </motion.div>
-                    );
-                })}
+                            <div className={styles.buttonContent}>
+                                <span className={styles.label}>
+                                    {diff.label}
+                                </span>
+                            </div>
+                        </GameButton>
+                    </motion.div>
+                ))}
             </div>
 
             <motion.div
