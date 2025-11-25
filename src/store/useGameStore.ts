@@ -106,19 +106,17 @@ export const useGameStore = create<GameState>((set, get) => ({
         if (forceClear) {
             const { score, timeLeft, lives, difficulty } = get();
 
-            // Calculate dummy bonuses for debug clear
-            let difficultyMultiplier = 1.0;
-            switch (difficulty) {
-                case 'beginner': difficultyMultiplier = 1.0; break;
-                case 'amateur': difficultyMultiplier = 1.2; break;
-                case 'normal': difficultyMultiplier = 1.5; break;
-                case 'expert': difficultyMultiplier = 2.0; break;
-                case 'master': difficultyMultiplier = 3.0; break;
-            }
-
+            // Calculate bonuses for debug clear (New Formula)
             const timeBonus = timeLeft * 100;
-            const lifeBonus = lives * 500;
-            const clearBonus = 1000 * difficultyMultiplier;
+            const lifeBonus = lives * 1000;
+            let clearBonus = 2000;
+            switch (difficulty) {
+                case 'beginner': clearBonus = 2000; break;
+                case 'amateur': clearBonus = 4000; break;
+                case 'normal': clearBonus = 6000; break;
+                case 'expert': clearBonus = 8000; break;
+                case 'master': clearBonus = 10000; break;
+            }
             const totalScore = score + timeBonus + lifeBonus + clearBonus;
 
             set({
@@ -210,19 +208,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         if (isCorrect) {
             const timeSpent = (Date.now() - questionStartTime) / 1000;
 
-            // Calculate Score
-            let difficultyMultiplier = 1.0;
-            switch (difficulty) {
-                case 'beginner': difficultyMultiplier = 1.0; break;
-                case 'amateur': difficultyMultiplier = 1.2; break;
-                case 'normal': difficultyMultiplier = 1.5; break;
-                case 'expert': difficultyMultiplier = 2.0; break;
-                case 'master': difficultyMultiplier = 3.0; break;
-            }
-
-            const baseScore = currentWaits.length * 100 * difficultyMultiplier;
-            const fastBonus = timeSpent <= 5 ? 300 : 0;
-            // Combo bonus removed
+            // Calculate Score (New Formula)
+            const baseScore = currentWaits.length * 100;
+            const fastBonus = timeSpent <= 5 ? Math.floor(baseScore * 0.3) : 0;
 
             const points = baseScore + fastBonus;
 
@@ -233,12 +221,19 @@ export const useGameStore = create<GameState>((set, get) => ({
                 correctCount: newCorrectCount,
             });
 
-            // Check Clear Condition for CLASSIC
+            // Check Clear Condition for CHALLENGE
             if (mode === 'challenge' && newCorrectCount >= 10) {
-                // Calculate Result Bonuses
+                // Calculate Result Bonuses (New Formula)
                 const timeBonus = timeLeft * 100;
-                const lifeBonus = lives * 500;
-                const clearBonus = 1000 * difficultyMultiplier;
+                const lifeBonus = lives * 1000;
+                let clearBonus = 2000;
+                switch (difficulty) {
+                    case 'beginner': clearBonus = 2000; break;
+                    case 'amateur': clearBonus = 4000; break;
+                    case 'normal': clearBonus = 6000; break;
+                    case 'expert': clearBonus = 8000; break;
+                    case 'master': clearBonus = 10000; break;
+                }
                 const totalScore = score + points + timeBonus + lifeBonus + clearBonus;
 
                 set({
