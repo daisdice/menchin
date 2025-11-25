@@ -12,8 +12,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-lg);
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
 }
 
 /* Header */
@@ -26,7 +26,7 @@
 }
 
 .title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     color: var(--color-text);
     margin: 0;
     letter-spacing: 0.1em;
@@ -60,7 +60,7 @@
 }
 
 .statusClear {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--color-accent-yellow);
     margin: 0;
     font-weight: 900;
@@ -172,7 +172,7 @@
     flex-direction: column;
     gap: var(--spacing-md);
     width: 100%;
-    margin-top: var(--spacing-md);
+    margin-top: 0;
 }
 
 @keyframes popIn {
