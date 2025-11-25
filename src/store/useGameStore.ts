@@ -255,6 +255,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 correct: true,
                 correctWaits: currentWaits,
                 points,
+                fastBonus,
                 bonuses: [
                     fastBonus > 0 ? 'FAST' : ''
                 ].filter(Boolean)
