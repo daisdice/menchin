@@ -133,11 +133,13 @@ export const GameScreen: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            {/* Debug Win Button */}
-            <div
-                style={{ position: 'absolute', top: 0, left: 0, width: 50, height: 50, zIndex: 9999, cursor: 'pointer' }}
-                onClick={() => useGameStore.getState().endGame(true)}
-            />
+            {/* Debug Win Button - only in development */}
+            {import.meta.env.DEV && (
+                <div
+                    style={{ position: 'absolute', top: 0, left: 0, width: 50, height: 50, zIndex: 9999, cursor: 'pointer' }}
+                    onClick={() => useGameStore.getState().endGame(true)}
+                />
+            )}
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.modeInfo}>
