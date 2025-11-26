@@ -50,8 +50,8 @@ export const GameScreen: React.FC = () => {
                     const startTime = Date.now();
                     useGameStore.setState({ gameEndTime: startTime, timeLeft: 0 });
                 } else {
-                    // CHALLENGE mode: set end time for countdown timer
-                    const duration = mode === 'challenge' ? 120 : 0;
+                    // CHALLENGE or SURVIVAL mode: set end time for countdown timer
+                    const duration = mode === 'challenge' ? 120 : (mode === 'survival' ? 30 : 0);
                     if (duration > 0) {
                         const newEndTime = Date.now() + duration * 1000;
                         useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
@@ -80,7 +80,7 @@ export const GameScreen: React.FC = () => {
                 setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
                 animationFrameId = requestAnimationFrame(updateTimer);
             } else {
-                // CHALLENGE mode: count down to end time
+                // CHALLENGE or SURVIVAL mode: count down to end time
                 const remaining = Math.max(0, gameEndTime - now);
                 const seconds = Math.floor(remaining / 1000);
                 const centiseconds = Math.floor((remaining % 1000) / 10);
@@ -126,6 +126,12 @@ export const GameScreen: React.FC = () => {
                     type: 'correct',
                     message: 'CORRECT!',
                     subMessage: `${result.timeSpent!.toFixed(2)}s`,
+                });
+            } else if (mode === 'survival') {
+                setFeedback({
+                    type: 'correct',
+                    message: 'CORRECT!',
+                    subMessage: result.bonuses ? result.bonuses[0] : '',
                 });
             } else {
                 // CHALLENGE mode: show score and bonus
@@ -173,20 +179,22 @@ export const GameScreen: React.FC = () => {
                     <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
                     <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
-                <div className={styles.statsGroup} style={mode === 'sprint' ? { justifyContent: 'center' } : {}}>
-                    {mode !== 'sprint' && (
+                <div className={styles.statsGroup} style={(mode === 'sprint' || mode === 'survival') ? { justifyContent: 'center' } : {}}>
+                    {mode !== 'sprint' && mode !== 'survival' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>LIFE</span>
                             <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
                         </div>
                     )}
-                    {(mode === 'challenge' || mode === 'sprint') && (
+                    {(mode === 'challenge' || mode === 'sprint' || mode === 'survival') && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>PROGRESS</span>
-                            <span className={styles.statValue}>{correctCount}/10</span>
+                            <span className={styles.statValue}>
+                                {mode === 'survival' ? correctCount : `${correctCount}/10`}
+                            </span>
                         </div>
                     )}
-                    {mode !== 'sprint' && (
+                    {mode !== 'sprint' && mode !== 'survival' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>SCORE</span>
                             <span className={styles.statValue}>{Math.floor(score)}</span>
@@ -195,7 +203,7 @@ export const GameScreen: React.FC = () => {
                 </div>
             </div>
             {/* Timer */}
-            {(mode === 'challenge' || mode === 'sprint') && (
+            {(mode === 'challenge' || mode === 'sprint' || mode === 'survival') && (
                 <div className={styles.timerDisplay}>
                     <div className={styles.timerLabel}>TIME</div>
                     <div className={styles.timerValue}>{displayTime}</div>

@@ -39,6 +39,8 @@ export const ResultScreen: React.FC = () => {
 
         if (mode === 'sprint') {
             text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\n`;
+        } else if (mode === 'survival') {
+            text += `🔥 SURVIVED: ${score} Hands\n`;
         } else {
             text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
             if (lastScoreBreakdown) {
@@ -156,6 +158,37 @@ export const ResultScreen: React.FC = () => {
                                 </div>
                             </motion.div>
                         </>
+                    ) : mode === 'survival' ? (
+                        <motion.div
+                            className={`${styles.scoreRow} ${styles.totalRow}`}
+                            variants={itemVariants}
+                            initial="hidden"
+                            animate="visible"
+                            custom={0}
+                        >
+                            <div className={styles.totalScoreContainer}>
+                                <span className={styles.totalLabel}>CLEARED</span>
+                                <div className={styles.totalValueContainer}>
+                                    <motion.span
+                                        className={styles.totalValue}
+                                        initial={{ scale: 1.1 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ duration: 0.1 }}
+                                    >
+                                        {score} Hands
+                                    </motion.span>
+                                    {isNewRecord && (
+                                        <motion.span
+                                            initial={{ scale: 0, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className={styles.newRecordBadge}
+                                        >
+                                            NEW RECORD!
+                                        </motion.span>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
                     ) : (
                         <>
                             {/* Base Score */}

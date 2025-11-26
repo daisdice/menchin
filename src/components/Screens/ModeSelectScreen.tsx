@@ -23,7 +23,7 @@ export const ModeSelectScreen: React.FC = () => {
     const modes: { id: GameMode; label: string; desc: string; color: 'primary' | 'secondary' | 'accent' | 'danger'; locked?: boolean }[] = [
         { id: 'challenge', label: 'CHALLENGE', desc: 'Standard Rules. 3 Lives.', color: 'primary' },
         { id: 'sprint', label: 'SPRINT', desc: 'Clear 10 Hands. Time Attack.', color: 'accent' },
-        { id: 'survival', label: 'SURVIVAL', desc: 'One Mistake = Game Over.', color: 'danger', locked: true },
+        { id: 'survival', label: 'SURVIVAL', desc: 'One Mistake = Game Over.', color: 'danger' },
         { id: 'practice', label: 'PRACTICE', desc: 'No Limits. Just Practice.', color: 'secondary', locked: true },
     ];
 

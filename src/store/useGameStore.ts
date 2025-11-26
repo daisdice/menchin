@@ -74,7 +74,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 break;
             case 'survival':
                 lives = 1;
-                duration = 0; // Infinite? Or handled differently
+                duration = 30;
                 break;
             case 'practice':
                 lives = 99;
@@ -167,6 +167,24 @@ export const useGameStore = create<GameState>((set, get) => ({
                             sprintTimes: get().sprintTimes
                         }
                     });
+                } else if (mode === 'survival') {
+                    const { correctCount } = get();
+                    const isClear = correctCount > 0;
+                    set({
+                        isPlaying: false,
+                        isGameOver: true,
+                        isClear,
+                        score: correctCount,
+                        lastScoreBreakdown: {
+                            baseScore: correctCount,
+                            clearBonus: 0,
+                            lifeBonus: 0,
+                            timeBonus: 0,
+                            totalScore: correctCount,
+                            timeLeft: 0,
+                            lives: 0
+                        }
+                    });
                 } else {
                     set({
                         isPlaying: false,
@@ -248,11 +266,22 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             const newCorrectCount = correctCount + 1;
 
-            set({
-                score: score + points,
-                correctCount: newCorrectCount,
-                sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes
-            });
+            if (mode === 'survival') {
+                const timeToAdd = currentWaits.length + 1;
+                const newGameEndTime = get().gameEndTime + timeToAdd * 1000;
+                set({
+                    score: newCorrectCount,
+                    correctCount: newCorrectCount,
+                    gameEndTime: newGameEndTime,
+                    timeLeft: timeLeft + timeToAdd
+                });
+            } else {
+                set({
+                    score: score + points,
+                    correctCount: newCorrectCount,
+                    sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes
+                });
+            }
 
             // Check Clear Condition for CHALLENGE
             if (mode === 'challenge' && newCorrectCount >= 10) {
@@ -293,18 +322,20 @@ export const useGameStore = create<GameState>((set, get) => ({
             return {
                 correct: true,
                 correctWaits: currentWaits,
-                points,
+                points: mode === 'survival' ? 0 : points,
                 fastBonus,
                 timeSpent,
-                bonuses: [
-                    fastBonus > 0 ? 'FAST' : ''
-                ].filter(Boolean)
+                bonuses: mode === 'survival'
+                    ? [`+${currentWaits.length + 1} s`]
+                    : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean)
             };
 
         } else {
             // Handle wrong answer based on mode
             let newLives = lives;
-            if (mode !== 'practice' && mode !== 'sprint') {
+            if (mode === 'survival') {
+                newLives = 0;
+            } else if (mode !== 'practice' && mode !== 'sprint') {
                 newLives = lives - 1;
             }
 
@@ -329,7 +360,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         const { isPlaying, mode, gameEndTime } = get();
         if (!isPlaying) return;
 
-        if (mode === 'challenge') {
+        if (mode === 'challenge' || mode === 'survival') {
             const now = Date.now();
             if (gameEndTime > 0) {
                 const remaining = Math.max(0, Math.ceil((gameEndTime - now) / 1000));
