@@ -37,13 +37,13 @@ export const TitleScreen: React.FC = () => {
 
                 <div className={styles.menuSection}>
                     <GameButton variant="accent" size="sm" onClick={() => navigate('/ranking')}>
-                        RANKING
-                    </GameButton>
-                    <GameButton variant="accent" size="sm" onClick={() => navigate('/stats')}>
                         RECORD
                     </GameButton>
+                    <GameButton variant="accent" size="sm" onClick={() => navigate('/stats')}>
+                        SUMMARY
+                    </GameButton>
                     <GameButton variant="accent" size="sm" onClick={() => navigate('/trophies')}>
-                        COLLECTION
+                        TROPHY
                     </GameButton>
                 </div>
 
