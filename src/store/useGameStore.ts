@@ -20,6 +20,7 @@ interface GameState {
     correctCount: number;
     isGameOver: boolean;
     isClear: boolean;
+    sprintTimes: number[]; // Track time spent per hand for SPRINT mode
     lastScoreBreakdown: {
         baseScore: number;
         clearBonus: number;
@@ -28,6 +29,7 @@ interface GameState {
         totalScore: number;
         timeLeft: number;
         lives: number;
+        sprintTimes?: number[];
     } | null;
 
     // Actions
@@ -35,7 +37,7 @@ interface GameState {
     endGame: (forceClear?: boolean) => void;
     nextHand: () => void;
     toggleWait: (tile: Tile) => void;
-    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; bonuses?: string[] };
+    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; timeSpent?: number; bonuses?: string[] };
     tick: () => void;
     resetGame: () => void;
 }
@@ -57,6 +59,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     isGameOver: false,
     isClear: false,
     lastScoreBreakdown: null,
+    sprintTimes: [],
 
     gameEndTime: 0,
 
@@ -99,6 +102,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             isGameOver: false,
             isClear: false,
             lastScoreBreakdown: null,
+            sprintTimes: [],
         });
         get().nextHand();
     },
@@ -159,7 +163,8 @@ export const useGameStore = create<GameState>((set, get) => ({
                             timeBonus: 0,
                             totalScore: elapsedTime,
                             timeLeft: 0,
-                            lives: 0
+                            lives: 0,
+                            sprintTimes: get().sprintTimes
                         }
                     });
                 } else {
@@ -246,6 +251,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             set({
                 score: score + points,
                 correctCount: newCorrectCount,
+                sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes
             });
 
             // Check Clear Condition for CHALLENGE
@@ -289,6 +295,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 correctWaits: currentWaits,
                 points,
                 fastBonus,
+                timeSpent,
                 bonuses: [
                     fastBonus > 0 ? 'FAST' : ''
                 ].filter(Boolean)
@@ -322,7 +329,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         const { isPlaying, mode, gameEndTime } = get();
         if (!isPlaying) return;
 
-        if (mode === 'sprint' || mode === 'challenge') {
+        if (mode === 'challenge') {
             const now = Date.now();
             if (gameEndTime > 0) {
                 const remaining = Math.max(0, Math.ceil((gameEndTime - now) / 1000));

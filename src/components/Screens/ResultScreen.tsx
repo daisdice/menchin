@@ -35,10 +35,15 @@ export const ResultScreen: React.FC = () => {
 
     const handleShare = () => {
         const status = isClear ? 'CLEARED! 🎉' : 'FAILED... 😢';
-        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
+        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n`;
 
-        if (lastScoreBreakdown) {
-            text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
+        if (mode === 'sprint') {
+            text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\n`;
+        } else {
+            text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
+            if (lastScoreBreakdown) {
+                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
+            }
         }
 
         text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
@@ -99,118 +104,135 @@ export const ResultScreen: React.FC = () => {
                 </div>
 
                 {/* Score List (Vertical) */}
+                {/* Score List (Vertical) */}
                 <div className={styles.scoreList}>
-                    {/* Base Score */}
-                    <motion.div
-                        className={styles.scoreRow}
-                        variants={itemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={0}
-                    >
-                        <span className={styles.label}>SCORE</span>
-                        <span className={styles.value}>{Math.floor(lastScoreBreakdown ? lastScoreBreakdown.baseScore : score)}</span>
-                    </motion.div>
-
-                    {/* Bonuses (Only if breakdown exists) */}
-                    {lastScoreBreakdown && (
+                    {/* SPRINT mode: show clear time */}
+                    {mode === 'sprint' ? (
+                        <motion.div
+                            className={styles.scoreRow}
+                            variants={itemVariants}
+                            initial="hidden"
+                            animate="visible"
+                            custom={0}
+                        >
+                            <span className={styles.label}>CLEAR TIME</span>
+                            <span className={styles.value}>{score.toFixed(2)}s</span>
+                        </motion.div>
+                    ) : (
                         <>
+                            {/* Base Score */}
                             <motion.div
                                 className={styles.scoreRow}
                                 variants={itemVariants}
                                 initial="hidden"
                                 animate="visible"
-                                custom={1}
+                                custom={0}
                             >
-                                <span className={styles.label}>CLEAR BONUS</span>
-                                <span className={styles.value}>+{Math.floor(lastScoreBreakdown.clearBonus)}</span>
+                                <span className={styles.label}>SCORE</span>
+                                <span className={styles.value}>{Math.floor(lastScoreBreakdown ? lastScoreBreakdown.baseScore : score)}</span>
                             </motion.div>
 
-                            {lastScoreBreakdown.lives > 0 && (
-                                <motion.div
-                                    className={styles.scoreRow}
-                                    variants={itemVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    custom={1.5}
-                                >
-                                    <span className={styles.label}>LIVES LEFT</span>
-                                    <span className={styles.value}>{lastScoreBreakdown.lives}</span>
-                                </motion.div>
+                            {/* Bonuses (Only if breakdown exists and not SPRINT) */}
+                            {lastScoreBreakdown && (
+                                <>
+                                    <motion.div
+                                        className={styles.scoreRow}
+                                        variants={itemVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        custom={1}
+                                    >
+                                        <span className={styles.label}>CLEAR BONUS</span>
+                                        <span className={styles.value}>+{Math.floor(lastScoreBreakdown.clearBonus)}</span>
+                                    </motion.div>
+
+                                    {lastScoreBreakdown.lives > 0 && (
+                                        <motion.div
+                                            className={styles.scoreRow}
+                                            variants={itemVariants}
+                                            initial="hidden"
+                                            animate="visible"
+                                            custom={1.5}
+                                        >
+                                            <span className={styles.label}>LIVES LEFT</span>
+                                            <span className={styles.value}>{lastScoreBreakdown.lives}</span>
+                                        </motion.div>
+                                    )}
+
+                                    <motion.div
+                                        className={styles.scoreRow}
+                                        variants={itemVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        custom={2}
+                                    >
+                                        <span className={styles.label}>LIFE BONUS</span>
+                                        <span className={styles.value}>+{Math.floor(lastScoreBreakdown.lifeBonus)}</span>
+                                    </motion.div>
+
+                                    {lastScoreBreakdown.timeLeft > 0 && (
+                                        <motion.div
+                                            className={styles.scoreRow}
+                                            variants={itemVariants}
+                                            initial="hidden"
+                                            animate="visible"
+                                            custom={2.5}
+                                        >
+                                            <span className={styles.label}>TIME LEFT</span>
+                                            <span className={styles.value}>{lastScoreBreakdown.timeLeft}s</span>
+                                        </motion.div>
+                                    )}
+
+                                    <motion.div
+                                        className={styles.scoreRow}
+                                        variants={itemVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        custom={3}
+                                    >
+                                        <span className={styles.label}>TIME BONUS</span>
+                                        <span className={styles.value}>+{Math.floor(lastScoreBreakdown.timeBonus)}</span>
+                                    </motion.div>
+                                </>
                             )}
 
+                            {/* Divider */}
+                            <div className={styles.divider} />
+
+                            {/* Total Score */}
                             <motion.div
-                                className={styles.scoreRow}
+                                className={`${styles.scoreRow} ${styles.totalRow}`}
                                 variants={itemVariants}
                                 initial="hidden"
                                 animate="visible"
-                                custom={2}
+                                custom={4}
                             >
-                                <span className={styles.label}>LIFE BONUS</span>
-                                <span className={styles.value}>+{Math.floor(lastScoreBreakdown.lifeBonus)}</span>
-                            </motion.div>
-
-                            {lastScoreBreakdown.timeLeft > 0 && (
-                                <motion.div
-                                    className={styles.scoreRow}
-                                    variants={itemVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    custom={2.5}
-                                >
-                                    <span className={styles.label}>TIME LEFT</span>
-                                    <span className={styles.value}>{lastScoreBreakdown.timeLeft}s</span>
-                                </motion.div>
-                            )}
-
-                            <motion.div
-                                className={styles.scoreRow}
-                                variants={itemVariants}
-                                initial="hidden"
-                                animate="visible"
-                                custom={3}
-                            >
-                                <span className={styles.label}>TIME BONUS</span>
-                                <span className={styles.value}>+{Math.floor(lastScoreBreakdown.timeBonus)}</span>
+                                <div className={styles.totalScoreContainer}>
+                                    <span className={styles.totalLabel}>TOTAL SCORE</span>
+                                    <div className={styles.totalValueContainer}>
+                                        <motion.span
+                                            className={styles.totalValue}
+                                            key={displayScore}
+                                            initial={{ scale: 1.1 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ duration: 0.1 }}
+                                        >
+                                            {Math.floor(displayScore)}
+                                        </motion.span>
+                                        {isNewRecord && (
+                                            <motion.span
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                className={styles.newRecordBadge}
+                                            >
+                                                NEW RECORD!
+                                            </motion.span>
+                                        )}
+                                    </div>
+                                </div>
                             </motion.div>
                         </>
                     )}
-
-                    {/* Divider */}
-                    <div className={styles.divider} />
-
-                    {/* Total Score */}
-                    <motion.div
-                        className={`${styles.scoreRow} ${styles.totalRow}`}
-                        variants={itemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={4}
-                    >
-                        <div className={styles.totalScoreContainer}>
-                            <span className={styles.totalLabel}>TOTAL SCORE</span>
-                            <div className={styles.totalValueContainer}>
-                                <motion.span
-                                    className={styles.totalValue}
-                                    key={displayScore}
-                                    initial={{ scale: 1.1 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ duration: 0.1 }}
-                                >
-                                    {Math.floor(displayScore)}
-                                </motion.span>
-                                {isNewRecord && (
-                                    <motion.span
-                                        initial={{ scale: 0, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        className={styles.newRecordBadge}
-                                    >
-                                        NEW RECORD!
-                                    </motion.span>
-                                )}
-                            </div>
-                        </div>
-                    </motion.div>
                 </div>
 
                 <div className={styles.actions}>

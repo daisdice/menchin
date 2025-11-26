@@ -45,10 +45,17 @@ export const GameScreen: React.FC = () => {
         } else {
             const timer = setTimeout(() => {
                 setCountdown(null);
-                const duration = mode === 'challenge' ? 120 : mode === 'sprint' ? 60 : 0;
-                if (duration > 0) {
-                    const newEndTime = Date.now() + duration * 1000;
-                    useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
+                // SPRINT mode: set start time for count-up timer
+                if (mode === 'sprint') {
+                    const startTime = Date.now();
+                    useGameStore.setState({ gameEndTime: startTime, timeLeft: 0 });
+                } else {
+                    // CHALLENGE mode: set end time for countdown timer
+                    const duration = mode === 'challenge' ? 120 : 0;
+                    if (duration > 0) {
+                        const newEndTime = Date.now() + duration * 1000;
+                        useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
+                    }
                 }
             }, 500);
             return () => clearTimeout(timer);
@@ -113,14 +120,24 @@ export const GameScreen: React.FC = () => {
     const handleSubmit = () => {
         const result = submitAnswer();
         if (result.correct) {
-            const baseScore = result.points! - (result.fastBonus || 0);
-            const baseScoreDisplay = `+${baseScore}`;
-            const bonusDisplay = result.fastBonus ? `FAST BONUS +${result.fastBonus}` : '';
-            setFeedback({
-                type: 'correct',
-                message: 'CORRECT!',
-                subMessage: bonusDisplay ? `${baseScoreDisplay}\n${bonusDisplay}` : baseScoreDisplay,
-            });
+            // SPRINT mode: show time spent on this question
+            if (mode === 'sprint') {
+                setFeedback({
+                    type: 'correct',
+                    message: 'CORRECT!',
+                    subMessage: `${result.timeSpent!.toFixed(2)}s`,
+                });
+            } else {
+                // CHALLENGE mode: show score and bonus
+                const baseScore = result.points! - (result.fastBonus || 0);
+                const baseScoreDisplay = `+${baseScore}`;
+                const bonusDisplay = result.fastBonus ? `FAST BONUS +${result.fastBonus}` : '';
+                setFeedback({
+                    type: 'correct',
+                    message: 'CORRECT!',
+                    subMessage: bonusDisplay ? `${baseScoreDisplay}\n${bonusDisplay}` : baseScoreDisplay,
+                });
+            }
             setTimeout(() => {
                 setFeedback(null);
                 if (useGameStore.getState().isPlaying) {
