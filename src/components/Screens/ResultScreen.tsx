@@ -108,16 +108,54 @@ export const ResultScreen: React.FC = () => {
                 <div className={styles.scoreList}>
                     {/* SPRINT mode: show clear time */}
                     {mode === 'sprint' ? (
-                        <motion.div
-                            className={styles.scoreRow}
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            custom={0}
-                        >
-                            <span className={styles.label}>CLEAR TIME</span>
-                            <span className={styles.value}>{score.toFixed(2)}s</span>
-                        </motion.div>
+                        <>
+                            {lastScoreBreakdown?.sprintTimes?.map((time, index) => (
+                                <motion.div
+                                    key={index}
+                                    className={styles.scoreRow}
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    custom={index * 0.1}
+                                >
+                                    <span className={styles.label}>HAND {index + 1}</span>
+                                    <span className={styles.value}>{time.toFixed(2)}s</span>
+                                </motion.div>
+                            ))}
+
+                            <div className={styles.divider} />
+
+                            <motion.div
+                                className={`${styles.scoreRow} ${styles.totalRow}`}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={1.5}
+                            >
+                                <div className={styles.totalScoreContainer}>
+                                    <span className={styles.totalLabel}>CLEAR TIME</span>
+                                    <div className={styles.totalValueContainer}>
+                                        <motion.span
+                                            className={styles.totalValue}
+                                            initial={{ scale: 1.1 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ duration: 0.1 }}
+                                        >
+                                            {score.toFixed(2)}s
+                                        </motion.span>
+                                        {isNewRecord && (
+                                            <motion.span
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                className={styles.newRecordBadge}
+                                            >
+                                                NEW RECORD!
+                                            </motion.span>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </>
                     ) : (
                         <>
                             {/* Base Score */}

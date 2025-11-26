@@ -173,7 +173,7 @@ export const GameScreen: React.FC = () => {
                     <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
                     <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
-                <div className={styles.statsGroup}>
+                <div className={styles.statsGroup} style={mode === 'sprint' ? { justifyContent: 'center' } : {}}>
                     {mode !== 'sprint' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>LIFE</span>
