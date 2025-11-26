@@ -41,7 +41,6 @@ interface GameState {
 }
 
 const INITIAL_LIVES = 3;
-const TIME_LIMIT_SPRINT = 60;
 
 export const useGameStore = create<GameState>((set, get) => ({
     isPlaying: false,
@@ -68,7 +67,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         switch (mode) {
             case 'sprint':
                 lives = 99;
-                duration = TIME_LIMIT_SPRINT;
+                duration = 0; // No time limit, count up timer
                 break;
             case 'survival':
                 lives = 1;
@@ -137,7 +136,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 }
             });
         } else {
-            const { score, isClear, lastScoreBreakdown } = get();
+            const { score, isClear, lastScoreBreakdown, mode, gameEndTime } = get();
 
             if (isClear && lastScoreBreakdown) {
                 set({
@@ -145,19 +144,39 @@ export const useGameStore = create<GameState>((set, get) => ({
                     isGameOver: true
                 });
             } else {
-                set({
-                    isPlaying: false,
-                    isGameOver: true,
-                    lastScoreBreakdown: {
-                        baseScore: score,
-                        clearBonus: 0,
-                        lifeBonus: 0,
-                        timeBonus: 0,
-                        totalScore: score,
-                        timeLeft: 0,
-                        lives: 0
-                    }
-                });
+                // For SPRINT mode, calculate elapsed time
+                if (mode === 'sprint') {
+                    const elapsedTime = (Date.now() - gameEndTime) / 1000; // in seconds
+                    set({
+                        isPlaying: false,
+                        isGameOver: true,
+                        isClear: true,
+                        score: elapsedTime, // Store elapsed time as "score" for SPRINT
+                        lastScoreBreakdown: {
+                            baseScore: elapsedTime,
+                            clearBonus: 0,
+                            lifeBonus: 0,
+                            timeBonus: 0,
+                            totalScore: elapsedTime,
+                            timeLeft: 0,
+                            lives: 0
+                        }
+                    });
+                } else {
+                    set({
+                        isPlaying: false,
+                        isGameOver: true,
+                        lastScoreBreakdown: {
+                            baseScore: score,
+                            clearBonus: 0,
+                            lifeBonus: 0,
+                            timeBonus: 0,
+                            totalScore: score,
+                            timeLeft: 0,
+                            lives: 0
+                        }
+                    });
+                }
             }
         }
     },
@@ -219,7 +238,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             const fastThreshold = 2 + currentWaits.length * 1; // 2秒 + 待ちの数 * 1秒
             const fastBonus = timeSpent <= fastThreshold ? Math.floor(baseScore * 0.3) : 0;
 
-            const points = baseScore + fastBonus;
+            // SPRINT mode: no score, only track time
+            const points = mode === 'sprint' ? 0 : baseScore + fastBonus;
 
             const newCorrectCount = correctCount + 1;
 
@@ -259,6 +279,11 @@ export const useGameStore = create<GameState>((set, get) => ({
                 get().endGame();
             }
 
+            // Check Clear Condition for SPRINT
+            if (mode === 'sprint' && newCorrectCount >= 10) {
+                get().endGame();
+            }
+
             return {
                 correct: true,
                 correctWaits: currentWaits,
@@ -272,7 +297,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         } else {
             // Handle wrong answer based on mode
             let newLives = lives;
-            if (mode !== 'practice') {
+            if (mode !== 'practice' && mode !== 'sprint') {
                 newLives = lives - 1;
             }
 

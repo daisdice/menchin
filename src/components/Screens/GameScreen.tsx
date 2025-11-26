@@ -58,24 +58,34 @@ export const GameScreen: React.FC = () => {
     // High precision timer
     useEffect(() => {
         if (countdown !== null) {
-            setDisplayTime('120.00');
+            setDisplayTime('0.00');
             return;
         }
         if (!isPlaying || gameEndTime === 0) return;
         let animationFrameId: number;
         const updateTimer = () => {
             const now = Date.now();
-            const remaining = Math.max(0, gameEndTime - now);
-            const seconds = Math.floor(remaining / 1000);
-            const centiseconds = Math.floor((remaining % 1000) / 10);
-            setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
-            if (remaining > 0) animationFrameId = requestAnimationFrame(updateTimer);
+            // SPRINT mode: count up from start time
+            if (mode === 'sprint') {
+                const elapsed = now - gameEndTime;
+                const seconds = Math.floor(elapsed / 1000);
+                const centiseconds = Math.floor((elapsed % 1000) / 10);
+                setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
+                animationFrameId = requestAnimationFrame(updateTimer);
+            } else {
+                // CHALLENGE mode: count down to end time
+                const remaining = Math.max(0, gameEndTime - now);
+                const seconds = Math.floor(remaining / 1000);
+                const centiseconds = Math.floor((remaining % 1000) / 10);
+                setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
+                if (remaining > 0) animationFrameId = requestAnimationFrame(updateTimer);
+            }
         };
         updateTimer();
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
-    }, [isPlaying, gameEndTime, countdown]);
+    }, [isPlaying, gameEndTime, countdown, mode]);
 
     // Navigation on game over / not playing
     useEffect(() => {
@@ -147,20 +157,24 @@ export const GameScreen: React.FC = () => {
                     <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
                 <div className={styles.statsGroup}>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>LIFE</span>
-                        <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
-                    </div>
-                    {mode === 'challenge' && (
+                    {mode !== 'sprint' && (
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>LIFE</span>
+                            <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
+                        </div>
+                    )}
+                    {(mode === 'challenge' || mode === 'sprint') && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>PROGRESS</span>
                             <span className={styles.statValue}>{correctCount}/10</span>
                         </div>
                     )}
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>SCORE</span>
-                        <span className={styles.statValue}>{Math.floor(score)}</span>
-                    </div>
+                    {mode !== 'sprint' && (
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>SCORE</span>
+                            <span className={styles.statValue}>{Math.floor(score)}</span>
+                        </div>
+                    )}
                 </div>
             </div>
             {/* Timer */}
