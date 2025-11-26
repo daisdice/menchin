@@ -41,7 +41,7 @@ export const ResultScreen: React.FC = () => {
             text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
         }
 
-        text += `#CHINIT #Mahjong`;
+        text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
