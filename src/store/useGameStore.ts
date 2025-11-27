@@ -390,12 +390,25 @@ export const useGameStore = create<GameState>((set, get) => ({
                 saveRecord(record);
             }
 
+            // Calculate totalResponseTime and fastBonuses from question results in this session
+            const allResults = getQuestionResults();
+            const sessionResults = allResults.filter(r => r.mode === mode && r.difficulty === difficulty);
+
+            // Get only recent session results (last N questions matching current game)
+            const sessionSize = correctCount + incorrectCount;
+            const recentResults = sessionResults.slice(-sessionSize);
+
+            const totalResponseTime = recentResults.reduce((sum, r) => sum + r.responseTime, 0);
+            const fastBonuses = recentResults.filter(r => r.fastBonus).length;
+
             // Update Mode Stats
             updateModeStats(mode, difficulty, {
                 attempts: 1,
                 clears: isClear ? 1 : 0,
                 totalQuestions: correctCount + incorrectCount,
                 correctAnswers: correctCount,
+                totalResponseTime,
+                fastBonuses,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
         }
