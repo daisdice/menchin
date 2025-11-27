@@ -5,6 +5,56 @@ import { Mahjong } from '../utils/mahjong';
 export type Difficulty = 'beginner' | 'amateur' | 'normal' | 'expert' | 'master';
 export type GameMode = 'challenge' | 'sprint' | 'survival' | 'practice';
 
+export interface GameRecord {
+    mode: 'challenge' | 'sprint' | 'survival';
+    difficulty: Difficulty;
+    score: number;
+    date: number;
+}
+
+// Record management functions
+const getStorageKey = (mode: GameRecord['mode'], difficulty: Difficulty): string => {
+    return `menchin_records_${mode}_${difficulty}`;
+};
+
+export const saveRecord = (record: GameRecord): void => {
+    const key = getStorageKey(record.mode, record.difficulty);
+    const existingRecords = getRecords(record.mode, record.difficulty);
+
+    // Add new record
+    const updatedRecords = [...existingRecords, record];
+
+    // Sort by score (descending for challenge/survival, ascending for sprint)
+    updatedRecords.sort((a, b) => {
+        if (record.mode === 'sprint') {
+            return a.score - b.score; // Lower is better for sprint (time)
+        }
+        return b.score - a.score; // Higher is better for challenge/survival
+    });
+
+    // Keep only top 10
+    const top10 = updatedRecords.slice(0, 10);
+
+    // Save to localStorage
+    localStorage.setItem(key, JSON.stringify(top10));
+};
+
+export const getRecords = (mode: GameRecord['mode'], difficulty: Difficulty): GameRecord[] => {
+    const key = getStorageKey(mode, difficulty);
+    const stored = localStorage.getItem(key);
+
+    if (!stored) {
+        return [];
+    }
+
+    try {
+        return JSON.parse(stored) as GameRecord[];
+    } catch {
+        return [];
+    }
+};
+
+
 interface GameState {
     isPlaying: boolean;
     score: number;
@@ -226,6 +276,18 @@ export const useGameStore = create<GameState>((set, get) => ({
                     });
                 }
             }
+        }
+
+        // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
+        const { mode, difficulty, score, isClear } = get();
+        if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival') && isClear) {
+            const record: GameRecord = {
+                mode,
+                difficulty,
+                score,
+                date: Date.now()
+            };
+            saveRecord(record);
         }
     },
 

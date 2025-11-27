@@ -66,7 +66,10 @@ export const ResultScreen: React.FC = () => {
     const [displayScore, setDisplayScore] = React.useState(0);
 
     useEffect(() => {
+        const timers: number[] = [];
+
         if (lastScoreBreakdown) {
+            setDisplayScore(0); // Reset to 0 before animation
             const sequence = [
                 { val: lastScoreBreakdown.baseScore, delay: 0 },
                 { val: lastScoreBreakdown.clearBonus, delay: 500 },
@@ -75,14 +78,19 @@ export const ResultScreen: React.FC = () => {
             ];
 
             sequence.forEach((item) => {
-                setTimeout(() => {
+                const timer = setTimeout(() => {
                     setDisplayScore(prev => prev + item.val);
                 }, item.delay);
+                timers.push(timer);
             });
         } else {
             setDisplayScore(score);
         }
-    }, [lastScoreBreakdown, score]);
+
+        return () => {
+            timers.forEach(timer => clearTimeout(timer));
+        };
+    }, [lastScoreBreakdown]);
 
     return (
         <div className={styles.container}>
