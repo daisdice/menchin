@@ -48,7 +48,9 @@ export const SummaryScreen: React.FC = () => {
         return {
             accuracy: (correctAnswers / totalQuestions) * 100,
             avgTime: totalTime / totalQuestions,
-            waitStats
+            waitStats,
+            correctAnswers,
+            totalQuestions
         };
     }, [questionResults]);
 
@@ -58,14 +60,13 @@ export const SummaryScreen: React.FC = () => {
     }, [activeTab, activeDifficulty]);
 
     const renderOverallStats = () => {
-        if (!overallStats) {
-            return (
-                <div className={styles.noRecords}>
-                    <p>NO DATA</p>
-                    <span className={styles.noRecordsHint}>Play some games to see statistics!</span>
-                </div>
-            );
-        }
+        const stats = overallStats || {
+            accuracy: 0,
+            avgTime: 0,
+            waitStats: {},
+            correctAnswers: 0,
+            totalQuestions: 0
+        };
 
         return (
             <>
@@ -73,13 +74,16 @@ export const SummaryScreen: React.FC = () => {
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>ACCURACY</span>
                         <span className={styles.statValue}>
-                            {overallStats.accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
+                            {stats.accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
+                        </span>
+                        <span className={styles.statSubValue}>
+                            ({stats.correctAnswers}/{stats.totalQuestions})
                         </span>
                     </div>
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>AVG TIME</span>
                         <span className={styles.statValue}>
-                            {overallStats.avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
+                            {stats.avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
                         </span>
                     </div>
                 </div>
@@ -96,16 +100,17 @@ export const SummaryScreen: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {Object.entries(overallStats.waitStats)
-                                .sort((a, b) => Number(a[0]) - Number(b[0]))
-                                .map(([waitCount, stats]) => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((waitCount) => {
+                                const s = stats.waitStats[waitCount] || { total: 0, correct: 0, time: 0 };
+                                return (
                                     <tr key={waitCount}>
                                         <td>{waitCount}</td>
-                                        <td>{((stats.correct / stats.total) * 100).toFixed(1)}%</td>
-                                        <td>{(stats.time / stats.total).toFixed(2)}s</td>
-                                        <td>{stats.total}</td>
+                                        <td>{s.total > 0 ? ((s.correct / s.total) * 100).toFixed(1) : '0.0'}%</td>
+                                        <td>{s.total > 0 ? (s.time / s.total).toFixed(2) : '0.00'}s</td>
+                                        <td>{s.total}</td>
                                     </tr>
-                                ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -114,33 +119,38 @@ export const SummaryScreen: React.FC = () => {
     };
 
     const renderModeStats = () => {
-        if (!modeStats || modeStats.attempts === 0) {
-            return (
-                <div className={styles.noRecords}>
-                    <p>NO DATA</p>
-                    <span className={styles.noRecordsHint}>Play {activeTab.toUpperCase()} mode to see stats!</span>
-                </div>
-            );
-        }
+        const stats = modeStats || {
+            attempts: 0,
+            clears: 0,
+            totalQuestions: 0,
+            correctAnswers: 0,
+            fastBonuses: 0,
+            totalResponseTime: 0,
+            bestScore: undefined
+        };
 
-        const accuracy = modeStats.totalQuestions > 0
-            ? (modeStats.correctAnswers / modeStats.totalQuestions) * 100
+        const accuracy = stats.totalQuestions > 0
+            ? (stats.correctAnswers / stats.totalQuestions) * 100
+            : 0;
+
+        const avgTime = stats.totalQuestions > 0
+            ? stats.totalResponseTime / stats.totalQuestions
             : 0;
 
         return (
             <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
                     <span className={styles.statLabel}>ATTEMPTS</span>
-                    <span className={styles.statValue}>{modeStats.attempts}</span>
+                    <span className={styles.statValue}>{stats.attempts}</span>
                 </div>
 
                 {activeTab !== 'sprint' && (
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>CLEARS</span>
                         <span className={styles.statValue}>
-                            {modeStats.clears || 0}
+                            {stats.clears || 0}
                             <span className={styles.statUnit}>
-                                ({modeStats.attempts > 0 ? ((modeStats.clears || 0) / modeStats.attempts * 100).toFixed(0) : 0}%)
+                                ({stats.attempts > 0 ? ((stats.clears || 0) / stats.attempts * 100).toFixed(0) : 0}%)
                             </span>
                         </span>
                     </div>
@@ -151,14 +161,24 @@ export const SummaryScreen: React.FC = () => {
                     <span className={styles.statValue}>
                         {accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
                     </span>
+                    <span className={styles.statSubValue}>
+                        ({stats.correctAnswers}/{stats.totalQuestions})
+                    </span>
+                </div>
+
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>AVG TIME</span>
+                    <span className={styles.statValue}>
+                        {avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
+                    </span>
                 </div>
 
                 {activeTab === 'challenge' && (
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>FAST BONUS</span>
                         <span className={styles.statValue}>
-                            {modeStats.totalQuestions > 0
-                                ? (((modeStats.fastBonuses || 0) / modeStats.totalQuestions) * 100).toFixed(1)
+                            {stats.totalQuestions > 0
+                                ? (((stats.fastBonuses || 0) / stats.totalQuestions) * 100).toFixed(1)
                                 : 0}
                             <span className={styles.statUnit}>%</span>
                         </span>
@@ -171,8 +191,8 @@ export const SummaryScreen: React.FC = () => {
                     </span>
                     <span className={styles.statValue}>
                         {activeTab === 'sprint'
-                            ? (modeStats.bestScore === Infinity ? '-' : `${modeStats.bestScore?.toFixed(2)}s`)
-                            : (modeStats.bestScore || 0).toLocaleString()}
+                            ? (stats.bestScore === undefined || stats.bestScore === Infinity ? '-' : `${stats.bestScore?.toFixed(2)}s`)
+                            : (stats.bestScore || 0).toLocaleString()}
                     </span>
                 </div>
             </div>
