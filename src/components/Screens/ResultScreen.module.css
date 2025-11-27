@@ -201,3 +201,18 @@
         transform: scale(1);
     }
 }
+
+.sprintGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    width: 100%;
+}
+
+.sprintRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--color-text);
+}

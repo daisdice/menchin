@@ -111,19 +111,21 @@ export const ResultScreen: React.FC = () => {
                     {/* SPRINT mode: show clear time */}
                     {mode === 'sprint' ? (
                         <>
-                            {lastScoreBreakdown?.sprintTimes?.map((time, index) => (
-                                <motion.div
-                                    key={index}
-                                    className={styles.scoreRow}
-                                    variants={itemVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    custom={index * 0.1}
-                                >
-                                    <span className={styles.label}>HAND {index + 1}</span>
-                                    <span className={styles.value}>{time.toFixed(2)}s</span>
-                                </motion.div>
-                            ))}
+                            <div className={styles.sprintGrid}>
+                                {lastScoreBreakdown?.sprintTimes?.map((time, index) => (
+                                    <motion.div
+                                        key={index}
+                                        className={styles.sprintRow}
+                                        variants={itemVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        custom={index * 0.1}
+                                    >
+                                        <span className={styles.label}>HAND {index + 1}</span>
+                                        <span className={styles.value}>{time.toFixed(2)}s</span>
+                                    </motion.div>
+                                ))}
+                            </div>
 
                             <div className={styles.divider} />
 
