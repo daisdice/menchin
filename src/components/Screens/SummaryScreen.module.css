@@ -1,0 +1,171 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+    width: 100%;
+    padding-top: var(--spacing-md);
+    overflow-y: auto;
+}
+
+.summaryCard {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.title {
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin: 0;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+}
+
+/* Tabs */
+.tabGroup {
+    display: flex;
+    gap: var(--spacing-xxs);
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tab {
+    flex: 1;
+    min-width: 80px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text-light);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.tabSmall {
+    font-size: 0.75rem;
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    min-width: 60px;
+}
+
+.tab:hover {
+    background-color: rgba(78, 205, 196, 0.1);
+    border-color: var(--color-accent-cyan);
+}
+
+.tabActive {
+    background-color: var(--color-accent-cyan);
+    color: var(--color-text);
+    border-color: var(--color-accent-cyan);
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.statItem {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.statLabel {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+}
+
+.statValue {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text);
+}
+
+.statUnit {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 2px;
+    color: var(--color-text-light);
+}
+
+/* Wait Stats Table */
+.waitStatsContainer {
+    width: 100%;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-xs) 0;
+    text-align: center;
+}
+
+.waitStatsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.waitStatsTable th,
+.waitStatsTable td {
+    padding: var(--spacing-xs);
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.9rem;
+}
+
+.waitStatsTable th {
+    font-weight: 700;
+    color: var(--color-text-light);
+}
+
+.waitStatsTable td {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.waitStatsTable tr:last-child td {
+    border-bottom: none;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+}

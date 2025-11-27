@@ -54,6 +54,104 @@ export const getRecords = (mode: GameRecord['mode'], difficulty: Difficulty): Ga
     }
 };
 
+// Statistics data structures
+export interface QuestionResult {
+    mode: 'challenge' | 'sprint' | 'survival';
+    difficulty: Difficulty;
+    waitCount: number;
+    correct: boolean;
+    responseTime: number;
+    fastBonus: boolean;
+    timestamp: number;
+}
+
+export interface ModeStats {
+    attempts: number;
+    clears?: number; // For challenge/survival
+    totalQuestions: number;
+    correctAnswers: number;
+    fastBonuses?: number; // For challenge
+    totalResponseTime: number;
+    bestScore?: number; // For challenge/survival: highScore, for sprint: bestTime
+}
+
+// Statistics management functions
+const STATS_STORAGE_KEY = 'menchin_question_results';
+const MODE_STATS_KEY = 'menchin_mode_stats';
+
+export const saveQuestionResult = (result: QuestionResult): void => {
+    const stored = localStorage.getItem(STATS_STORAGE_KEY);
+    const results: QuestionResult[] = stored ? JSON.parse(stored) : [];
+    results.push(result);
+
+    // Keep only last 10000 results to prevent storage overflow
+    if (results.length > 10000) {
+        results.shift();
+    }
+
+    localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(results));
+};
+
+export const getQuestionResults = (): QuestionResult[] => {
+    const stored = localStorage.getItem(STATS_STORAGE_KEY);
+    if (!stored) return [];
+
+    try {
+        return JSON.parse(stored) as QuestionResult[];
+    } catch {
+        return [];
+    }
+};
+
+export const getModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficulty: Difficulty): ModeStats => {
+    const key = `${MODE_STATS_KEY}_${mode}_${difficulty}`;
+    const stored = localStorage.getItem(key);
+
+    if (!stored) {
+        return {
+            attempts: 0,
+            clears: 0,
+            totalQuestions: 0,
+            correctAnswers: 0,
+            fastBonuses: 0,
+            totalResponseTime: 0,
+            bestScore: mode === 'sprint' ? Infinity : 0
+        };
+    }
+
+    try {
+        return JSON.parse(stored) as ModeStats;
+    } catch {
+        return {
+            attempts: 0,
+            clears: 0,
+            totalQuestions: 0,
+            correctAnswers: 0,
+            fastBonuses: 0,
+            totalResponseTime: 0,
+            bestScore: mode === 'sprint' ? Infinity : 0
+        };
+    }
+};
+
+export const updateModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficulty: Difficulty, updates: Partial<ModeStats>): void => {
+    const current = getModeStats(mode, difficulty);
+    const key = `${MODE_STATS_KEY}_${mode}_${difficulty}`;
+
+    const updated: ModeStats = {
+        attempts: updates.attempts !== undefined ? current.attempts + updates.attempts : current.attempts,
+        clears: updates.clears !== undefined ? (current.clears || 0) + updates.clears : current.clears,
+        totalQuestions: updates.totalQuestions !== undefined ? current.totalQuestions + updates.totalQuestions : current.totalQuestions,
+        correctAnswers: updates.correctAnswers !== undefined ? current.correctAnswers + updates.correctAnswers : current.correctAnswers,
+        fastBonuses: updates.fastBonuses !== undefined ? (current.fastBonuses || 0) + updates.fastBonuses : current.fastBonuses,
+        totalResponseTime: updates.totalResponseTime !== undefined ? current.totalResponseTime + updates.totalResponseTime : current.totalResponseTime,
+        bestScore: updates.bestScore !== undefined ?
+            (mode === 'sprint' ? Math.min(current.bestScore || Infinity, updates.bestScore) : Math.max(current.bestScore || 0, updates.bestScore))
+            : current.bestScore
+    };
+
+    localStorage.setItem(key, JSON.stringify(updated));
+};
 
 interface GameState {
     isPlaying: boolean;
@@ -279,15 +377,27 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
 
         // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
-        const { mode, difficulty, score, isClear } = get();
-        if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival') && isClear) {
-            const record: GameRecord = {
-                mode,
-                difficulty,
-                score,
-                date: Date.now()
-            };
-            saveRecord(record);
+        const { mode, difficulty, score, isClear, correctCount, incorrectCount } = get();
+        if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
+            // Save Record if clear
+            if (isClear) {
+                const record: GameRecord = {
+                    mode,
+                    difficulty,
+                    score,
+                    date: Date.now()
+                };
+                saveRecord(record);
+            }
+
+            // Update Mode Stats
+            updateModeStats(mode, difficulty, {
+                attempts: 1,
+                clears: isClear ? 1 : 0,
+                totalQuestions: correctCount + incorrectCount,
+                correctAnswers: correctCount,
+                bestScore: (mode === 'sprint' && !isClear) ? undefined : score
+            });
         }
     },
 
@@ -406,6 +516,19 @@ export const useGameStore = create<GameState>((set, get) => ({
                 get().endGame();
             }
 
+            // Save question result for statistics (exclude practice mode)
+            if (mode !== 'practice') {
+                saveQuestionResult({
+                    mode,
+                    difficulty,
+                    waitCount: currentWaits.length,
+                    correct: true,
+                    responseTime: timeSpent,
+                    fastBonus: fastBonus > 0,
+                    timestamp: Date.now()
+                });
+            }
+
             return {
                 correct: true,
                 correctWaits: currentWaits,
@@ -433,6 +556,20 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             if (newLives <= 0) {
                 get().endGame();
+            }
+
+            // Save question result for statistics (exclude practice mode)
+            if (mode !== 'practice') {
+                const timeSpent = (Date.now() - questionStartTime) / 1000;
+                saveQuestionResult({
+                    mode,
+                    difficulty,
+                    waitCount: currentWaits.length,
+                    correct: false,
+                    responseTime: timeSpent,
+                    fastBonus: false,
+                    timestamp: Date.now()
+                });
             }
 
             return {
