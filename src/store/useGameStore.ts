@@ -18,6 +18,7 @@ interface GameState {
     mode: GameMode;
     questionStartTime: number;
     correctCount: number;
+    incorrectCount: number;
     isGameOver: boolean;
     isClear: boolean;
     sprintTimes: number[]; // Track time spent per hand for SPRINT mode
@@ -30,6 +31,8 @@ interface GameState {
         timeLeft: number;
         lives: number;
         sprintTimes?: number[];
+        incorrectCount?: number;
+        totalQuestions?: number;
     } | null;
 
     // Actions
@@ -56,6 +59,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     mode: 'challenge',
     questionStartTime: 0,
     correctCount: 0,
+    incorrectCount: 0,
     isGameOver: false,
     isClear: false,
     lastScoreBreakdown: null,
@@ -99,6 +103,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             mode,
             selectedWaits: [],
             correctCount: 0,
+            incorrectCount: 0,
             isGameOver: false,
             isClear: false,
             lastScoreBreakdown: null,
@@ -183,6 +188,26 @@ export const useGameStore = create<GameState>((set, get) => ({
                             totalScore: correctCount,
                             timeLeft: 0,
                             lives: 0
+                        }
+                    });
+                } else if (mode === 'practice') {
+                    const { correctCount, incorrectCount } = get();
+                    const totalQuestions = correctCount + incorrectCount;
+                    set({
+                        isPlaying: false,
+                        isGameOver: true,
+                        isClear: true,
+                        score: correctCount,
+                        lastScoreBreakdown: {
+                            baseScore: correctCount,
+                            clearBonus: 0,
+                            lifeBonus: 0,
+                            timeBonus: 0,
+                            totalScore: correctCount,
+                            timeLeft: 0,
+                            lives: 0,
+                            incorrectCount,
+                            totalQuestions
                         }
                     });
                 } else {
@@ -341,6 +366,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             set({
                 lives: newLives,
+                incorrectCount: get().incorrectCount + 1,
             });
 
             if (newLives <= 0) {

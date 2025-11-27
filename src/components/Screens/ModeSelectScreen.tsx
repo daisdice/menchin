@@ -24,7 +24,7 @@ export const ModeSelectScreen: React.FC = () => {
         { id: 'challenge', label: 'CHALLENGE', desc: 'Standard Rules. 3 Lives.', color: 'primary' },
         { id: 'sprint', label: 'SPRINT', desc: 'Clear 10 Hands. Time Attack.', color: 'accent' },
         { id: 'survival', label: 'SURVIVAL', desc: 'One Mistake = Game Over.', color: 'danger' },
-        { id: 'practice', label: 'PRACTICE', desc: 'No Limits. Just Practice.', color: 'secondary', locked: true },
+        { id: 'practice', label: 'PRACTICE', desc: 'No Limits. Just Practice.', color: 'secondary' },
     ];
 
     return (

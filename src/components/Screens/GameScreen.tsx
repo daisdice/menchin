@@ -133,6 +133,12 @@ export const GameScreen: React.FC = () => {
                     message: 'CORRECT!',
                     subMessage: result.bonuses ? result.bonuses[0] : '',
                 });
+            } else if (mode === 'practice') {
+                setFeedback({
+                    type: 'correct',
+                    message: 'CORRECT!',
+                    subMessage: `${result.timeSpent!.toFixed(2)}s`,
+                });
             } else {
                 // CHALLENGE mode: show score and bonus
                 const baseScore = result.points! - (result.fastBonus || 0);
@@ -179,22 +185,22 @@ export const GameScreen: React.FC = () => {
                     <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
                     <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
                 </div>
-                <div className={styles.statsGroup} style={(mode === 'sprint' || mode === 'survival') ? { justifyContent: 'center' } : {}}>
-                    {mode !== 'sprint' && mode !== 'survival' && (
+                <div className={styles.statsGroup} style={(mode === 'sprint' || mode === 'survival' || mode === 'practice') ? { justifyContent: 'center' } : {}}>
+                    {mode !== 'sprint' && mode !== 'survival' && mode !== 'practice' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>LIFE</span>
                             <span className={styles.lives}>{'❤️'.repeat(lives)}</span>
                         </div>
                     )}
-                    {(mode === 'challenge' || mode === 'sprint' || mode === 'survival') && (
+                    {(mode === 'challenge' || mode === 'sprint' || mode === 'survival' || mode === 'practice') && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>PROGRESS</span>
                             <span className={styles.statValue}>
-                                {mode === 'survival' ? correctCount : `${correctCount}/10`}
+                                {(mode === 'survival' || mode === 'practice') ? correctCount : `${correctCount}/10`}
                             </span>
                         </div>
                     )}
-                    {mode !== 'sprint' && mode !== 'survival' && (
+                    {mode !== 'sprint' && mode !== 'survival' && mode !== 'practice' && (
                         <div className={styles.statItem}>
                             <span className={styles.statLabel}>SCORE</span>
                             <span className={styles.statValue}>{Math.floor(score)}</span>
@@ -228,6 +234,11 @@ export const GameScreen: React.FC = () => {
                     <GameButton variant="primary" size="lg" onClick={handleSubmit} className={styles.submitBtn} fullWidth>
                         ANSWER
                     </GameButton>
+                    {mode === 'practice' && (
+                        <GameButton variant="danger" size="lg" onClick={() => useGameStore.getState().endGame()} fullWidth className={styles.submitBtn}>
+                            END
+                        </GameButton>
+                    )}
                 </div>
             </div>
             {/* Countdown Overlay */}

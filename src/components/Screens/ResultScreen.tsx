@@ -189,6 +189,45 @@ export const ResultScreen: React.FC = () => {
                                 </div>
                             </div>
                         </motion.div>
+
+                    ) : mode === 'practice' ? (
+                        <>
+                            <motion.div
+                                className={styles.scoreRow}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={0}
+                            >
+                                <span className={styles.label}>CORRECT</span>
+                                <span className={styles.value}>{lastScoreBreakdown?.baseScore}</span>
+                            </motion.div>
+                            <motion.div
+                                className={styles.scoreRow}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={0.1}
+                            >
+                                <span className={styles.label}>INCORRECT</span>
+                                <span className={styles.value}>{lastScoreBreakdown?.incorrectCount}</span>
+                            </motion.div>
+                            <div className={styles.divider} />
+                            <motion.div
+                                className={`${styles.scoreRow} ${styles.totalRow}`}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={0.2}
+                            >
+                                <div className={styles.totalScoreContainer}>
+                                    <span className={styles.totalLabel}>TOTAL</span>
+                                    <div className={styles.totalValueContainer}>
+                                        <span className={styles.totalValue}>{lastScoreBreakdown?.totalQuestions}</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </>
                     ) : (
                         <>
                             {/* Base Score */}
@@ -313,11 +352,13 @@ export const ResultScreen: React.FC = () => {
                     <GameButton variant="secondary" onClick={handleTitle} fullWidth>
                         TITLE
                     </GameButton>
-                    <GameButton variant="accent" onClick={handleShare} fullWidth>
-                        SHARE
-                    </GameButton>
+                    {mode !== 'practice' && (
+                        <GameButton variant="accent" onClick={handleShare} fullWidth>
+                            SHARE
+                        </GameButton>
+                    )}
                 </div>
-            </Card>
-        </div>
+            </Card >
+        </div >
     );
 };
