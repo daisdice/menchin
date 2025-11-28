@@ -184,6 +184,7 @@ interface GameState {
         totalQuestions?: number;
     } | null;
     unlockedTrophies: string[]; // Array of trophy IDs
+    trophyUnlockDates: Record<string, number>; // Map of trophy ID to unlock timestamp
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
 
     // Actions
@@ -201,6 +202,7 @@ interface GameState {
 
 const INITIAL_LIVES = 3;
 const TROPHY_STORAGE_KEY = 'menchin_unlocked_trophies';
+const TROPHY_DATES_STORAGE_KEY = 'menchin_trophy_dates';
 
 // Load unlocked trophies from localStorage
 const loadUnlockedTrophies = (): string[] => {
@@ -216,6 +218,22 @@ const loadUnlockedTrophies = (): string[] => {
 // Save unlocked trophies to localStorage
 const saveUnlockedTrophies = (trophies: string[]): void => {
     localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophies));
+};
+
+// Load trophy dates from localStorage
+const loadTrophyDates = (): Record<string, number> => {
+    const stored = localStorage.getItem(TROPHY_DATES_STORAGE_KEY);
+    if (!stored) return {};
+    try {
+        return JSON.parse(stored) as Record<string, number>;
+    } catch {
+        return {};
+    }
+};
+
+// Save trophy dates to localStorage
+const saveTrophyDates = (dates: Record<string, number>): void => {
+    localStorage.setItem(TROPHY_DATES_STORAGE_KEY, JSON.stringify(dates));
 };
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -236,6 +254,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     lastScoreBreakdown: null,
     sprintTimes: [],
     unlockedTrophies: loadUnlockedTrophies(),
+    trophyUnlockDates: loadTrophyDates(),
     newlyUnlockedTrophies: [],
 
     gameEndTime: 0,
@@ -681,9 +700,11 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     checkAndUnlockTrophies: () => {
-        const { mode, difficulty, isClear, unlockedTrophies } = get();
+        const { mode, difficulty, isClear, unlockedTrophies, trophyUnlockDates } = get();
         const gameState = { mode, difficulty, isClear };
         const newlyUnlocked: string[] = [];
+        const now = Date.now();
+        const newDates = { ...trophyUnlockDates };
 
         // Check all trophies
         for (const trophy of TROPHIES) {
@@ -693,6 +714,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             // Check if trophy should be unlocked
             if (checkTrophyUnlock(trophy.id, gameState)) {
                 newlyUnlocked.push(trophy.id);
+                newDates[trophy.id] = now; // Record unlock timestamp
             }
         }
 
@@ -700,8 +722,10 @@ export const useGameStore = create<GameState>((set, get) => ({
         if (newlyUnlocked.length > 0) {
             const updatedUnlockedTrophies = [...unlockedTrophies, ...newlyUnlocked];
             saveUnlockedTrophies(updatedUnlockedTrophies);
+            saveTrophyDates(newDates);
             set({
                 unlockedTrophies: updatedUnlockedTrophies,
+                trophyUnlockDates: newDates,
                 newlyUnlockedTrophies: newlyUnlocked
             });
         }

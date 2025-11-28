@@ -77,18 +77,11 @@
     line-height: 1.4;
 }
 
-.unlockedBadge {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
-    color: #000;
-    font-size: 0.7rem;
-    font-weight: 700;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.unlockDate {
+    font-size: 0.75rem;
+    margin: 0.5rem 0 0;
+    color: #6c757d;
+    font-style: italic;
 }
 
 .actions {

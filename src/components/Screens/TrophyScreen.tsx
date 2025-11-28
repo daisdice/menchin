@@ -8,7 +8,12 @@ import styles from './TrophyScreen.module.css';
 
 export const TrophyScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { unlockedTrophies } = useGameStore();
+    const { unlockedTrophies, trophyUnlockDates } = useGameStore();
+
+    const formatDate = (timestamp: number) => {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    };
 
     return (
         <div className={styles.container}>
@@ -22,6 +27,7 @@ export const TrophyScreen: React.FC = () => {
             <div className={styles.trophyGrid}>
                 {TROPHIES.map((trophy) => {
                     const isUnlocked = unlockedTrophies.includes(trophy.id);
+                    const unlockDate = trophyUnlockDates[trophy.id];
                     return (
                         <Card
                             key={trophy.id}
@@ -33,8 +39,12 @@ export const TrophyScreen: React.FC = () => {
                                 <p className={styles.trophyDescription}>
                                     {isUnlocked || !trophy.hidden ? trophy.description : '???'}
                                 </p>
+                                {isUnlocked && unlockDate && (
+                                    <p className={styles.unlockDate}>
+                                        {formatDate(unlockDate)}
+                                    </p>
+                                )}
                             </div>
-                            {isUnlocked && <div className={styles.unlockedBadge}>UNLOCKED</div>}
                         </Card>
                     );
                 })}
