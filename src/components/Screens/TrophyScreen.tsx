@@ -35,16 +35,18 @@ export const TrophyScreen: React.FC = () => {
                         >
                             <div className={styles.trophyIcon}>{trophy.icon}</div>
                             <div className={styles.trophyInfo}>
-                                <h3 className={styles.trophyTitle}>{trophy.title}</h3>
+                                <div className={styles.trophyInfoHeader}>
+                                    <h3 className={styles.trophyTitle}>{trophy.title}</h3>
+                                    {isUnlocked && unlockDate && (
+                                        <span className={styles.unlockDate}>
+                                            {formatDate(unlockDate)}
+                                        </span>
+                                    )}
+                                </div>
                                 <p className={styles.trophyDescription}>
                                     {isUnlocked || !trophy.hidden ? trophy.description : '???'}
                                 </p>
                             </div>
-                            {isUnlocked && unlockDate && (
-                                <div className={styles.unlockDate}>
-                                    {formatDate(unlockDate)}
-                                </div>
-                            )}
                         </Card>
                     );
                 })}

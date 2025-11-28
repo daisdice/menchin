@@ -90,13 +90,20 @@
 
 .trophyInfo {
     display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
     flex: 1;
     min-width: 0;
     /* Prevent overflow */
-    flex-wrap: wrap;
+}
+
+.trophyInfoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    width: 100%;
 }
 
 .trophyTitle {
@@ -105,23 +112,20 @@
     margin: 0;
     color: #ffd700;
     line-height: 1.2;
-    white-space: nowrap;
 }
 
 .trophyDescription {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin: 0;
     color: #adb5bd;
     line-height: 1.4;
 }
 
 .unlockDate {
-    margin-left: auto;
     font-size: 0.85rem;
     color: #6c757d;
     font-style: italic;
     white-space: nowrap;
-    padding-left: 1rem;
     flex-shrink: 0;
 }
 
@@ -144,13 +148,17 @@
     .trophyCard {
         padding: 0.75rem;
         gap: 0.75rem;
-        flex-wrap: wrap;
-        /* Allow wrapping on very small screens if needed, or keep nowrap */
     }
 
     .trophyIcon {
         font-size: 1.75rem;
         width: 2.5rem;
+    }
+
+    .trophyInfoHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
     }
 
     .trophyTitle {
@@ -164,8 +172,6 @@
     .unlockDate {
         width: 100%;
         text-align: right;
-        margin-top: 0.25rem;
-        padding-left: 0;
         font-size: 0.75rem;
     }
 }
