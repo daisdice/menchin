@@ -69,6 +69,7 @@ export interface QuestionResult {
 export interface ModeStats {
     attempts: number;
     clears?: number; // For challenge/survival
+    noMissClears?: number; // No-mistake clears
     totalQuestions: number;
     correctAnswers: number;
     fastBonuses?: number; // For challenge
@@ -79,6 +80,16 @@ export interface ModeStats {
 // Statistics management functions
 const STATS_STORAGE_KEY = 'menchin_question_results';
 const MODE_STATS_KEY = 'menchin_mode_stats';
+const GLOBAL_STATS_KEY = 'menchin_global_stats';
+
+// Global statistics (across all modes and difficulties)
+export interface GlobalStats {
+    totalCorrect: number; // Total correct answers across all modes
+    wait3Plus: number; // Correct answers with 3+ tile waits
+    wait6Plus: number; // Correct answers with 6+ tile waits
+    wait9: number; // Correct answers with 9 tile waits
+    practiceAttempts: number; // Practice mode play count
+}
 
 export const saveQuestionResult = (result: QuestionResult): void => {
     const stored = localStorage.getItem(STATS_STORAGE_KEY);
@@ -104,6 +115,46 @@ export const getQuestionResults = (): QuestionResult[] => {
     }
 };
 
+export const getGlobalStats = (): GlobalStats => {
+    const stored = localStorage.getItem(GLOBAL_STATS_KEY);
+
+    if (!stored) {
+        return {
+            totalCorrect: 0,
+            wait3Plus: 0,
+            wait6Plus: 0,
+            wait9: 0,
+            practiceAttempts: 0
+        };
+    }
+
+    try {
+        return JSON.parse(stored) as GlobalStats;
+    } catch {
+        return {
+            totalCorrect: 0,
+            wait3Plus: 0,
+            wait6Plus: 0,
+            wait9: 0,
+            practiceAttempts: 0
+        };
+    }
+};
+
+export const updateGlobalStats = (updates: Partial<GlobalStats>): void => {
+    const current = getGlobalStats();
+
+    const updated: GlobalStats = {
+        totalCorrect: updates.totalCorrect !== undefined ? current.totalCorrect + updates.totalCorrect : current.totalCorrect,
+        wait3Plus: updates.wait3Plus !== undefined ? current.wait3Plus + updates.wait3Plus : current.wait3Plus,
+        wait6Plus: updates.wait6Plus !== undefined ? current.wait6Plus + updates.wait6Plus : current.wait6Plus,
+        wait9: updates.wait9 !== undefined ? current.wait9 + updates.wait9 : current.wait9,
+        practiceAttempts: updates.practiceAttempts !== undefined ? current.practiceAttempts + updates.practiceAttempts : current.practiceAttempts
+    };
+
+    localStorage.setItem(GLOBAL_STATS_KEY, JSON.stringify(updated));
+};
+
 export const getModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficulty: Difficulty): ModeStats => {
     const key = `${MODE_STATS_KEY}_${mode}_${difficulty}`;
     const stored = localStorage.getItem(key);
@@ -112,6 +163,7 @@ export const getModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficul
         return {
             attempts: 0,
             clears: 0,
+            noMissClears: 0,
             totalQuestions: 0,
             correctAnswers: 0,
             fastBonuses: 0,
@@ -126,6 +178,7 @@ export const getModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficul
         return {
             attempts: 0,
             clears: 0,
+            noMissClears: 0,
             totalQuestions: 0,
             correctAnswers: 0,
             fastBonuses: 0,
@@ -142,6 +195,7 @@ export const updateModeStats = (mode: 'challenge' | 'sprint' | 'survival', diffi
     const updated: ModeStats = {
         attempts: updates.attempts !== undefined ? current.attempts + updates.attempts : current.attempts,
         clears: updates.clears !== undefined ? (current.clears || 0) + updates.clears : current.clears,
+        noMissClears: updates.noMissClears !== undefined ? (current.noMissClears || 0) + updates.noMissClears : current.noMissClears,
         totalQuestions: updates.totalQuestions !== undefined ? current.totalQuestions + updates.totalQuestions : current.totalQuestions,
         correctAnswers: updates.correctAnswers !== undefined ? current.correctAnswers + updates.correctAnswers : current.correctAnswers,
         fastBonuses: updates.fastBonuses !== undefined ? (current.fastBonuses || 0) + updates.fastBonuses : current.fastBonuses,
@@ -186,6 +240,7 @@ interface GameState {
     unlockedTrophies: string[]; // Array of trophy IDs
     trophyUnlockDates: Record<string, number>; // Map of trophy ID to unlock timestamp
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
+    hasErrors: boolean; // Track if any mistakes were made in current game
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -256,6 +311,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     unlockedTrophies: loadUnlockedTrophies(),
     trophyUnlockDates: loadTrophyDates(),
     newlyUnlockedTrophies: [],
+    hasErrors: false,
 
     gameEndTime: 0,
 
@@ -300,7 +356,16 @@ export const useGameStore = create<GameState>((set, get) => ({
             isClear: false,
             lastScoreBreakdown: null,
             sprintTimes: [],
+            hasErrors: false
         });
+
+        // Update practice mode stats
+        if (mode === 'practice') {
+            updateGlobalStats({
+                practiceAttempts: 1
+            });
+        }
+
         get().nextHand();
     },
 
@@ -421,7 +486,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
 
         // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
-        const { mode, difficulty, score, isClear } = get();
+        const { mode, difficulty, score, isClear, hasErrors } = get();
         if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
             // Save Record if clear
             if (isClear) {
@@ -438,6 +503,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             updateModeStats(mode, difficulty, {
                 attempts: 1,
                 clears: isClear ? 1 : 0,
+                noMissClears: (isClear && !hasErrors) ? 1 : 0,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
 
@@ -580,6 +646,15 @@ export const useGameStore = create<GameState>((set, get) => ({
                     totalResponseTime: timeSpent,
                     fastBonuses: fastBonus > 0 ? 1 : 0
                 });
+
+                // Update global stats
+                const waitCount = currentWaits.length;
+                updateGlobalStats({
+                    totalCorrect: 1,
+                    wait3Plus: waitCount >= 3 ? 1 : 0,
+                    wait6Plus: waitCount >= 6 ? 1 : 0,
+                    wait9: waitCount === 9 ? 1 : 0
+                });
             }
 
             return {
@@ -605,6 +680,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             set({
                 lives: newLives,
                 incorrectCount: get().incorrectCount + 1,
+                hasErrors: true
             });
 
             if (newLives <= 0) {
@@ -700,21 +776,63 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     checkAndUnlockTrophies: () => {
-        const { mode, difficulty, isClear, unlockedTrophies, trophyUnlockDates } = get();
-        const gameState = { mode, difficulty, isClear };
+        const { mode, difficulty, isClear, score, hasErrors, unlockedTrophies, trophyUnlockDates, sprintTimes } = get();
+
+        // Calculate total time for sprint mode
+        const totalTime = sprintTimes.reduce((sum, time) => sum + time, 0);
+
+        const gameState = {
+            mode,
+            difficulty,
+            isClear,
+            score,
+            hasErrors,
+            totalTime: totalTime / 1000 // Convert to seconds
+        };
+
+        // Collect all mode stats
+        const modeStats: Record<string, ModeStats> = {};
+        const modes = ['challenge', 'sprint', 'survival'] as const;
+        const difficulties = ['beginner', 'amateur', 'normal', 'expert', 'master'] as const;
+
+        for (const m of modes) {
+            for (const d of difficulties) {
+                const key = `${m}_${d}`;
+                modeStats[key] = getModeStats(m, d);
+            }
+        }
+
+        // Get global stats
+        const globalStats = getGlobalStats();
+
         const newlyUnlocked: string[] = [];
         const now = Date.now();
         const newDates = { ...trophyUnlockDates };
 
-        // Check all trophies
+        // Check all trophies except platinum
         for (const trophy of TROPHIES) {
+            if (trophy.id === 'PLATINUM_ALL_TROPHIES') continue; // Handle platinum separately
+
             // Skip if already unlocked
             if (unlockedTrophies.includes(trophy.id)) continue;
 
             // Check if trophy should be unlocked
-            if (checkTrophyUnlock(trophy.id, gameState)) {
+            if (checkTrophyUnlock(trophy.id, gameState, modeStats, globalStats)) {
                 newlyUnlocked.push(trophy.id);
                 newDates[trophy.id] = now; // Record unlock timestamp
+            }
+        }
+
+        // Check platinum trophy (all other trophies except platinum itself)
+        if (!unlockedTrophies.includes('PLATINUM_ALL_TROPHIES')) {
+            const allOtherTrophies = TROPHIES.filter(t => t.id !== 'PLATINUM_ALL_TROPHIES');
+            const allUnlocked = allOtherTrophies.every(t =>
+                unlockedTrophies.includes(t.id) || newlyUnlocked.includes(t.id)
+            );
+
+            if (allUnlocked) {
+                newlyUnlocked.push('PLATINUM_ALL_TROPHIES');
+                newDates['PLATINUM_ALL_TROPHIES'] = now;
             }
         }
 
