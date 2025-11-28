@@ -191,6 +191,7 @@ interface GameState {
     submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; timeSpent?: number; bonuses?: string[] };
     tick: () => void;
     resetGame: () => void;
+    startGameTimer: () => void;
 }
 
 const INITIAL_LIVES = 3;
@@ -625,6 +626,30 @@ export const useGameStore = create<GameState>((set, get) => ({
             isGameOver: false,
             isClear: false,
             lastScoreBreakdown: null,
+        });
+    },
+
+    startGameTimer: () => {
+        const { mode } = get();
+        const now = Date.now();
+        let gameEndTime = 0;
+        let timeLeft = 0;
+
+        if (mode === 'sprint') {
+            gameEndTime = now;
+            timeLeft = 0;
+        } else {
+            const duration = mode === 'challenge' ? 120 : (mode === 'survival' ? 30 : 0);
+            if (duration > 0) {
+                gameEndTime = now + duration * 1000;
+                timeLeft = duration;
+            }
+        }
+
+        set({
+            questionStartTime: now,
+            gameEndTime,
+            timeLeft
         });
     }
 }));
