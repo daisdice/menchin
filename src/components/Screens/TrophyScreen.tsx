@@ -24,7 +24,7 @@ export const TrophyScreen: React.FC = () => {
                 </p>
             </div>
 
-            <div className={styles.trophyGrid}>
+            <div className={styles.trophyList}>
                 {TROPHIES.map((trophy) => {
                     const isUnlocked = unlockedTrophies.includes(trophy.id);
                     const unlockDate = trophyUnlockDates[trophy.id];
@@ -39,12 +39,12 @@ export const TrophyScreen: React.FC = () => {
                                 <p className={styles.trophyDescription}>
                                     {isUnlocked || !trophy.hidden ? trophy.description : '???'}
                                 </p>
-                                {isUnlocked && unlockDate && (
-                                    <p className={styles.unlockDate}>
-                                        {formatDate(unlockDate)}
-                                    </p>
-                                )}
                             </div>
+                            {isUnlocked && unlockDate && (
+                                <div className={styles.unlockDate}>
+                                    {formatDate(unlockDate)}
+                                </div>
+                            )}
                         </Card>
                     );
                 })}
