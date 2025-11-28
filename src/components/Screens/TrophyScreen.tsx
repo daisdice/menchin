@@ -33,7 +33,7 @@ export const TrophyScreen: React.FC = () => {
                             key={trophy.id}
                             className={`${styles.trophyCard} ${!isUnlocked ? styles.locked : ''}`}
                         >
-                            <div className={styles.trophyIcon}>{trophy.icon}</div>
+
                             <div className={styles.trophyInfo}>
                                 <div className={styles.trophyInfoHeader}>
                                     <h3 className={styles.trophyTitle}>{trophy.title}</h3>
