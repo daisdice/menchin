@@ -377,7 +377,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         }
 
         // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
-        const { mode, difficulty, score, isClear, correctCount, incorrectCount } = get();
+        const { mode, difficulty, score, isClear } = get();
         if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
             // Save Record if clear
             if (isClear) {
@@ -390,25 +390,10 @@ export const useGameStore = create<GameState>((set, get) => ({
                 saveRecord(record);
             }
 
-            // Calculate totalResponseTime and fastBonuses from question results in this session
-            const allResults = getQuestionResults();
-            const sessionResults = allResults.filter(r => r.mode === mode && r.difficulty === difficulty);
-
-            // Get only recent session results (last N questions matching current game)
-            const sessionSize = correctCount + incorrectCount;
-            const recentResults = sessionResults.slice(-sessionSize);
-
-            const totalResponseTime = recentResults.reduce((sum, r) => sum + r.responseTime, 0);
-            const fastBonuses = recentResults.filter(r => r.fastBonus).length;
-
-            // Update Mode Stats
+            // Update Mode Stats (only game-level stats)
             updateModeStats(mode, difficulty, {
                 attempts: 1,
                 clears: isClear ? 1 : 0,
-                totalQuestions: correctCount + incorrectCount,
-                correctAnswers: correctCount,
-                totalResponseTime,
-                fastBonuses,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
         }
@@ -540,6 +525,14 @@ export const useGameStore = create<GameState>((set, get) => ({
                     fastBonus: fastBonus > 0,
                     timestamp: Date.now()
                 });
+
+                // Update mode stats immediately
+                updateModeStats(mode, difficulty, {
+                    totalQuestions: 1,
+                    correctAnswers: 1,
+                    totalResponseTime: timeSpent,
+                    fastBonuses: fastBonus > 0 ? 1 : 0
+                });
             }
 
             return {
@@ -582,6 +575,14 @@ export const useGameStore = create<GameState>((set, get) => ({
                     responseTime: timeSpent,
                     fastBonus: false,
                     timestamp: Date.now()
+                });
+
+                // Update mode stats immediately
+                updateModeStats(mode, difficulty, {
+                    totalQuestions: 1,
+                    correctAnswers: 0,
+                    totalResponseTime: timeSpent,
+                    fastBonuses: 0
                 });
             }
 
