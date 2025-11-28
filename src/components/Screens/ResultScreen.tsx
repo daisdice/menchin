@@ -5,11 +5,12 @@ import { useGameStore } from '../../store/useGameStore';
 import { useAppStore } from '../../store/useAppStore';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
+import { TROPHIES } from '../../data/trophies';
 import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear } = useGameStore();
+    const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear, newlyUnlockedTrophies, clearNewlyUnlockedTrophies } = useGameStore();
     const { saveScore } = useAppStore();
 
     const isNewRecord = React.useMemo(() => {
@@ -21,6 +22,13 @@ export const ResultScreen: React.FC = () => {
     useEffect(() => {
         saveScore(difficulty, score);
     }, [score, difficulty, saveScore]);
+
+    // Clear newly unlocked trophies when leaving the result screen
+    useEffect(() => {
+        return () => {
+            clearNewlyUnlockedTrophies();
+        };
+    }, [clearNewlyUnlockedTrophies]);
 
     const handleRetry = () => {
         resetGame();
@@ -35,20 +43,20 @@ export const ResultScreen: React.FC = () => {
 
     const handleShare = () => {
         const status = isClear ? 'CLEARED! 🎉' : 'FAILED... 😢';
-        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n`;
+        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\\n\\n`;
 
         if (mode === 'sprint') {
-            text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\n`;
+            text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\\n`;
         } else if (mode === 'survival') {
-            text += `🔥 SURVIVED: ${score} Hands\n`;
+            text += `🔥 SURVIVED: ${score} Hands\\n`;
         } else {
-            text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
+            text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\\n`;
             if (lastScoreBreakdown) {
-                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
+                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\\n`;
             }
         }
 
-        text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
+        text += `\\nhttps://daisdice.github.io/menchin/\\n#CHINIT #Mahjong`;
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
@@ -368,7 +376,32 @@ export const ResultScreen: React.FC = () => {
                         </GameButton>
                     )}
                 </div>
-            </Card >
-        </div >
+            </Card>
+
+            {/* Trophy Toast Notifications */}
+            {newlyUnlockedTrophies.length > 0 && (
+                <div className={styles.trophyToasts}>
+                    {newlyUnlockedTrophies.map((trophyId, index) => {
+                        const trophy = TROPHIES.find(t => t.id === trophyId);
+                        if (!trophy) return null;
+                        return (
+                            <motion.div
+                                key={trophyId}
+                                initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ delay: index * 0.3, duration: 0.5 }}
+                                className={styles.trophyToast}
+                            >
+                                <div className={styles.trophyToastIcon}>{trophy.icon}</div>
+                                <div className={styles.trophyToastContent}>
+                                    <div className={styles.trophyToastLabel}>TROPHY UNLOCKED!</div>
+                                    <div className={styles.trophyToastTitle}>{trophy.title}</div>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
     );
 };

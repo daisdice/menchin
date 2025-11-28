@@ -216,3 +216,64 @@
     font-size: 0.9rem;
     color: var(--color-text);
 }
+
+/* Trophy Toast Notifications */
+.trophyToasts {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 9999;
+}
+
+.trophyToast {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.trophyToastIcon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.trophyToastContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.trophyToastLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+}
+
+.trophyToastTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+}
+
+@media (max-width: 768px) {
+    .trophyToasts {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+    }
+
+    .trophyToast {
+        min-width: auto;
+        max-width: 100%;
+    }
+}

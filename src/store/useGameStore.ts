@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Tile, Hand } from '../utils/mahjong';
 import { Mahjong } from '../utils/mahjong';
+import { TROPHIES, checkTrophyUnlock } from '../data/trophies';
 
 export type Difficulty = 'beginner' | 'amateur' | 'normal' | 'expert' | 'master';
 export type GameMode = 'challenge' | 'sprint' | 'survival' | 'practice';
@@ -182,6 +183,8 @@ interface GameState {
         incorrectCount?: number;
         totalQuestions?: number;
     } | null;
+    unlockedTrophies: string[]; // Array of trophy IDs
+    newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -192,9 +195,28 @@ interface GameState {
     tick: () => void;
     resetGame: () => void;
     startGameTimer: () => void;
+    checkAndUnlockTrophies: () => void;
+    clearNewlyUnlockedTrophies: () => void;
 }
 
 const INITIAL_LIVES = 3;
+const TROPHY_STORAGE_KEY = 'menchin_unlocked_trophies';
+
+// Load unlocked trophies from localStorage
+const loadUnlockedTrophies = (): string[] => {
+    const stored = localStorage.getItem(TROPHY_STORAGE_KEY);
+    if (!stored) return [];
+    try {
+        return JSON.parse(stored) as string[];
+    } catch {
+        return [];
+    }
+};
+
+// Save unlocked trophies to localStorage
+const saveUnlockedTrophies = (trophies: string[]): void => {
+    localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophies));
+};
 
 export const useGameStore = create<GameState>((set, get) => ({
     isPlaying: false,
@@ -213,6 +235,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     isClear: false,
     lastScoreBreakdown: null,
     sprintTimes: [],
+    unlockedTrophies: loadUnlockedTrophies(),
+    newlyUnlockedTrophies: [],
 
     gameEndTime: 0,
 
@@ -397,6 +421,9 @@ export const useGameStore = create<GameState>((set, get) => ({
                 clears: isClear ? 1 : 0,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
+
+            // Check and unlock trophies
+            get().checkAndUnlockTrophies();
         }
     },
 
@@ -651,5 +678,36 @@ export const useGameStore = create<GameState>((set, get) => ({
             gameEndTime,
             timeLeft
         });
+    },
+
+    checkAndUnlockTrophies: () => {
+        const { mode, difficulty, isClear, unlockedTrophies } = get();
+        const gameState = { mode, difficulty, isClear };
+        const newlyUnlocked: string[] = [];
+
+        // Check all trophies
+        for (const trophy of TROPHIES) {
+            // Skip if already unlocked
+            if (unlockedTrophies.includes(trophy.id)) continue;
+
+            // Check if trophy should be unlocked
+            if (checkTrophyUnlock(trophy.id, gameState)) {
+                newlyUnlocked.push(trophy.id);
+            }
+        }
+
+        // Update state if any trophies were unlocked
+        if (newlyUnlocked.length > 0) {
+            const updatedUnlockedTrophies = [...unlockedTrophies, ...newlyUnlocked];
+            saveUnlockedTrophies(updatedUnlockedTrophies);
+            set({
+                unlockedTrophies: updatedUnlockedTrophies,
+                newlyUnlockedTrophies: newlyUnlocked
+            });
+        }
+    },
+
+    clearNewlyUnlockedTrophies: () => {
+        set({ newlyUnlockedTrophies: [] });
     }
 }));

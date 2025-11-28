@@ -8,7 +8,7 @@ import { ResultScreen } from './components/Screens/ResultScreen';
 import { OptionsScreen } from './components/Screens/OptionsScreen';
 import { RecordScreen } from './components/Screens/RecordScreen';
 import { SummaryScreen } from './components/Screens/SummaryScreen';
-import { PlaceholderScreen } from './components/Screens/PlaceholderScreen';
+import { TrophyScreen } from './components/Screens/TrophyScreen';
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
           <Route path="/options" element={<OptionsScreen />} />
           <Route path="/ranking" element={<RecordScreen />} />
           <Route path="/stats" element={<SummaryScreen />} />
-          <Route path="/trophies" element={<PlaceholderScreen title="TROPHY" />} />
+          <Route path="/trophies" element={<TrophyScreen />} />
         </Routes>
       </MainLayout>
     </HashRouter>
