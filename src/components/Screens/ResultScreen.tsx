@@ -23,20 +23,15 @@ export const ResultScreen: React.FC = () => {
         saveScore(difficulty, score);
     }, [score, difficulty, saveScore]);
 
-    // Clear newly unlocked trophies when leaving the result screen
-    useEffect(() => {
-        return () => {
-            clearNewlyUnlockedTrophies();
-        };
-    }, [clearNewlyUnlockedTrophies]);
-
     const handleRetry = () => {
+        clearNewlyUnlockedTrophies();
         resetGame();
         useGameStore.getState().startGame(mode, difficulty);
         navigate('/game');
     };
 
     const handleTitle = () => {
+        clearNewlyUnlockedTrophies();
         resetGame();
         navigate('/');
     };
