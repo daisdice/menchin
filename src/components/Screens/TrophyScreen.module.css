@@ -100,38 +100,6 @@
 
 .trophyTitle {
     font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-    color: #ffd700;
-    line-height: 1.2;
-}
-
-.trophyDescription {
-    font-size: 0.85rem;
-    margin: 0;
-    color: #adb5bd;
-    line-height: 1.4;
-}
-
-.unlockDate {
-    font-size: 0.85rem;
-    color: #6c757d;
-    font-style: italic;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.actions {
-    width: 100%;
-    max-width: 400px;
-    flex-shrink: 0;
-}
-
-@media (max-width: 600px) {
-    .container {
-        padding: 1rem;
-        gap: 1rem;
-    }
 
     .title {
         font-size: 2rem;
