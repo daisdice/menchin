@@ -37,7 +37,6 @@
     overflow-y: auto;
     flex: 1;
     padding: 0.5rem;
-    /* Add padding for scrollbar spacing and shadow visibility */
 }
 
 /* Custom Scrollbar */
@@ -67,7 +66,6 @@
     padding: 1rem;
     transition: transform 0.2s, box-shadow 0.2s;
     min-height: 80px;
-    /* Ensure consistent height */
 }
 
 .trophyCard:hover {
@@ -87,19 +85,41 @@
     gap: 0.25rem;
     flex: 1;
     min-width: 0;
-    /* Prevent overflow */
-}
-
-.trophyInfoHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    width: 100%;
 }
 
 .trophyTitle {
     font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    color: #ffd700;
+    line-height: 1.2;
+}
+
+.trophyDescription {
+    font-size: 0.85rem;
+    margin: 0;
+    color: #adb5bd;
+    line-height: 1.4;
+}
+
+.unlockDate {
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.actions {
+    width: 100%;
+    max-width: 400px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem;
+        gap: 1rem;
+    }
 
     .title {
         font-size: 2rem;
@@ -108,12 +128,6 @@
     .trophyCard {
         padding: 0.75rem;
         gap: 0.75rem;
-    }
-
-    .trophyInfoHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
     }
 
     .trophyTitle {
@@ -125,8 +139,6 @@
     }
 
     .unlockDate {
-        width: 100%;
-        text-align: right;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
     }
 }
