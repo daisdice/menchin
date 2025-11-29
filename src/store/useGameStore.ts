@@ -488,8 +488,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
         const { mode, difficulty, score, isClear, hasErrors } = get();
         if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
-            // Save Record if clear
-            if (isClear) {
+            // Save Record (always for challenge, only on clear for sprint/survival)
+            if (mode === 'challenge' || isClear) {
                 const record: GameRecord = {
                     mode,
                     difficulty,
