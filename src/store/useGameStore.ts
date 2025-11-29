@@ -506,10 +506,10 @@ export const useGameStore = create<GameState>((set, get) => ({
                 noMissClears: (isClear && !hasErrors) ? 1 : 0,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
-
-            // Check and unlock trophies
-            get().checkAndUnlockTrophies();
         }
+
+        // Check and unlock trophies (for all modes including practice)
+        get().checkAndUnlockTrophies();
     },
 
     nextHand: () => {
