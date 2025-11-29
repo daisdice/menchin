@@ -889,7 +889,7 @@ export const checkTrophyUnlock = (
     }
 
     // ========== SURVIVAL MODE ==========
-    if (trophyId.startsWith('SURVIVAL_CORRECT_')) {
+    if (trophyId.startsWith('SURVIVAL_CORRECT_') && mode === 'survival') {
         const correctThresholds: Record<string, number> = {
             'SURVIVAL_CORRECT_BEGINNER_BRONZE': 5,
             'SURVIVAL_CORRECT_BEGINNER_SILVER': 15,
@@ -909,9 +909,7 @@ export const checkTrophyUnlock = (
         };
         const threshold = correctThresholds[trophyId];
         const diff = trophyId.split('_')[2].toLowerCase() as Difficulty;
-        const key = `survival_${diff}`;
-        const stats = modeStats[key];
-        return stats && stats.correctAnswers >= threshold;
+        return difficulty === diff && score >= threshold;
     }
 
     // ========== PRACTICE MODE ==========
