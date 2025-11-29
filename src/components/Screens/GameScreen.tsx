@@ -11,6 +11,7 @@ export const GameScreen: React.FC = () => {
     const navigate = useNavigate();
     const {
         currentHand,
+        currentWaits,
         gameEndTime,
         score,
         lives,
@@ -23,6 +24,7 @@ export const GameScreen: React.FC = () => {
         difficulty,
         correctCount,
         isGameOver,
+        isTimeUp,
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
@@ -99,6 +101,20 @@ export const GameScreen: React.FC = () => {
         const interval = setInterval(() => tick(), 100);
         return () => clearInterval(interval);
     }, [isPlaying, isGameOver, navigate, tick, countdown]);
+
+    // Handle Time Up
+    useEffect(() => {
+        if (isTimeUp && !feedback) {
+            setFeedback({
+                type: 'incorrect',
+                message: `TIME UP... ANSWER: ${currentWaits.join(', ')}`,
+            });
+            setTimeout(() => {
+                setFeedback(null);
+                useGameStore.getState().endGame();
+            }, 2000);
+        }
+    }, [isTimeUp, feedback, currentWaits]);
 
     // End condition for survival/practice
     useEffect(() => {

@@ -242,6 +242,7 @@ interface GameState {
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
     hasErrors: boolean; // Track if any mistakes were made in current game
     pendingGameEnd: boolean; // Game end is pending, will transition after feedback
+    isTimeUp: boolean; // Track if time ran out
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -314,6 +315,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     newlyUnlockedTrophies: [],
     hasErrors: false,
     pendingGameEnd: false,
+    isTimeUp: false,
 
     gameEndTime: 0,
 
@@ -359,7 +361,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             lastScoreBreakdown: null,
             sprintTimes: [],
             hasErrors: false,
-            pendingGameEnd: false
+            pendingGameEnd: false,
+            isTimeUp: false
         });
 
         // Update practice mode stats
@@ -731,7 +734,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({ timeLeft: remaining });
 
                 if (remaining <= 0) {
-                    get().endGame();
+                    set({ isTimeUp: true, pendingGameEnd: true });
                 }
             }
         }
