@@ -241,8 +241,7 @@ interface GameState {
     trophyUnlockDates: Record<string, number>; // Map of trophy ID to unlock timestamp
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
     hasErrors: boolean; // Track if any mistakes were made in current game
-    pendingGameEnd: boolean; // Game end is pending, will transition after feedback
-    isTimeUp: boolean; // Track if time ran out
+    fastBonusCount: number; // Track number of FAST bonuses in current game
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -314,8 +313,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     trophyUnlockDates: loadTrophyDates(),
     newlyUnlockedTrophies: [],
     hasErrors: false,
-    pendingGameEnd: false,
-    isTimeUp: false,
+    fastBonusCount: 0,
 
     gameEndTime: 0,
 
@@ -361,8 +359,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             lastScoreBreakdown: null,
             sprintTimes: [],
             hasErrors: false,
-            pendingGameEnd: false,
-            isTimeUp: false
+            fastBonusCount: 0
         });
 
         // Update practice mode stats
@@ -512,10 +509,10 @@ export const useGameStore = create<GameState>((set, get) => ({
                 noMissClears: (isClear && !hasErrors) ? 1 : 0,
                 bestScore: (mode === 'sprint' && !isClear) ? undefined : score
             });
-        }
 
-        // Check and unlock trophies (for all modes including practice)
-        get().checkAndUnlockTrophies();
+            // Check and unlock trophies
+            get().checkAndUnlockTrophies();
+        }
     },
 
     nextHand: () => {
@@ -593,7 +590,8 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({
                     score: score + points,
                     correctCount: newCorrectCount,
-                    sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes
+                    sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes,
+                    fastBonusCount: fastBonus > 0 ? get().fastBonusCount + 1 : get().fastBonusCount
                 });
             }
 
@@ -615,7 +613,6 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({
                     score: totalScore,
                     isClear: true,
-                    pendingGameEnd: true,
                     lastScoreBreakdown: {
                         baseScore: score + points,
                         clearBonus,
@@ -629,9 +626,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             }
 
             // Check Clear Condition for SPRINT
-            if (mode === 'sprint' && newCorrectCount >= 10) {
-                set({ pendingGameEnd: true });
-            }
+            const isSprintEnd = mode === 'sprint' && newCorrectCount >= 10;
 
             // Save question result for statistics (exclude practice mode)
             if (mode !== 'practice') {
@@ -672,7 +667,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 bonuses: mode === 'survival'
                     ? [`+${currentWaits.length + 1} s`]
                     : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean),
-                gameEnding: (mode === 'challenge' && newCorrectCount >= 10) || (mode === 'sprint' && newCorrectCount >= 10)
+                gameEnding: (mode === 'challenge' && newCorrectCount >= 10) || isSprintEnd
             };
 
         } else {
@@ -687,8 +682,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             set({
                 lives: newLives,
                 incorrectCount: get().incorrectCount + 1,
-                hasErrors: true,
-                pendingGameEnd: newLives <= 0
+                hasErrors: true
             });
 
             // Save question result for statistics (exclude practice mode)
@@ -734,7 +728,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({ timeLeft: remaining });
 
                 if (remaining <= 0) {
-                    set({ isTimeUp: true, pendingGameEnd: true });
+                    get().endGame();
                 }
             }
         }
@@ -781,7 +775,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     checkAndUnlockTrophies: () => {
-        const { mode, difficulty, isClear, score, hasErrors, unlockedTrophies, trophyUnlockDates, sprintTimes } = get();
+        const { mode, difficulty, isClear, score, hasErrors, fastBonusCount, unlockedTrophies, trophyUnlockDates, sprintTimes } = get();
 
         // Calculate total time for sprint mode
         const totalTime = sprintTimes.reduce((sum, time) => sum + time, 0);
@@ -792,6 +786,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             isClear,
             score,
             hasErrors,
+            fastBonusCount,
             totalTime: totalTime / 1000 // Convert to seconds
         };
 

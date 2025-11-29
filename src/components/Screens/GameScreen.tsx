@@ -11,7 +11,6 @@ export const GameScreen: React.FC = () => {
     const navigate = useNavigate();
     const {
         currentHand,
-        currentWaits,
         gameEndTime,
         score,
         lives,
@@ -24,7 +23,6 @@ export const GameScreen: React.FC = () => {
         difficulty,
         correctCount,
         isGameOver,
-        isTimeUp,
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
@@ -47,9 +45,18 @@ export const GameScreen: React.FC = () => {
         } else {
             const timer = setTimeout(() => {
                 setCountdown(null);
-
-                // Start game timer (resets questionStartTime and sets gameEndTime/timeLeft atomically)
-                useGameStore.getState().startGameTimer();
+                // SPRINT mode: set start time for count-up timer
+                if (mode === 'sprint') {
+                    const startTime = Date.now();
+                    useGameStore.setState({ gameEndTime: startTime, timeLeft: 0 });
+                } else {
+                    // CHALLENGE or SURVIVAL mode: set end time for countdown timer
+                    const duration = mode === 'challenge' ? 120 : (mode === 'survival' ? 30 : 0);
+                    if (duration > 0) {
+                        const newEndTime = Date.now() + duration * 1000;
+                        useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration });
+                    }
+                }
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -101,20 +108,6 @@ export const GameScreen: React.FC = () => {
         const interval = setInterval(() => tick(), 100);
         return () => clearInterval(interval);
     }, [isPlaying, isGameOver, navigate, tick, countdown]);
-
-    // Handle Time Up
-    useEffect(() => {
-        if (isTimeUp && !feedback) {
-            setFeedback({
-                type: 'incorrect',
-                message: `TIME UP... ANSWER: ${currentWaits.join(', ')}`,
-            });
-            setTimeout(() => {
-                setFeedback(null);
-                useGameStore.getState().endGame();
-            }, 2000);
-        }
-    }, [isTimeUp, feedback, currentWaits]);
 
     // End condition for survival/practice
     useEffect(() => {

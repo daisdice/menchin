@@ -237,6 +237,51 @@ export const TROPHIES: Trophy[] = [
         hidden: false,
         category: 'challenge'
     },
+    {
+        id: 'CHALLENGE_ALL_FAST_BEGINNER',
+        title: '初級神速',
+        description: 'チャレンジモード（初級）で全問FASTボーナスを獲得してクリア',
+        icon: '⚡',
+        hidden: false,
+        category: 'challenge',
+        tier: 'silver'
+    },
+    {
+        id: 'CHALLENGE_ALL_FAST_AMATEUR',
+        title: '中級神速',
+        description: 'チャレンジモード（中級）で全問FASTボーナスを獲得してクリア',
+        icon: '⚡',
+        hidden: false,
+        category: 'challenge',
+        tier: 'silver'
+    },
+    {
+        id: 'CHALLENGE_ALL_FAST_NORMAL',
+        title: '上級神速',
+        description: 'チャレンジモード（上級）で全問FASTボーナスを獲得してクリア',
+        icon: '⚡',
+        hidden: false,
+        category: 'challenge',
+        tier: 'gold'
+    },
+    {
+        id: 'CHALLENGE_ALL_FAST_EXPERT',
+        title: '達人神速',
+        description: 'チャレンジモード（達人）で全問FASTボーナスを獲得してクリア',
+        icon: '⚡',
+        hidden: false,
+        category: 'challenge',
+        tier: 'gold'
+    },
+    {
+        id: 'CHALLENGE_ALL_FAST_MASTER',
+        title: '師範神速',
+        description: 'チャレンジモード（師範）で全問FASTボーナスを獲得してクリア',
+        icon: '⚡',
+        hidden: false,
+        category: 'challenge',
+        tier: 'gold'
+    },
 
     // Cumulative FAST Bonus (3)
     {
@@ -764,6 +809,7 @@ export interface GameStateForTrophyCheck {
     isClear: boolean;
     score?: number;
     hasErrors?: boolean;
+    fastBonusCount?: number;
     totalTime?: number; // For sprint mode
 }
 
@@ -774,7 +820,7 @@ export const checkTrophyUnlock = (
     modeStats: Record<string, ModeStats>,
     globalStats: GlobalStats
 ): boolean => {
-    const { mode, difficulty, isClear, score = 0, hasErrors = false, totalTime = Infinity } = gameState;
+    const { mode, difficulty, isClear, score = 0, hasErrors = false, fastBonusCount = 0, totalTime = Infinity } = gameState;
 
     // Platinum trophy - check if all other trophies are unlocked
     if (trophyId === 'PLATINUM_ALL_TROPHIES') {
@@ -825,6 +871,18 @@ export const checkTrophyUnlock = (
             'CHALLENGE_NOMISS_MASTER': 'master'
         };
         return diffMap[trophyId] === difficulty;
+    }
+
+    if (trophyId.startsWith('CHALLENGE_ALL_FAST_') && mode === 'challenge' && isClear) {
+        const diffMap: Record<string, Difficulty> = {
+            'CHALLENGE_ALL_FAST_BEGINNER': 'beginner',
+            'CHALLENGE_ALL_FAST_AMATEUR': 'amateur',
+            'CHALLENGE_ALL_FAST_NORMAL': 'normal',
+            'CHALLENGE_ALL_FAST_EXPERT': 'expert',
+            'CHALLENGE_ALL_FAST_MASTER': 'master'
+        };
+        // 全問正解かつ全問FASTボーナス (10問)
+        return diffMap[trophyId] === difficulty && fastBonusCount >= 10;
     }
 
     if (trophyId.startsWith('FAST_BONUS_')) {
