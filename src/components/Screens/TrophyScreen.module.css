@@ -117,7 +117,7 @@
 
 @media (max-width: 600px) {
     .container {
-        padding: 1rem;
+        padding: 1rem 0.5rem 0.5rem;
         gap: 1rem;
     }
 
@@ -140,5 +140,9 @@
 
     .unlockDate {
         font-size: 0.65rem;
+    }
+
+    .actions {
+        margin-bottom: 0.5rem;
     }
 }
