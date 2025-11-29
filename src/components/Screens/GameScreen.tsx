@@ -143,7 +143,9 @@ export const GameScreen: React.FC = () => {
             }
             setTimeout(() => {
                 setFeedback(null);
-                if (useGameStore.getState().isPlaying) {
+                if (result.gameEnding) {
+                    useGameStore.getState().endGame();
+                } else if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
                 }
             }, 1000);
@@ -154,7 +156,9 @@ export const GameScreen: React.FC = () => {
             });
             setTimeout(() => {
                 setFeedback(null);
-                if (useGameStore.getState().isPlaying) {
+                if (result.gameEnding) {
+                    useGameStore.getState().endGame();
+                } else if (useGameStore.getState().isPlaying) {
                     useGameStore.getState().nextHand();
                 }
             }, 2000);

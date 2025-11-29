@@ -241,13 +241,14 @@ interface GameState {
     trophyUnlockDates: Record<string, number>; // Map of trophy ID to unlock timestamp
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
     hasErrors: boolean; // Track if any mistakes were made in current game
+    pendingGameEnd: boolean; // Game end is pending, will transition after feedback
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
     endGame: (forceClear?: boolean) => void;
     nextHand: () => void;
     toggleWait: (tile: Tile) => void;
-    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; timeSpent?: number; bonuses?: string[] };
+    submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; timeSpent?: number; bonuses?: string[]; gameEnding?: boolean };
     tick: () => void;
     resetGame: () => void;
     startGameTimer: () => void;
@@ -312,6 +313,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     trophyUnlockDates: loadTrophyDates(),
     newlyUnlockedTrophies: [],
     hasErrors: false,
+    pendingGameEnd: false,
 
     gameEndTime: 0,
 
@@ -356,7 +358,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             isClear: false,
             lastScoreBreakdown: null,
             sprintTimes: [],
-            hasErrors: false
+            hasErrors: false,
+            pendingGameEnd: false
         });
 
         // Update practice mode stats
@@ -609,6 +612,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({
                     score: totalScore,
                     isClear: true,
+                    pendingGameEnd: true,
                     lastScoreBreakdown: {
                         baseScore: score + points,
                         clearBonus,
@@ -619,12 +623,11 @@ export const useGameStore = create<GameState>((set, get) => ({
                         lives
                     }
                 });
-                get().endGame();
             }
 
             // Check Clear Condition for SPRINT
             if (mode === 'sprint' && newCorrectCount >= 10) {
-                get().endGame();
+                set({ pendingGameEnd: true });
             }
 
             // Save question result for statistics (exclude practice mode)
@@ -665,7 +668,8 @@ export const useGameStore = create<GameState>((set, get) => ({
                 timeSpent,
                 bonuses: mode === 'survival'
                     ? [`+${currentWaits.length + 1} s`]
-                    : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean)
+                    : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean),
+                gameEnding: (mode === 'challenge' && newCorrectCount >= 10) || (mode === 'sprint' && newCorrectCount >= 10)
             };
 
         } else {
@@ -680,12 +684,9 @@ export const useGameStore = create<GameState>((set, get) => ({
             set({
                 lives: newLives,
                 incorrectCount: get().incorrectCount + 1,
-                hasErrors: true
+                hasErrors: true,
+                pendingGameEnd: newLives <= 0
             });
-
-            if (newLives <= 0) {
-                get().endGame();
-            }
 
             // Save question result for statistics (exclude practice mode)
             if (mode !== 'practice') {
@@ -713,7 +714,8 @@ export const useGameStore = create<GameState>((set, get) => ({
                 correct: false,
                 correctWaits: currentWaits,
                 points: 0,
-                bonuses: []
+                bonuses: [],
+                gameEnding: newLives <= 0
             };
         }
     },
