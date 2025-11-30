@@ -1,20 +1,21 @@
 .container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    height: 100%;
+    align-items: center;
+    min-height: 100vh;
     width: 100%;
-    padding-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .resultCard {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
 }
 
 /* Header */
@@ -27,11 +28,12 @@
 }
 
 .title {
-    font-size: 1.75rem;
+    font-size: 2rem;
     color: var(--color-text);
     margin: 0;
-    letter-spacing: 0.1em;
-    font-weight: 800;
+    letter-spacing: 0.15em;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .badges {
@@ -46,10 +48,10 @@
     font-size: 0.8rem;
     padding: 4px 12px;
     border-radius: 12px;
-    background-color: var(--color-background);
-    color: var(--color-text-light);
+    background-color: rgba(78, 205, 196, 0.1);
+    color: var(--color-text);
     font-weight: 700;
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-accent-cyan);
 }
 
 /* Status */
@@ -61,7 +63,7 @@
 }
 
 .statusClear {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: var(--color-accent-yellow);
     margin: 0;
     font-weight: 900;
@@ -83,8 +85,9 @@
     gap: 8px;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.02);
-    padding: 16px;
-    border-radius: 12px;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-border);
 }
 
 .scoreRow {
@@ -96,15 +99,18 @@
 }
 
 .label {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--color-text-light);
     letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
 .value {
-    font-weight: 700;
+    font-weight: 800;
     font-family: monospace;
     font-size: 1.1rem;
+    color: var(--color-text);
 }
 
 .divider {
@@ -132,76 +138,35 @@
     font-size: 1.1rem;
     font-weight: 800;
     color: var(--color-text);
+    text-transform: uppercase;
 }
 
 .totalValueContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: var(--spacing-xs);
 }
 
 .totalValue {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 900;
     color: var(--color-accent-cyan);
     line-height: 1;
 }
 
 .newRecordBadge {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     background-color: var(--color-accent-yellow);
     color: var(--color-text);
-    padding: 2px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     font-weight: 800;
-    margin-top: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
 }
 
-/* Unlock Message */
-.unlockMessage {
-    color: var(--color-accent-red);
-    font-weight: 800;
-    font-size: 1rem;
-    text-align: center;
-    animation: pulse 2s infinite;
-}
-
-/* Actions */
-.actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    width: 100%;
-    margin-top: 0;
-}
-
-@keyframes popIn {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
+/* Sprint Grid */
 .sprintGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -217,63 +182,53 @@
     color: var(--color-text);
 }
 
-/* Trophy Toast Notifications */
-.trophyToasts {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+/* Actions */
+.actions {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    z-index: 9999;
+    gap: var(--spacing-sm);
+    width: 100%;
+    margin-top: 0;
 }
 
-.trophyToast {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.95) 0%, rgba(255, 165, 0, 0.95) 100%);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
-    min-width: 300px;
-    max-width: 400px;
-}
-
-.trophyToastIcon {
-    font-size: 2.5rem;
-    flex-shrink: 0;
-}
-
-.trophyToastContent {
-    flex: 1;
-    min-width: 0;
-}
-
-.trophyToastLabel {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #000;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.25rem;
-}
-
-.trophyToastTitle {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #000;
-}
-
-@media (max-width: 768px) {
-    .trophyToasts {
-        bottom: 1rem;
-        right: 1rem;
-        left: 1rem;
+/* Animations */
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
     }
 
-    .trophyToast {
-        min-width: auto;
-        max-width: 100%;
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-sm);
+        align-items: flex-start;
+    }
+
+    .resultCard {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .statusClear {
+        font-size: 2rem;
+    }
+
+    .statusFailed {
+        font-size: 1.5rem;
+    }
+
+    .totalValue {
+        font-size: 2rem;
     }
 }

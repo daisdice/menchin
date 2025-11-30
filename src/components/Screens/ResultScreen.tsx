@@ -5,7 +5,7 @@ import { useGameStore } from '../../store/useGameStore';
 import { useAppStore } from '../../store/useAppStore';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
-import { TROPHIES } from '../../data/trophies';
+import { TrophyToastContainer } from '../UI/TrophyToastContainer';
 import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
@@ -375,32 +375,7 @@ export const ResultScreen: React.FC = () => {
 
             {/* Trophy Toast Notifications */}
             {newlyUnlockedTrophies.length > 0 && (
-                <div className={styles.trophyToasts}>
-                    {newlyUnlockedTrophies.map((trophyId, index) => {
-                        const trophy = TROPHIES.find(t => t.id === trophyId);
-                        if (!trophy) return null;
-                        return (
-                            <motion.div
-                                key={trophyId}
-                                initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ delay: index * 0.3, duration: 0.5 }}
-                                className={styles.trophyToast}
-                            >
-                                <div className={styles.trophyToastIcon}>
-                                    {trophy.tier === 'bronze' && '🥉'}
-                                    {trophy.tier === 'silver' && '🥈'}
-                                    {trophy.tier === 'gold' && '🥇'}
-                                    {trophy.tier === 'platinum' && '🏆'}
-                                </div>
-                                <div className={styles.trophyToastContent}>
-                                    <div className={styles.trophyToastLabel}>TROPHY UNLOCKED!</div>
-                                    <div className={styles.trophyToastTitle}>{trophy.title}</div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </div>
+                <TrophyToastContainer trophyIds={newlyUnlockedTrophies} />
             )}
         </div>
     );
