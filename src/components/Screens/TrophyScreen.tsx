@@ -18,6 +18,8 @@ export const TrophyScreen: React.FC = () => {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
         });
     };
 
@@ -42,7 +44,7 @@ export const TrophyScreen: React.FC = () => {
                 <div className={styles.header}>
                     <h1 className={styles.title}>TROPHIES</h1>
                     <div className={styles.subtitle}>
-                        {unlockedTrophies.length} / {TROPHIES.length} UNLOCKED
+                        {unlockedTrophies.length} / {TROPHIES.length} ACHIEVED
                     </div>
                 </div>
 
@@ -99,7 +101,7 @@ export const TrophyScreen: React.FC = () => {
                                     </p>
                                     {isUnlocked && unlockDate && (
                                         <span className={styles.unlockDate}>
-                                            UNLOCKED: {formatDate(unlockDate)}
+                                            ACHIEVED: {formatDate(unlockDate)}
                                         </span>
                                     )}
                                 </div>
