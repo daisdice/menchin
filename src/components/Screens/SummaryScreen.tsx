@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '../UI/Card';
 import { GameButton } from '../UI/GameButton';
 import type {
     Difficulty,
@@ -71,12 +70,12 @@ export const SummaryScreen: React.FC = () => {
         };
 
         return (
-            <>
+            <div className={styles.statsContainer}>
                 <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>BASE</h3>
                 </div>
                 <div className={styles.statsGrid}>
-                    <div className={styles.statItem}>
+                    <div className={styles.statCard}>
                         <span className={styles.statLabel}>ACCURACY</span>
                         <span className={styles.statValue}>
                             {stats.accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
@@ -85,7 +84,7 @@ export const SummaryScreen: React.FC = () => {
                             ({stats.correctAnswers}/{stats.totalQuestions})
                         </span>
                     </div>
-                    <div className={styles.statItem}>
+                    <div className={styles.statCard}>
                         <span className={styles.statLabel}>AVG TIME</span>
                         <span className={styles.statValue}>
                             {stats.avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
@@ -96,14 +95,14 @@ export const SummaryScreen: React.FC = () => {
                 <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>TROPHY</h3>
                 </div>
-                <div className={styles.trophyStatsContainer}>
+                <div className={styles.trophyContainer}>
                     {(() => {
                         const trophyStats = getTrophyStats();
                         const rate = trophyStats.total > 0 ? (trophyStats.unlocked / trophyStats.total * 100) : 0;
                         return (
                             <>
-                                <div className={styles.statItem}>
-                                    <span className={styles.statLabel}>OVERALL</span>
+                                <div className={styles.statCard}>
+                                    <span className={styles.statLabel}>OVERALL RATE</span>
                                     <span className={styles.statValue}>
                                         {rate.toFixed(1)}<span className={styles.statUnit}>%</span>
                                     </span>
@@ -111,12 +110,12 @@ export const SummaryScreen: React.FC = () => {
                                         ({trophyStats.unlocked}/{trophyStats.total})
                                     </span>
                                 </div>
-                                <div className={styles.tierStatsGrid}>
+                                <div className={styles.tierGrid}>
                                     {(['bronze', 'silver', 'gold', 'platinum'] as const).map(tier => {
                                         const tierStats = trophyStats.byTier[tier];
                                         const tierRate = tierStats.total > 0 ? (tierStats.unlocked / tierStats.total * 100) : 0;
                                         return (
-                                            <div key={tier} className={styles.tierStatItem}>
+                                            <div key={tier} className={`${styles.tierCard} ${styles[`tier${tier.charAt(0).toUpperCase() + tier.slice(1)}`]}`}>
                                                 <span className={styles.tierLabel}>{tier.toUpperCase()}</span>
                                                 <span className={styles.tierValue}>
                                                     {tierRate.toFixed(0)}%
@@ -137,8 +136,8 @@ export const SummaryScreen: React.FC = () => {
                 <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>STATS BY WAIT COUNT</h3>
                 </div>
-                <div className={styles.waitStatsContainer}>
-                    <table className={styles.waitStatsTable}>
+                <div className={styles.tableContainer}>
+                    <table className={styles.statsTable}>
                         <thead>
                             <tr>
                                 <th>WAITS</th>
@@ -161,13 +160,11 @@ export const SummaryScreen: React.FC = () => {
                     </table>
                 </div>
 
-
-
                 <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>STATS BY DIFFICULTY</h3>
                 </div>
-                <div className={styles.difficultyStatsContainer}>
-                    <table className={styles.waitStatsTable}>
+                <div className={styles.tableContainer}>
+                    <table className={styles.statsTable}>
                         <thead>
                             <tr>
                                 <th>DIFFICULTY</th>
@@ -201,7 +198,7 @@ export const SummaryScreen: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-            </>
+            </div>
         );
     };
 
@@ -225,65 +222,67 @@ export const SummaryScreen: React.FC = () => {
             : 0;
 
         return (
-            <div className={styles.statsGrid}>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>ATTEMPTS</span>
-                    <span className={styles.statValue}>{stats.attempts}</span>
-                </div>
+            <div className={styles.statsContainer}>
+                <div className={styles.statsGrid}>
+                    <div className={styles.statCard}>
+                        <span className={styles.statLabel}>ATTEMPTS</span>
+                        <span className={styles.statValue}>{stats.attempts}</span>
+                    </div>
 
-                {activeTab === 'challenge' && (
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>CLEARS</span>
-                        <span className={styles.statValue}>
-                            {stats.clears || 0}
-                            <span className={styles.statUnit}>
+                    {activeTab === 'challenge' && (
+                        <div className={styles.statCard}>
+                            <span className={styles.statLabel}>CLEARS</span>
+                            <span className={styles.statValue}>
+                                {stats.clears || 0}
+                            </span>
+                            <span className={styles.statSubValue}>
                                 ({stats.attempts > 0 ? ((stats.clears || 0) / stats.attempts * 100).toFixed(0) : 0}%)
                             </span>
-                        </span>
-                    </div>
-                )}
+                        </div>
+                    )}
 
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>ACCURACY</span>
-                    <span className={styles.statValue}>
-                        {accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
-                    </span>
-                    <span className={styles.statSubValue}>
-                        ({stats.correctAnswers}/{stats.totalQuestions})
-                    </span>
-                </div>
-
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>AVG TIME</span>
-                    <span className={styles.statValue}>
-                        {avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
-                    </span>
-                </div>
-
-                {activeTab === 'challenge' && (
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>FAST BONUS</span>
+                    <div className={styles.statCard}>
+                        <span className={styles.statLabel}>ACCURACY</span>
                         <span className={styles.statValue}>
-                            {stats.totalQuestions > 0
-                                ? (((stats.fastBonuses || 0) / stats.totalQuestions) * 100).toFixed(1)
-                                : 0}
-                            <span className={styles.statUnit}>%</span>
+                            {accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
                         </span>
                         <span className={styles.statSubValue}>
-                            ({stats.fastBonuses || 0}/{stats.totalQuestions})
+                            ({stats.correctAnswers}/{stats.totalQuestions})
                         </span>
                     </div>
-                )}
 
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>
-                        {activeTab === 'sprint' ? 'BEST TIME' : 'HIGH SCORE'}
-                    </span>
-                    <span className={styles.statValue}>
-                        {activeTab === 'sprint'
-                            ? (stats.bestScore === undefined || stats.bestScore === Infinity ? '-' : `${stats.bestScore?.toFixed(2)}s`)
-                            : (stats.bestScore || 0).toLocaleString()}
-                    </span>
+                    <div className={styles.statCard}>
+                        <span className={styles.statLabel}>AVG TIME</span>
+                        <span className={styles.statValue}>
+                            {avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
+                        </span>
+                    </div>
+
+                    {activeTab === 'challenge' && (
+                        <div className={styles.statCard}>
+                            <span className={styles.statLabel}>FAST BONUS</span>
+                            <span className={styles.statValue}>
+                                {stats.totalQuestions > 0
+                                    ? (((stats.fastBonuses || 0) / stats.totalQuestions) * 100).toFixed(1)
+                                    : 0}
+                                <span className={styles.statUnit}>%</span>
+                            </span>
+                            <span className={styles.statSubValue}>
+                                ({stats.fastBonuses || 0}/{stats.totalQuestions})
+                            </span>
+                        </div>
+                    )}
+
+                    <div className={styles.statCard}>
+                        <span className={styles.statLabel}>
+                            {activeTab === 'sprint' ? 'BEST TIME' : 'HIGH SCORE'}
+                        </span>
+                        <span className={styles.statValue}>
+                            {activeTab === 'sprint'
+                                ? (stats.bestScore === undefined || stats.bestScore === Infinity ? '-' : `${stats.bestScore?.toFixed(2)}s`)
+                                : (stats.bestScore || 0).toLocaleString()}
+                        </span>
+                    </div>
                 </div>
             </div>
         );
@@ -291,34 +290,38 @@ export const SummaryScreen: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <Card className={styles.summaryCard}>
+            <div className={styles.content}>
                 <div className={styles.header}>
                     <h2 className={styles.title}>SUMMARY</h2>
                 </div>
 
-                <div className={styles.tabGroup}>
-                    {(['overall', 'challenge', 'sprint', 'survival'] as Tab[]).map((tab) => (
-                        <button
-                            key={tab}
-                            className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab.toUpperCase()}
-                        </button>
-                    ))}
+                <div className={styles.tabSection}>
+                    <div className={styles.tabGroup}>
+                        {(['overall', 'challenge', 'sprint', 'survival'] as Tab[]).map((tab) => (
+                            <button
+                                key={tab}
+                                className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {activeTab !== 'overall' && (
-                    <div className={styles.tabGroup}>
-                        {(['beginner', 'amateur', 'normal', 'expert', 'master'] as Difficulty[]).map((diff) => (
-                            <button
-                                key={diff}
-                                className={`${styles.tab} ${styles.tabSmall} ${activeDifficulty === diff ? styles.tabActive : ''}`}
-                                onClick={() => setActiveDifficulty(diff)}
-                            >
-                                {diff.toUpperCase()}
-                            </button>
-                        ))}
+                    <div className={styles.tabSection}>
+                        <div className={styles.tabGroup}>
+                            {(['beginner', 'amateur', 'normal', 'expert', 'master'] as Difficulty[]).map((diff) => (
+                                <button
+                                    key={diff}
+                                    className={`${styles.tab} ${styles.tabSmall} ${activeDifficulty === diff ? styles.tabActive : ''}`}
+                                    onClick={() => setActiveDifficulty(diff)}
+                                >
+                                    {diff.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
 
@@ -333,7 +336,7 @@ export const SummaryScreen: React.FC = () => {
                         BACK
                     </GameButton>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };
