@@ -8,7 +8,9 @@ import type {
 } from '../../store/useGameStore';
 import {
     getQuestionResults,
-    getModeStats
+    getModeStats,
+    getTrophyStats,
+    getDifficultyStats
 } from '../../store/useGameStore';
 import styles from './SummaryScreen.module.css';
 
@@ -114,6 +116,62 @@ export const SummaryScreen: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+
+                <div className={styles.trophyStatsContainer}>
+                    <h3 className={styles.sectionTitle}>TROPHY PROGRESS</h3>
+                    {(() => {
+                        const trophyStats = getTrophyStats();
+                        const rate = trophyStats.total > 0 ? (trophyStats.unlocked / trophyStats.total * 100) : 0;
+                        return (
+                            <div className={styles.statItem}>
+                                <span className={styles.statLabel}>TROPHY RATE</span>
+                                <span className={styles.statValue}>
+                                    {rate.toFixed(1)}<span className={styles.statUnit}>%</span>
+                                </span>
+                                <span className={styles.statSubValue}>
+                                    ({trophyStats.unlocked}/{trophyStats.total})
+                                </span>
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                <div className={styles.difficultyStatsContainer}>
+                    <h3 className={styles.sectionTitle}>STATS BY DIFFICULTY</h3>
+                    <table className={styles.waitStatsTable}>
+                        <thead>
+                            <tr>
+                                <th>DIFFICULTY</th>
+                                <th>ACCURACY</th>
+                                <th>AVG TIME</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(() => {
+                                const diffStats = getDifficultyStats();
+                                const difficulties: { id: Difficulty; label: string }[] = [
+                                    { id: 'beginner', label: 'BEGINNER' },
+                                    { id: 'amateur', label: 'AMATEUR' },
+                                    { id: 'normal', label: 'NORMAL' },
+                                    { id: 'expert', label: 'EXPERT' },
+                                    { id: 'master', label: 'MASTER' }
+                                ];
+                                return difficulties.map(diff => {
+                                    const s = diffStats[diff.id];
+                                    const accuracy = s.total > 0 ? (s.correct / s.total * 100) : 0;
+                                    const avgTime = s.total > 0 ? (s.totalTime / s.total) : 0;
+                                    return (
+                                        <tr key={diff.id}>
+                                            <td>{diff.label}</td>
+                                            <td>{accuracy.toFixed(1)}% ({s.correct}/{s.total})</td>
+                                            <td>{avgTime.toFixed(2)}s</td>
+                                        </tr>
+                                    );
+                                });
+                            })()}
+                        </tbody>
+                    </table>
+                </div>
             </>
         );
     };
@@ -144,7 +202,7 @@ export const SummaryScreen: React.FC = () => {
                     <span className={styles.statValue}>{stats.attempts}</span>
                 </div>
 
-                {activeTab !== 'sprint' && (
+                {activeTab === 'challenge' && (
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>CLEARS</span>
                         <span className={styles.statValue}>
@@ -181,6 +239,9 @@ export const SummaryScreen: React.FC = () => {
                                 ? (((stats.fastBonuses || 0) / stats.totalQuestions) * 100).toFixed(1)
                                 : 0}
                             <span className={styles.statUnit}>%</span>
+                        </span>
+                        <span className={styles.statSubValue}>
+                            ({stats.fastBonuses || 0}/{stats.totalQuestions})
                         </span>
                     </div>
                 )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/useGameStore';
-import { TROPHIES } from '../../data/trophies';
+import { TROPHIES, generateTrophyDescription } from '../../data/trophies';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
 import styles from './TrophyScreen.module.css';
@@ -49,7 +49,7 @@ export const TrophyScreen: React.FC = () => {
                             <div className={styles.trophyInfo}>
                                 <h3 className={styles.trophyTitle}>{trophy.title}</h3>
                                 <p className={styles.trophyDescription}>
-                                    {trophy.description}
+                                    {generateTrophyDescription(trophy)}
                                 </p>
                                 {isUnlocked && unlockDate && (
                                     <span className={styles.unlockDate}>

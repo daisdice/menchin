@@ -885,3 +885,34 @@ export const useGameStore = create<GameState>((set, get) => ({
         set({ newlyUnlockedTrophies: [] });
     }
 }));
+
+// Trophy stats functions
+export const getTrophyStats = () => {
+    const unlocked = loadUnlockedTrophies();
+    // Count all trophies excluding platinum
+    const totalTrophies = TROPHIES.filter(t => t.type !== 'platinum').length;
+    return {
+        unlocked: unlocked.length,
+        total: totalTrophies
+    };
+};
+
+// Difficulty-based stats
+export const getDifficultyStats = (): Record<Difficulty, { correct: number; total: number; totalTime: number }> => {
+    const questionResults = getQuestionResults();
+    const difficulties: Difficulty[] = ['beginner', 'amateur', 'normal', 'expert', 'master'];
+
+    const stats: Record<string, { correct: number; total: number; totalTime: number }> = {};
+
+    difficulties.forEach(diff => {
+        const filtered = questionResults.filter(r => r.difficulty === diff);
+        stats[diff] = {
+            correct: filtered.filter(r => r.correct).length,
+            total: filtered.length,
+            totalTime: filtered.reduce((sum, r) => sum + r.responseTime, 0)
+        };
+    });
+
+    return stats as Record<Difficulty, { correct: number; total: number; totalTime: number }>;
+};
+

@@ -22,11 +22,112 @@ export type TrophyType =
 export interface Trophy {
     id: string;
     title: string;
-    description: string;
     type: TrophyType;
     check_params: any[];
     tier: 'bronze' | 'silver' | 'gold' | 'platinum';
 }
+
+// Difficulty label mapping
+const DIFFICULTY_LABELS: Record<string, string> = {
+    beginner: '初級',
+    amateur: '中級',
+    normal: '上級',
+    expert: '達人',
+    master: '師範'
+};
+
+// Generate trophy description dynamically based on type and params
+export const generateTrophyDescription = (trophy: Trophy): string => {
+    const params = trophy.check_params;
+
+    switch (trophy.type) {
+        case 'challenge_clear': {
+            const [difficulty] = params;
+            return `チャレンジモード（${DIFFICULTY_LABELS[difficulty]}）をクリアした`;
+        }
+
+        case 'challenge_score': {
+            const [score, difficulty] = params;
+            return `チャレンジモード（${DIFFICULTY_LABELS[difficulty]}）で${score.toLocaleString()}点を達成`;
+        }
+
+        case 'challenge_nomiss': {
+            const [difficulty] = params;
+            return `チャレンジモード（${DIFFICULTY_LABELS[difficulty]}）をノーミスでクリア`;
+        }
+
+        case 'challenge_all_fast': {
+            const [difficulty] = params;
+            return `チャレンジモード（${DIFFICULTY_LABELS[difficulty]}）で全問FASTボーナスを獲得してクリア`;
+        }
+
+        case 'challenge_plays': {
+            const [count] = params;
+            return `チャレンジモードを累計${count}回プレイ`;
+        }
+
+        case 'sprint_clear': {
+            const [difficulty] = params;
+            return `スプリントモード（${DIFFICULTY_LABELS[difficulty]}）をクリア`;
+        }
+
+        case 'sprint_time': {
+            const [time, difficulty] = params;
+            return `スプリントモード（${DIFFICULTY_LABELS[difficulty]}）を${time}秒以内にクリア`;
+        }
+
+        case 'sprint_nomiss': {
+            const [difficulty] = params;
+            return `スプリントモード（${DIFFICULTY_LABELS[difficulty]}）をノーミスでクリア`;
+        }
+
+        case 'sprint_plays': {
+            const [count] = params;
+            return `スプリントモードを累計${count}回プレイ`;
+        }
+
+        case 'survival_correct': {
+            const [count, difficulty] = params;
+            return `サバイバルモード（${DIFFICULTY_LABELS[difficulty]}）で${count}問正解`;
+        }
+
+        case 'survival_plays': {
+            const [count] = params;
+            return `サバイバルモードを累計${count}回プレイ`;
+        }
+
+        case 'practice_play': {
+            return 'プラクティスモードで初プレイ';
+        }
+
+        case 'total_correct': {
+            const [count] = params;
+            return `累計${count}問正解`;
+        }
+
+        case 'wait_correct': {
+            const [minWaits, count] = params;
+            return `${minWaits}面待ち以上を累計${count}問正解`;
+        }
+
+        case 'wait_exact_correct': {
+            const [waits, count] = params;
+            return `${waits}面待ちを${count === 1 ? '正解した' : `累計${count}回正解`}`;
+        }
+
+        case 'fast_bonus': {
+            const [count] = params;
+            return `FASTボーナスを累計${count}回獲得`;
+        }
+
+        case 'platinum': {
+            return '全てのトロフィーを獲得する';
+        }
+
+        default:
+            return 'トロフィーを獲得';
+    }
+};
 
 export const TROPHIES: Trophy[] = [
     // ========== CHALLENGE MODE ==========
@@ -34,7 +135,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_CLEAR_BEGINNER',
         title: '初級クリア',
-        description: 'チャレンジモード（初級）をクリアした',
         type: 'challenge_clear',
         check_params: ['beginner'],
         tier: 'bronze'
@@ -42,7 +142,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_CLEAR_AMATEUR',
         title: '中級クリア',
-        description: 'チャレンジモード（中級）をクリアした',
         type: 'challenge_clear',
         check_params: ['amateur'],
         tier: 'bronze'
@@ -50,7 +149,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_CLEAR_NORMAL',
         title: '上級クリア',
-        description: 'チャレンジモード（上級）をクリアした',
         type: 'challenge_clear',
         check_params: ['normal'],
         tier: 'bronze'
@@ -58,7 +156,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_CLEAR_EXPERT',
         title: '達人クリア',
-        description: 'チャレンジモード（達人）をクリアした',
         type: 'challenge_clear',
         check_params: ['expert'],
         tier: 'silver'
@@ -66,7 +163,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_CLEAR_MASTER',
         title: '師範クリア',
-        description: 'チャレンジモード（師範）をクリアした',
         type: 'challenge_clear',
         check_params: ['master'],
         tier: 'gold'
@@ -77,7 +173,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_BEGINNER_BRONZE',
         title: '初級スコア Bronze',
-        description: 'チャレンジモード（初級）で3,000点を達成',
         type: 'challenge_score',
         check_params: [3000, 'beginner'],
         tier: 'bronze'
@@ -85,7 +180,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_BEGINNER_SILVER',
         title: '初級スコア Silver',
-        description: 'チャレンジモード（初級）で5,000点を達成',
         type: 'challenge_score',
         check_params: [5000, 'beginner'],
         tier: 'silver'
@@ -93,7 +187,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_BEGINNER_GOLD',
         title: '初級スコア Gold',
-        description: 'チャレンジモード（初級）で8,000点を達成',
         type: 'challenge_score',
         check_params: [8000, 'beginner'],
         tier: 'gold'
@@ -102,7 +195,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_AMATEUR_BRONZE',
         title: '中級スコア Bronze',
-        description: 'チャレンジモード（中級）で4,000点を達成',
         type: 'challenge_score',
         check_params: [4000, 'amateur'],
         tier: 'bronze'
@@ -110,7 +202,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_AMATEUR_SILVER',
         title: '中級スコア Silver',
-        description: 'チャレンジモード（中級）で7,000点を達成',
         type: 'challenge_score',
         check_params: [7000, 'amateur'],
         tier: 'silver'
@@ -118,7 +209,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_AMATEUR_GOLD',
         title: '中級スコア Gold',
-        description: 'チャレンジモード（中級）で12,000点を達成',
         type: 'challenge_score',
         check_params: [12000, 'amateur'],
         tier: 'gold'
@@ -127,7 +217,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_NORMAL_BRONZE',
         title: '上級スコア Bronze',
-        description: 'チャレンジモード（上級）で5,000点を達成',
         type: 'challenge_score',
         check_params: [5000, 'normal'],
         tier: 'bronze'
@@ -135,7 +224,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_NORMAL_SILVER',
         title: '上級スコア Silver',
-        description: 'チャレンジモード（上級）で9,000点を達成',
         type: 'challenge_score',
         check_params: [9000, 'normal'],
         tier: 'silver'
@@ -143,7 +231,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_NORMAL_GOLD',
         title: '上級スコア Gold',
-        description: 'チャレンジモード（上級）で15,000点を達成',
         type: 'challenge_score',
         check_params: [15000, 'normal'],
         tier: 'gold'
@@ -152,7 +239,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_EXPERT_BRONZE',
         title: '達人スコア Bronze',
-        description: 'チャレンジモード（達人）で6,000点を達成',
         type: 'challenge_score',
         check_params: [6000, 'expert'],
         tier: 'bronze'
@@ -160,7 +246,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_EXPERT_SILVER',
         title: '達人スコア Silver',
-        description: 'チャレンジモード（達人）で11,000点を達成',
         type: 'challenge_score',
         check_params: [11000, 'expert'],
         tier: 'silver'
@@ -168,7 +253,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_EXPERT_GOLD',
         title: '達人スコア Gold',
-        description: 'チャレンジモード（達人）で18,000点を達成',
         type: 'challenge_score',
         check_params: [18000, 'expert'],
         tier: 'gold'
@@ -177,7 +261,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_MASTER_BRONZE',
         title: '師範スコア Bronze',
-        description: 'チャレンジモード（師範）で7,000点を達成',
         type: 'challenge_score',
         check_params: [7000, 'master'],
         tier: 'bronze'
@@ -185,7 +268,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_MASTER_SILVER',
         title: '師範スコア Silver',
-        description: 'チャレンジモード（師範）で13,000点を達成',
         type: 'challenge_score',
         check_params: [13000, 'master'],
         tier: 'silver'
@@ -193,7 +275,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_SCORE_MASTER_GOLD',
         title: '師範スコア Gold',
-        description: 'チャレンジモード（師範）で20,000点を達成',
         type: 'challenge_score',
         check_params: [20000, 'master'],
         tier: 'gold'
@@ -203,7 +284,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_NOMISS_BEGINNER',
         title: '初級完全勝利',
-        description: 'チャレンジモード（初級）をノーミスでクリア',
         type: 'challenge_nomiss',
         check_params: ['beginner'],
         tier: 'silver'
@@ -211,7 +291,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_NOMISS_AMATEUR',
         title: '中級完全勝利',
-        description: 'チャレンジモード（中級）をノーミスでクリア',
         type: 'challenge_nomiss',
         check_params: ['amateur'],
         tier: 'silver'
@@ -219,7 +298,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_NOMISS_NORMAL',
         title: '上級完全勝利',
-        description: 'チャレンジモード（上級）をノーミスでクリア',
         type: 'challenge_nomiss',
         check_params: ['normal'],
         tier: 'gold'
@@ -227,7 +305,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_NOMISS_EXPERT',
         title: '達人完全勝利',
-        description: 'チャレンジモード（達人）をノーミスでクリア',
         type: 'challenge_nomiss',
         check_params: ['expert'],
         tier: 'gold'
@@ -235,7 +312,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_NOMISS_MASTER',
         title: '師範完全勝利',
-        description: 'チャレンジモード（師範）をノーミスでクリア',
         type: 'challenge_nomiss',
         check_params: ['master'],
         tier: 'gold'
@@ -245,7 +321,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_ALL_FAST_BEGINNER',
         title: '初級神速',
-        description: 'チャレンジモード（初級）で全問FASTボーナスを獲得してクリア',
         type: 'challenge_all_fast',
         check_params: ['beginner'],
         tier: 'silver'
@@ -253,7 +328,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_ALL_FAST_AMATEUR',
         title: '中級神速',
-        description: 'チャレンジモード（中級）で全問FASTボーナスを獲得してクリア',
         type: 'challenge_all_fast',
         check_params: ['amateur'],
         tier: 'silver'
@@ -261,7 +335,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_ALL_FAST_NORMAL',
         title: '上級神速',
-        description: 'チャレンジモード（上級）で全問FASTボーナスを獲得してクリア',
         type: 'challenge_all_fast',
         check_params: ['normal'],
         tier: 'gold'
@@ -269,7 +342,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_ALL_FAST_EXPERT',
         title: '達人神速',
-        description: 'チャレンジモード（達人）で全問FASTボーナスを獲得してクリア',
         type: 'challenge_all_fast',
         check_params: ['expert'],
         tier: 'gold'
@@ -277,7 +349,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_ALL_FAST_MASTER',
         title: '師範神速',
-        description: 'チャレンジモード（師範）で全問FASTボーナスを獲得してクリア',
         type: 'challenge_all_fast',
         check_params: ['master'],
         tier: 'gold'
@@ -287,7 +358,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'FAST_BONUS_BRONZE',
         title: 'FASTボーナス Bronze',
-        description: 'FASTボーナスを累計15回獲得',
         type: 'fast_bonus',
         check_params: [15],
         tier: 'bronze'
@@ -295,7 +365,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'FAST_BONUS_SILVER',
         title: 'FASTボーナス Silver',
-        description: 'FASTボーナスを累計50回獲得',
         type: 'fast_bonus',
         check_params: [50],
         tier: 'silver'
@@ -303,7 +372,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'FAST_BONUS_GOLD',
         title: 'FASTボーナス Gold',
-        description: 'FASTボーナスを累計100回獲得',
         type: 'fast_bonus',
         check_params: [100],
         tier: 'gold'
@@ -314,7 +382,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_CLEAR_BEGINNER',
         title: 'スプリント初級クリア',
-        description: 'スプリントモード（初級）をクリア',
         type: 'sprint_clear',
         check_params: ['beginner'],
         tier: 'bronze'
@@ -322,7 +389,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_CLEAR_AMATEUR',
         title: 'スプリント中級クリア',
-        description: 'スプリントモード（中級）をクリア',
         type: 'sprint_clear',
         check_params: ['amateur'],
         tier: 'bronze'
@@ -330,7 +396,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_CLEAR_NORMAL',
         title: 'スプリント上級クリア',
-        description: 'スプリントモード（上級）をクリア',
         type: 'sprint_clear',
         check_params: ['normal'],
         tier: 'bronze'
@@ -338,7 +403,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_CLEAR_EXPERT',
         title: 'スプリント達人クリア',
-        description: 'スプリントモード（達人）をクリア',
         type: 'sprint_clear',
         check_params: ['expert'],
         tier: 'silver'
@@ -346,7 +410,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_CLEAR_MASTER',
         title: 'スプリント師範クリア',
-        description: 'スプリントモード（師範）をクリア',
         type: 'sprint_clear',
         check_params: ['master'],
         tier: 'gold'
@@ -356,7 +419,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_NOMISS_BEGINNER',
         title: 'スプリント初級完全勝利',
-        description: 'スプリントモード（初級）をノーミスでクリア',
         type: 'sprint_nomiss',
         check_params: ['beginner'],
         tier: 'silver'
@@ -364,7 +426,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_NOMISS_AMATEUR',
         title: 'スプリント中級完全勝利',
-        description: 'スプリントモード（中級）をノーミスでクリア',
         type: 'sprint_nomiss',
         check_params: ['amateur'],
         tier: 'silver'
@@ -372,7 +433,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_NOMISS_NORMAL',
         title: 'スプリント上級完全勝利',
-        description: 'スプリントモード（上級）をノーミスでクリア',
         type: 'sprint_nomiss',
         check_params: ['normal'],
         tier: 'gold'
@@ -380,7 +440,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_NOMISS_EXPERT',
         title: 'スプリント達人完全勝利',
-        description: 'スプリントモード（達人）をノーミスでクリア',
         type: 'sprint_nomiss',
         check_params: ['expert'],
         tier: 'gold'
@@ -388,7 +447,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_NOMISS_MASTER',
         title: 'スプリント師範完全勝利',
-        description: 'スプリントモード（師範）をノーミスでクリア',
         type: 'sprint_nomiss',
         check_params: ['master'],
         tier: 'gold'
@@ -399,7 +457,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_BEGINNER_BRONZE',
         title: 'スプリント初級タイム Bronze',
-        description: 'スプリントモード（初級）を120秒以内にクリア',
         type: 'sprint_time',
         check_params: [120, 'beginner'],
         tier: 'bronze'
@@ -407,7 +464,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_BEGINNER_SILVER',
         title: 'スプリント初級タイム Silver',
-        description: 'スプリントモード（初級）を90秒以内にクリア',
         type: 'sprint_time',
         check_params: [90, 'beginner'],
         tier: 'silver'
@@ -415,7 +471,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_BEGINNER_GOLD',
         title: 'スプリント初級タイム Gold',
-        description: 'スプリントモード（初級）を60秒以内にクリア',
         type: 'sprint_time',
         check_params: [60, 'beginner'],
         tier: 'gold'
@@ -424,7 +479,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_AMATEUR_BRONZE',
         title: 'スプリント中級タイム Bronze',
-        description: 'スプリントモード（中級）を150秒以内にクリア',
         type: 'sprint_time',
         check_params: [150, 'amateur'],
         tier: 'bronze'
@@ -432,7 +486,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_AMATEUR_SILVER',
         title: 'スプリント中級タイム Silver',
-        description: 'スプリントモード（中級）を120秒以内にクリア',
         type: 'sprint_time',
         check_params: [120, 'amateur'],
         tier: 'silver'
@@ -440,7 +493,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_AMATEUR_GOLD',
         title: 'スプリント中級タイム Gold',
-        description: 'スプリントモード（中級）を90秒以内にクリア',
         type: 'sprint_time',
         check_params: [90, 'amateur'],
         tier: 'gold'
@@ -449,7 +501,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_NORMAL_BRONZE',
         title: 'スプリント上級タイム Bronze',
-        description: 'スプリントモード（上級）を180秒以内にクリア',
         type: 'sprint_time',
         check_params: [180, 'normal'],
         tier: 'bronze'
@@ -457,7 +508,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_NORMAL_SILVER',
         title: 'スプリント上級タイム Silver',
-        description: 'スプリントモード（上級）を150秒以内にクリア',
         type: 'sprint_time',
         check_params: [150, 'normal'],
         tier: 'silver'
@@ -465,7 +515,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_NORMAL_GOLD',
         title: 'スプリント上級タイム Gold',
-        description: 'スプリントモード（上級）を120秒以内にクリア',
         type: 'sprint_time',
         check_params: [120, 'normal'],
         tier: 'gold'
@@ -474,7 +523,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_EXPERT_BRONZE',
         title: 'スプリント達人タイム Bronze',
-        description: 'スプリントモード（達人）を210秒以内にクリア',
         type: 'sprint_time',
         check_params: [210, 'expert'],
         tier: 'bronze'
@@ -482,7 +530,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_EXPERT_SILVER',
         title: 'スプリント達人タイム Silver',
-        description: 'スプリントモード（達人）を180秒以内にクリア',
         type: 'sprint_time',
         check_params: [180, 'expert'],
         tier: 'silver'
@@ -490,7 +537,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_EXPERT_GOLD',
         title: 'スプリント達人タイム Gold',
-        description: 'スプリントモード（達人）を150秒以内にクリア',
         type: 'sprint_time',
         check_params: [150, 'expert'],
         tier: 'gold'
@@ -499,7 +545,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_MASTER_BRONZE',
         title: 'スプリント師範タイム Bronze',
-        description: 'スプリントモード（師範）を240秒以内にクリア',
         type: 'sprint_time',
         check_params: [240, 'master'],
         tier: 'bronze'
@@ -507,7 +552,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_MASTER_SILVER',
         title: 'スプリント師範タイム Silver',
-        description: 'スプリントモード（師範）を210秒以内にクリア',
         type: 'sprint_time',
         check_params: [210, 'master'],
         tier: 'silver'
@@ -515,7 +559,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_TIME_MASTER_GOLD',
         title: 'スプリント師範タイム Gold',
-        description: 'スプリントモード（師範）を180秒以内にクリア',
         type: 'sprint_time',
         check_params: [180, 'master'],
         tier: 'gold'
@@ -527,7 +570,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_BEGINNER_BRONZE',
         title: 'サバイバル初級 Bronze',
-        description: 'サバイバルモード（初級）で5問正解',
         type: 'survival_correct',
         check_params: [5, 'beginner'],
         tier: 'bronze'
@@ -535,7 +577,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_BEGINNER_SILVER',
         title: 'サバイバル初級 Silver',
-        description: 'サバイバルモード（初級）で15問正解',
         type: 'survival_correct',
         check_params: [15, 'beginner'],
         tier: 'silver'
@@ -543,7 +584,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_BEGINNER_GOLD',
         title: 'サバイバル初級 Gold',
-        description: 'サバイバルモード（初級）で30問正解',
         type: 'survival_correct',
         check_params: [30, 'beginner'],
         tier: 'gold'
@@ -552,7 +592,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_AMATEUR_BRONZE',
         title: 'サバイバル中級 Bronze',
-        description: 'サバイバルモード（中級）で5問正解',
         type: 'survival_correct',
         check_params: [5, 'amateur'],
         tier: 'bronze'
@@ -560,7 +599,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_AMATEUR_SILVER',
         title: 'サバイバル中級 Silver',
-        description: 'サバイバルモード（中級）で15問正解',
         type: 'survival_correct',
         check_params: [15, 'amateur'],
         tier: 'silver'
@@ -568,7 +606,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_AMATEUR_GOLD',
         title: 'サバイバル中級 Gold',
-        description: 'サバイバルモード（中級）で30問正解',
         type: 'survival_correct',
         check_params: [30, 'amateur'],
         tier: 'gold'
@@ -577,7 +614,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_NORMAL_BRONZE',
         title: 'サバイバル上級 Bronze',
-        description: 'サバイバルモード（上級）で5問正解',
         type: 'survival_correct',
         check_params: [5, 'normal'],
         tier: 'bronze'
@@ -585,7 +621,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_NORMAL_SILVER',
         title: 'サバイバル上級 Silver',
-        description: 'サバイバルモード（上級）で15問正解',
         type: 'survival_correct',
         check_params: [15, 'normal'],
         tier: 'silver'
@@ -593,7 +628,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_NORMAL_GOLD',
         title: 'サバイバル上級 Gold',
-        description: 'サバイバルモード（上級）で30問正解',
         type: 'survival_correct',
         check_params: [30, 'normal'],
         tier: 'gold'
@@ -602,7 +636,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_EXPERT_BRONZE',
         title: 'サバイバル達人 Bronze',
-        description: 'サバイバルモード（達人）で5問正解',
         type: 'survival_correct',
         check_params: [5, 'expert'],
         tier: 'bronze'
@@ -610,7 +643,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_EXPERT_SILVER',
         title: 'サバイバル達人 Silver',
-        description: 'サバイバルモード（達人）で15問正解',
         type: 'survival_correct',
         check_params: [15, 'expert'],
         tier: 'silver'
@@ -618,7 +650,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_EXPERT_GOLD',
         title: 'サバイバル達人 Gold',
-        description: 'サバイバルモード（達人）で30問正解',
         type: 'survival_correct',
         check_params: [30, 'expert'],
         tier: 'gold'
@@ -627,7 +658,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_MASTER_BRONZE',
         title: 'サバイバル師範 Bronze',
-        description: 'サバイバルモード（師範）で5問正解',
         type: 'survival_correct',
         check_params: [5, 'master'],
         tier: 'bronze'
@@ -635,7 +665,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_MASTER_SILVER',
         title: 'サバイバル師範 Silver',
-        description: 'サバイバルモード（師範）で15問正解',
         type: 'survival_correct',
         check_params: [15, 'master'],
         tier: 'silver'
@@ -643,7 +672,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_CORRECT_MASTER_GOLD',
         title: 'サバイバル師範 Gold',
-        description: 'サバイバルモード（師範）で30問正解',
         type: 'survival_correct',
         check_params: [30, 'master'],
         tier: 'gold'
@@ -653,7 +681,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'PRACTICE_FIRST_PLAY',
         title: 'プラクティス',
-        description: 'プラクティスモードで初プレイ',
         type: 'practice_play',
         check_params: [],
         tier: 'bronze'
@@ -664,7 +691,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_BRONZE',
         title: '正解数 Bronze',
-        description: '累計15問正解',
         type: 'total_correct',
         check_params: [15],
         tier: 'bronze'
@@ -672,7 +698,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_SILVER',
         title: '正解数 Silver',
-        description: '累計50問正解',
         type: 'total_correct',
         check_params: [50],
         tier: 'silver'
@@ -680,7 +705,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_GOLD',
         title: '正解数 Gold',
-        description: '累計100問正解',
         type: 'total_correct',
         check_params: [100],
         tier: 'gold'
@@ -688,7 +712,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_150',
         title: '正解数 150',
-        description: '累計150問正解',
         type: 'total_correct',
         check_params: [150],
         tier: 'bronze'
@@ -696,7 +719,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_200',
         title: '正解数 200',
-        description: '累計200問正解',
         type: 'total_correct',
         check_params: [200],
         tier: 'silver'
@@ -704,7 +726,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_300',
         title: '正解数 300',
-        description: '累計300問正解',
         type: 'total_correct',
         check_params: [300],
         tier: 'silver'
@@ -712,7 +733,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_500',
         title: '正解数 500',
-        description: '累計500問正解',
         type: 'total_correct',
         check_params: [500],
         tier: 'gold'
@@ -720,7 +740,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_750',
         title: '正解数 750',
-        description: '累計750問正解',
         type: 'total_correct',
         check_params: [750],
         tier: 'gold'
@@ -728,7 +747,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'GLOBAL_CORRECT_1000',
         title: '正解数 1000',
-        description: '累計1000問正解',
         type: 'total_correct',
         check_params: [1000],
         tier: 'gold'
@@ -738,7 +756,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_PLAYS_BRONZE',
         title: 'チャレンジャー Bronze',
-        description: 'チャレンジモードを累計10回プレイ',
         type: 'challenge_plays',
         check_params: [10],
         tier: 'bronze'
@@ -746,7 +763,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_PLAYS_SILVER',
         title: 'チャレンジャー Silver',
-        description: 'チャレンジモードを累計30回プレイ',
         type: 'challenge_plays',
         check_params: [30],
         tier: 'silver'
@@ -754,7 +770,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'CHALLENGE_PLAYS_GOLD',
         title: 'チャレンジャー Gold',
-        description: 'チャレンジモードを累計100回プレイ',
         type: 'challenge_plays',
         check_params: [100],
         tier: 'gold'
@@ -762,7 +777,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_PLAYS_BRONZE',
         title: 'スプリンター Bronze',
-        description: 'スプリントモードを累計10回プレイ',
         type: 'sprint_plays',
         check_params: [10],
         tier: 'bronze'
@@ -770,7 +784,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_PLAYS_SILVER',
         title: 'スプリンター Silver',
-        description: 'スプリントモードを累計30回プレイ',
         type: 'sprint_plays',
         check_params: [30],
         tier: 'silver'
@@ -778,7 +791,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SPRINT_PLAYS_GOLD',
         title: 'スプリンター Gold',
-        description: 'スプリントモードを累計100回プレイ',
         type: 'sprint_plays',
         check_params: [100],
         tier: 'gold'
@@ -786,7 +798,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_PLAYS_BRONZE',
         title: 'サバイバリスト Bronze',
-        description: 'サバイバルモードを累計10回プレイ',
         type: 'survival_plays',
         check_params: [10],
         tier: 'bronze'
@@ -794,7 +805,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_PLAYS_SILVER',
         title: 'サバイバリスト Silver',
-        description: 'サバイバルモードを累計30回プレイ',
         type: 'survival_plays',
         check_params: [30],
         tier: 'silver'
@@ -802,7 +812,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'SURVIVAL_PLAYS_GOLD',
         title: 'サバイバリスト Gold',
-        description: 'サバイバルモードを累計100回プレイ',
         type: 'survival_plays',
         check_params: [100],
         tier: 'gold'
@@ -812,7 +821,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT3_BRONZE',
         title: '3面待ち以上 Bronze',
-        description: '3面待ち以上を累計15問正解',
         type: 'wait_correct',
         check_params: [3, 15],
         tier: 'bronze'
@@ -820,7 +828,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT3_SILVER',
         title: '3面待ち以上 Silver',
-        description: '3面待ち以上を累計50問正解',
         type: 'wait_correct',
         check_params: [3, 50],
         tier: 'silver'
@@ -828,7 +835,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT3_GOLD',
         title: '3面待ち以上 Gold',
-        description: '3面待ち以上を累計100問正解',
         type: 'wait_correct',
         check_params: [3, 100],
         tier: 'gold'
@@ -838,7 +844,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT6_BRONZE',
         title: '6面待ち以上 Bronze',
-        description: '6面待ち以上を累計5問正解',
         type: 'wait_correct',
         check_params: [6, 5],
         tier: 'bronze'
@@ -846,7 +851,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT6_SILVER',
         title: '6面待ち以上 Silver',
-        description: '6面待ち以上を累計15問正解',
         type: 'wait_correct',
         check_params: [6, 15],
         tier: 'silver'
@@ -854,7 +858,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT6_GOLD',
         title: '6面待ち以上 Gold',
-        description: '6面待ち以上を累計30問正解',
         type: 'wait_correct',
         check_params: [6, 30],
         tier: 'gold'
@@ -864,7 +867,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT9_BRONZE',
         title: '純正九蓮宝燈 Bronze',
-        description: '9面待ちを累計1回正解',
         type: 'wait_exact_correct',
         check_params: [9, 1],
         tier: 'bronze'
@@ -872,7 +874,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT9_SILVER',
         title: '純正九蓮宝燈 Silver',
-        description: '9面待ちを累計3回正解',
         type: 'wait_exact_correct',
         check_params: [9, 3],
         tier: 'silver'
@@ -880,7 +881,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'WAIT9_GOLD',
         title: '純正九蓮宝燈 Gold',
-        description: '9面待ちを累計5回正解',
         type: 'wait_exact_correct',
         check_params: [9, 5],
         tier: 'gold'
@@ -890,7 +890,6 @@ export const TROPHIES: Trophy[] = [
     {
         id: 'PLATINUM_ALL_TROPHIES',
         title: '免許皆伝',
-        description: '全てのトロフィーを獲得する',
         type: 'platinum',
         check_params: [],
         tier: 'platinum'
