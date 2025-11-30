@@ -1,13 +1,28 @@
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    height: 100%;
-    gap: var(--spacing-lg);
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
     padding: var(--spacing-md);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
+.content {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
 .header {
     text-align: center;
 }
@@ -15,8 +30,10 @@
 .title {
     font-size: 2rem;
     color: var(--color-text);
-    letter-spacing: 0.1em;
     margin: 0;
+    letter-spacing: 0.15em;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .subtitle {
@@ -24,14 +41,15 @@
     color: var(--color-text-light);
     font-weight: 700;
     letter-spacing: 0.1em;
+    margin-top: var(--spacing-xs);
 }
 
+/* Difficulty List */
 .list {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
     width: 100%;
-    max-width: 400px;
 }
 
 .item {
@@ -40,32 +58,46 @@
 
 .buttonContent {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 0 var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
 }
 
 .label {
     font-size: 1.2rem;
+    font-weight: 800;
 }
 
-.waits {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    font-weight: 400;
+/* Actions */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
 }
 
-.locked {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(1);
-}
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-sm);
+        align-items: flex-start;
+    }
 
-.lockIcon {
-    margin-left: var(--spacing-sm);
-}
+    .content {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
 
-.footer {
-    margin-top: var(--spacing-md);
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .label {
+        font-size: 1rem;
+    }
 }
