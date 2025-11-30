@@ -87,9 +87,12 @@
     background-color: rgba(0, 0, 0, 0.02);
     border-radius: var(--radius-md);
     padding: var(--spacing-md);
-    min-height: 400px;
+    height: 400px;
+    max-height: 400px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .recordList {
