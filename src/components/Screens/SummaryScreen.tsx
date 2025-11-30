@@ -75,7 +75,7 @@ export const SummaryScreen: React.FC = () => {
                     <h3 className={styles.sectionTitle}>BASE</h3>
                 </div>
                 <div className={styles.statsGrid}>
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardAccuracy}`}>
                         <span className={styles.statLabel}>ACCURACY</span>
                         <span className={styles.statValue}>
                             {stats.accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
@@ -84,7 +84,7 @@ export const SummaryScreen: React.FC = () => {
                             ({stats.correctAnswers}/{stats.totalQuestions})
                         </span>
                     </div>
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardTime}`}>
                         <span className={styles.statLabel}>AVG TIME</span>
                         <span className={styles.statValue}>
                             {stats.avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
@@ -101,7 +101,7 @@ export const SummaryScreen: React.FC = () => {
                         const rate = trophyStats.total > 0 ? (trophyStats.unlocked / trophyStats.total * 100) : 0;
                         return (
                             <>
-                                <div className={styles.statCard}>
+                                <div className={`${styles.statCard} ${styles.cardScore}`}>
                                     <span className={styles.statLabel}>OVERALL RATE</span>
                                     <span className={styles.statValue}>
                                         {rate.toFixed(1)}<span className={styles.statUnit}>%</span>
@@ -224,13 +224,13 @@ export const SummaryScreen: React.FC = () => {
         return (
             <div className={styles.statsContainer}>
                 <div className={styles.statsGrid}>
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardCount}`}>
                         <span className={styles.statLabel}>ATTEMPTS</span>
                         <span className={styles.statValue}>{stats.attempts}</span>
                     </div>
 
                     {activeTab === 'challenge' && (
-                        <div className={styles.statCard}>
+                        <div className={`${styles.statCard} ${styles.cardCount}`}>
                             <span className={styles.statLabel}>CLEARS</span>
                             <span className={styles.statValue}>
                                 {stats.clears || 0}
@@ -241,7 +241,7 @@ export const SummaryScreen: React.FC = () => {
                         </div>
                     )}
 
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardAccuracy}`}>
                         <span className={styles.statLabel}>ACCURACY</span>
                         <span className={styles.statValue}>
                             {accuracy.toFixed(1)}<span className={styles.statUnit}>%</span>
@@ -251,7 +251,7 @@ export const SummaryScreen: React.FC = () => {
                         </span>
                     </div>
 
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardTime}`}>
                         <span className={styles.statLabel}>AVG TIME</span>
                         <span className={styles.statValue}>
                             {avgTime.toFixed(2)}<span className={styles.statUnit}>s</span>
@@ -259,7 +259,7 @@ export const SummaryScreen: React.FC = () => {
                     </div>
 
                     {activeTab === 'challenge' && (
-                        <div className={styles.statCard}>
+                        <div className={`${styles.statCard} ${styles.cardBonus}`}>
                             <span className={styles.statLabel}>FAST BONUS</span>
                             <span className={styles.statValue}>
                                 {stats.totalQuestions > 0
@@ -273,7 +273,7 @@ export const SummaryScreen: React.FC = () => {
                         </div>
                     )}
 
-                    <div className={styles.statCard}>
+                    <div className={`${styles.statCard} ${styles.cardScore}`}>
                         <span className={styles.statLabel}>
                             {activeTab === 'sprint' ? 'BEST TIME' : 'HIGH SCORE'}
                         </span>
