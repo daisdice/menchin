@@ -23,6 +23,8 @@ export const GameScreen: React.FC = () => {
         difficulty,
         correctCount,
         isGameOver,
+        isTimeUp,
+        currentWaits,
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
@@ -116,6 +118,20 @@ export const GameScreen: React.FC = () => {
             // Handled by store
         }
     }, [lives, isPlaying, mode]);
+
+    // Handle Time Up
+    useEffect(() => {
+        if (isTimeUp && !feedback) {
+            setFeedback({
+                type: 'incorrect',
+                message: `TIME UP... ANSWER: ${currentWaits.join(', ')}`,
+            });
+            setTimeout(() => {
+                setFeedback(null);
+                useGameStore.getState().endGame();
+            }, 2000);
+        }
+    }, [isTimeUp, feedback, currentWaits]);
 
     const handleSubmit = () => {
         const result = submitAnswer();

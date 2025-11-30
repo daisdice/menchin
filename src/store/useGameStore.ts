@@ -242,6 +242,7 @@ interface GameState {
     newlyUnlockedTrophies: string[]; // Trophies unlocked in current session
     hasErrors: boolean; // Track if any mistakes were made in current game
     fastBonusCount: number; // Track number of FAST bonuses in current game
+    isTimeUp: boolean; // Track if time ran out
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -314,6 +315,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     newlyUnlockedTrophies: [],
     hasErrors: false,
     fastBonusCount: 0,
+    isTimeUp: false,
 
     gameEndTime: 0,
 
@@ -359,7 +361,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             lastScoreBreakdown: null,
             sprintTimes: [],
             hasErrors: false,
-            fastBonusCount: 0
+            fastBonusCount: 0,
+            isTimeUp: false
         });
 
         // Update practice mode stats
@@ -728,7 +731,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 set({ timeLeft: remaining });
 
                 if (remaining <= 0) {
-                    get().endGame();
+                    set({ isTimeUp: true });
                 }
             }
         }
