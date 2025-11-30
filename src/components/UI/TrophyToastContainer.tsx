@@ -19,7 +19,7 @@ export const TrophyToastContainer: React.FC<TrophyToastContainerProps> = ({
 }) => {
     const [queue, setQueue] = useState<string[]>([]);
     const [activeToasts, setActiveToasts] = useState<ActiveToast[]>([]);
-    const MAX_VISIBLE = 2; // Maximum toasts visible at once
+    const MAX_VISIBLE = 1; // Maximum toasts visible at once
     const TOAST_DURATION = 3000; // 3 seconds
 
     // Initialize queue when trophyIds change
@@ -54,7 +54,7 @@ export const TrophyToastContainer: React.FC<TrophyToastContainerProps> = ({
 
     return (
         <div className={styles.container}>
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {activeToasts.map((toast) => {
                     const trophy = TROPHIES.find(t => t.id === toast.trophyId);
                     if (!trophy) return null;
