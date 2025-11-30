@@ -1010,7 +1010,7 @@ export const checkTrophyUnlock = (
     score,
     isClear,
     hasErrors,
-    remainingTime,
+    remainingTime: _remainingTime,
     globalStats,
     modeStats,
     unlockedTrophies,
@@ -1065,42 +1065,9 @@ export const checkTrophyUnlock = (
 
     case 'sprint_time': {
       const [targetTime, targetDiff] = params;
-      // remainingTime is in ms, targetTime is in seconds
-      // If remainingTime is undefined, we can't check time
-      if (remainingTime === undefined) return false;
-
-      // Calculate elapsed time: (Initial Time - Remaining Time) / 1000
-      // But wait, sprint mode logic is usually "finish within X seconds".
-      // The previous logic was: remainingTime >= (InitialTime - TargetTime * 1000) ??
-      // Let's look at how it was implemented before.
-      // It was: const timeThresholds = { ... }; return remainingTime >= timeThresholds[id] * 1000; ?? No.
-      // Wait, previous implementation had thresholds like 120, 90, 60.
-      // If the limit is 300s (5 min), and I finish in 60s, remaining is 240s.
-      // So if I need to finish WITHIN 60s, remaining must be >= 300 - 60 = 240.
-      // BUT, the thresholds in the previous file were:
-      // SPRINT_TIME_BEGINNER_BRONZE: 120 (Finish within 120s)
-      // The logic was: `remainingTime >= (300 - threshold) * 1000` ? 
-      // Actually, let's assume the previous logic was correct or I should re-derive it.
-      // Sprint mode usually has a fixed time limit (e.g. 300s).
-      // If I finish in 120s, I have 180s remaining.
-      // The condition "Finish within 120s" means "Time Taken <= 120".
-      // Time Taken = (Total Time - Remaining Time).
-      // So (Total - Remaining) <= 120  =>  Remaining >= Total - 120.
-      // Let's assume Total Time is 300s (5 minutes) for all sprint modes?
-      // Checking useGameStore.ts might be needed, but assuming standard 300s for now.
-      // Actually, let's just use the logic: "Remaining time >= X" where X is calculated based on target.
-      // Wait, the previous code didn't show the calculation logic clearly in the snippet I saw.
-      // Let's assume the parameter passed is "Target Seconds to Finish".
-      // So we need to know the Total Time.
-      // In Sprint mode, initial time is usually 300s.
-      // So Remaining >= (300 - TargetTime) * 1000.
-
-      // However, to be safe and avoid hardcoding 300, let's look at how it works.
-      // If I can't access total time here, I might need to rely on what I know.
-      // Let's assume 300s for now as it's standard for this app.
-      const SPRINT_TOTAL_TIME_SEC = 300;
-      return mode === 'sprint' && isClear && difficulty === targetDiff &&
-        (remainingTime / 1000) >= (SPRINT_TOTAL_TIME_SEC - targetTime);
+      // In sprint mode, 'score' contains the total elapsed time in seconds
+      // Trophy is awarded if you finish within the target time (i.e., score <= targetTime)
+      return mode === 'sprint' && isClear && difficulty === targetDiff && score <= targetTime;
     }
 
     case 'sprint_plays': {
