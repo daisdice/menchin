@@ -90,35 +90,7 @@ export const SummaryScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <div className={styles.waitStatsContainer}>
-                    <h3 className={styles.sectionTitle}>STATS BY WAIT COUNT</h3>
-                    <table className={styles.waitStatsTable}>
-                        <thead>
-                            <tr>
-                                <th>WAITS</th>
-                                <th>ACCURACY</th>
-                                <th>AVG TIME</th>
-                                <th>COUNT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((waitCount) => {
-                                const s = stats.waitStats[waitCount] || { total: 0, correct: 0, time: 0 };
-                                return (
-                                    <tr key={waitCount}>
-                                        <td>{waitCount}</td>
-                                        <td>{s.total > 0 ? ((s.correct / s.total) * 100).toFixed(1) : '0.0'}%</td>
-                                        <td>{s.total > 0 ? (s.time / s.total).toFixed(2) : '0.00'}s</td>
-                                        <td>{s.total}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-
                 <div className={styles.trophyStatsContainer}>
-                    <h3 className={styles.sectionTitle}>TROPHY PROGRESS</h3>
                     {(() => {
                         const trophyStats = getTrophyStats();
                         const rate = trophyStats.total > 0 ? (trophyStats.unlocked / trophyStats.total * 100) : 0;
@@ -135,6 +107,33 @@ export const SummaryScreen: React.FC = () => {
                         );
                     })()}
                 </div>
+
+                <div className={styles.waitStatsContainer}>
+                    <h3 className={styles.sectionTitle}>STATS BY WAIT COUNT</h3>
+                    <table className={styles.waitStatsTable}>
+                        <thead>
+                            <tr>
+                                <th>WAITS</th>
+                                <th>ACCURACY</th>
+                                <th>AVG TIME</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((waitCount) => {
+                                const s = stats.waitStats[waitCount] || { total: 0, correct: 0, time: 0 };
+                                return (
+                                    <tr key={waitCount}>
+                                        <td>{waitCount}</td>
+                                        <td>{s.total > 0 ? ((s.correct / s.total) * 100).toFixed(1) : '0.0'}% ({s.correct}/{s.total})</td>
+                                        <td>{s.total > 0 ? (s.time / s.total).toFixed(2) : '0.00'}s</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
+
 
                 <div className={styles.difficultyStatsContainer}>
                     <h3 className={styles.sectionTitle}>STATS BY DIFFICULTY</h3>

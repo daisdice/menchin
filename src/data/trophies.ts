@@ -863,26 +863,12 @@ export const TROPHIES: Trophy[] = [
         tier: 'gold'
     },
 
-    // 9 Tile Waits (3)
+    // 9 Tile Waits (1)
     {
-        id: 'WAIT9_BRONZE',
-        title: '純正九蓮宝燈 Bronze',
+        id: 'WAIT9_UNIQUE',
+        title: '純正九蓮宝燈',
         type: 'wait_exact_correct',
         check_params: [9, 1],
-        tier: 'bronze'
-    },
-    {
-        id: 'WAIT9_SILVER',
-        title: '純正九蓮宝燈 Silver',
-        type: 'wait_exact_correct',
-        check_params: [9, 3],
-        tier: 'silver'
-    },
-    {
-        id: 'WAIT9_GOLD',
-        title: '純正九蓮宝燈 Gold',
-        type: 'wait_exact_correct',
-        check_params: [9, 5],
         tier: 'gold'
     },
 

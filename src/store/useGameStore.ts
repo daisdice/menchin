@@ -889,8 +889,8 @@ export const useGameStore = create<GameState>((set, get) => ({
 // Trophy stats functions
 export const getTrophyStats = () => {
     const unlocked = loadUnlockedTrophies();
-    // Count all trophies excluding platinum
-    const totalTrophies = TROPHIES.filter(t => t.type !== 'platinum').length;
+    // Count all trophies including platinum
+    const totalTrophies = TROPHIES.length;
     return {
         unlocked: unlocked.length,
         total: totalTrophies
