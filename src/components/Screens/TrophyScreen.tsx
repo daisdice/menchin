@@ -6,11 +6,13 @@ import { GameButton } from '../UI/GameButton';
 import styles from './TrophyScreen.module.css';
 
 type TabType = 'overall' | 'challenge' | 'sprint' | 'survival';
+type AchievementFilterType = 'all' | 'achieved' | 'notAchieved';
 
 export const TrophyScreen: React.FC = () => {
     const navigate = useNavigate();
     const { unlockedTrophies, trophyUnlockDates } = useGameStore();
     const [activeTab, setActiveTab] = useState<TabType>('overall');
+    const [achievementFilter, setAchievementFilter] = useState<AchievementFilterType>('all');
 
     const formatDate = (timestamp: number) => {
         const date = new Date(timestamp);
@@ -24,8 +26,19 @@ export const TrophyScreen: React.FC = () => {
     };
 
     const filteredTrophies = TROPHIES.filter(trophy => {
-        if (activeTab === 'overall') return true;
-        return trophy.category === activeTab;
+        // Mode filter
+        const modeMatch = activeTab === 'overall' || trophy.category === activeTab;
+
+        // Achievement filter
+        const isUnlocked = unlockedTrophies.includes(trophy.id);
+        let achievementMatch = true;
+        if (achievementFilter === 'achieved') {
+            achievementMatch = isUnlocked;
+        } else if (achievementFilter === 'notAchieved') {
+            achievementMatch = !isUnlocked;
+        }
+
+        return modeMatch && achievementMatch;
     });
 
     const getTierClass = (tier: string) => {
@@ -73,6 +86,27 @@ export const TrophyScreen: React.FC = () => {
                             onClick={() => setActiveTab('survival')}
                         >
                             SURVIVAL
+                        </button>
+                    </div>
+
+                    <div className={styles.tabGroup}>
+                        <button
+                            className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'all' ? styles.tabActive : ''}`}
+                            onClick={() => setAchievementFilter('all')}
+                        >
+                            ALL
+                        </button>
+                        <button
+                            className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'achieved' ? styles.tabActive : ''}`}
+                            onClick={() => setAchievementFilter('achieved')}
+                        >
+                            ACHIEVED
+                        </button>
+                        <button
+                            className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'notAchieved' ? styles.tabActive : ''}`}
+                            onClick={() => setAchievementFilter('notAchieved')}
+                        >
+                            NOT ACHIEVED
                         </button>
                     </div>
                 </div>

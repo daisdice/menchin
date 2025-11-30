@@ -46,6 +46,9 @@
 /* Tab Section */
 .tabSection {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 
 .tabGroup {
@@ -69,6 +72,12 @@
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
+}
+
+.tabSmall {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-width: 60px;
 }
 
 .tab:hover {
@@ -207,6 +216,11 @@
     .tab {
         font-size: 0.8rem;
         padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .tabSmall {
+        font-size: 0.7rem;
+        padding: var(--spacing-xxs) var(--spacing-xs);
     }
 
     .trophyList {
