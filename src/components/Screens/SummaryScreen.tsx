@@ -72,6 +72,9 @@ export const SummaryScreen: React.FC = () => {
 
         return (
             <>
+                <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>BASE</h3>
+                </div>
                 <div className={styles.statsGrid}>
                     <div className={styles.statItem}>
                         <span className={styles.statLabel}>ACCURACY</span>
@@ -90,26 +93,51 @@ export const SummaryScreen: React.FC = () => {
                     </div>
                 </div>
 
+                <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>TROPHY</h3>
+                </div>
                 <div className={styles.trophyStatsContainer}>
                     {(() => {
                         const trophyStats = getTrophyStats();
                         const rate = trophyStats.total > 0 ? (trophyStats.unlocked / trophyStats.total * 100) : 0;
                         return (
-                            <div className={styles.statItem}>
-                                <span className={styles.statLabel}>TROPHY RATE</span>
-                                <span className={styles.statValue}>
-                                    {rate.toFixed(1)}<span className={styles.statUnit}>%</span>
-                                </span>
-                                <span className={styles.statSubValue}>
-                                    ({trophyStats.unlocked}/{trophyStats.total})
-                                </span>
-                            </div>
+                            <>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statLabel}>OVERALL</span>
+                                    <span className={styles.statValue}>
+                                        {rate.toFixed(1)}<span className={styles.statUnit}>%</span>
+                                    </span>
+                                    <span className={styles.statSubValue}>
+                                        ({trophyStats.unlocked}/{trophyStats.total})
+                                    </span>
+                                </div>
+                                <div className={styles.tierStatsGrid}>
+                                    {(['bronze', 'silver', 'gold', 'platinum'] as const).map(tier => {
+                                        const tierStats = trophyStats.byTier[tier];
+                                        const tierRate = tierStats.total > 0 ? (tierStats.unlocked / tierStats.total * 100) : 0;
+                                        return (
+                                            <div key={tier} className={styles.tierStatItem}>
+                                                <span className={styles.tierLabel}>{tier.toUpperCase()}</span>
+                                                <span className={styles.tierValue}>
+                                                    {tierRate.toFixed(0)}%
+                                                </span>
+                                                <span className={styles.tierSubValue}>
+                                                    ({tierStats.unlocked}/{tierStats.total})
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
                         );
                     })()}
                 </div>
 
-                <div className={styles.waitStatsContainer}>
+
+                <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>STATS BY WAIT COUNT</h3>
+                </div>
+                <div className={styles.waitStatsContainer}>
                     <table className={styles.waitStatsTable}>
                         <thead>
                             <tr>
@@ -135,8 +163,10 @@ export const SummaryScreen: React.FC = () => {
 
 
 
-                <div className={styles.difficultyStatsContainer}>
+                <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>STATS BY DIFFICULTY</h3>
+                </div>
+                <div className={styles.difficultyStatsContainer}>
                     <table className={styles.waitStatsTable}>
                         <thead>
                             <tr>

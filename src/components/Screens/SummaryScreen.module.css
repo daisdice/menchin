@@ -75,6 +75,27 @@
     border-color: var(--color-accent-cyan);
 }
 
+/* Section Header */
+.sectionHeader {
+    width: 100%;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.sectionHeader .sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-accent-cyan);
+    margin: 0;
+    text-align: left;
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.sectionHeader:first-child {
+    margin-top: 0;
+}
+
 /* Stats Grid */
 .statsGrid {
     display: grid;
@@ -122,8 +143,8 @@
     margin-top: 4px;
 }
 
-/* Wait Stats Table */
-.waitStatsContainer {
+/* Trophy Stats */
+.trophyStatsContainer {
     width: 100%;
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -131,15 +152,54 @@
     padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
 }
 
-.sectionTitle {
-    font-size: 1rem;
+.tierStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.tierStatItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background-color: rgba(78, 205, 196, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.tierLabel {
+    font-size: 0.75rem;
     font-weight: 700;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.tierValue {
+    font-size: 1.2rem;
+    font-weight: 800;
     color: var(--color-text);
-    margin: 0 0 var(--spacing-xs) 0;
-    text-align: center;
+}
+
+.tierSubValue {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+    margin-top: 2px;
+}
+
+/* Wait Stats Table */
+.waitStatsContainer {
+    width: 100%;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
 }
 
 .waitStatsTable {
@@ -167,6 +227,14 @@
 
 .waitStatsTable tr:last-child td {
     border-bottom: none;
+}
+
+.difficultyStatsContainer {
+    width: 100%;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
 }
 
 /* Actions */

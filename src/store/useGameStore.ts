@@ -891,9 +891,26 @@ export const getTrophyStats = () => {
     const unlocked = loadUnlockedTrophies();
     // Count all trophies including platinum
     const totalTrophies = TROPHIES.length;
+
+    // Count by tier
+    const byTier = {
+        bronze: { unlocked: 0, total: 0 },
+        silver: { unlocked: 0, total: 0 },
+        gold: { unlocked: 0, total: 0 },
+        platinum: { unlocked: 0, total: 0 }
+    };
+
+    TROPHIES.forEach(trophy => {
+        byTier[trophy.tier].total++;
+        if (unlocked.includes(trophy.id)) {
+            byTier[trophy.tier].unlocked++;
+        }
+    });
+
     return {
         unlocked: unlocked.length,
-        total: totalTrophies
+        total: totalTrophies,
+        byTier
     };
 };
 
