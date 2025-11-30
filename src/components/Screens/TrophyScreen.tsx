@@ -40,10 +40,16 @@ export const TrophyScreen: React.FC = () => {
                             className={`${styles.trophyCard} ${!isUnlocked ? styles.locked : ''}`}
                         >
 
+                            <div className={styles.trophyIcon}>
+                                {trophy.tier === 'bronze' && '🥉'}
+                                {trophy.tier === 'silver' && '🥈'}
+                                {trophy.tier === 'gold' && '🥇'}
+                                {trophy.tier === 'platinum' && '🏆'}
+                            </div>
                             <div className={styles.trophyInfo}>
                                 <h3 className={styles.trophyTitle}>{trophy.title}</h3>
                                 <p className={styles.trophyDescription}>
-                                    {isUnlocked || !trophy.hidden ? trophy.description : '???'}
+                                    {trophy.description}
                                 </p>
                                 {isUnlocked && unlockDate && (
                                     <span className={styles.unlockDate}>

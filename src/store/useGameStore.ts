@@ -89,6 +89,8 @@ export interface GlobalStats {
     wait6Plus: number; // Correct answers with 6+ tile waits
     wait9: number; // Correct answers with 9 tile waits
     practiceAttempts: number; // Practice mode play count
+    waitStats: Record<number, number>; // Wait count -> correct count
+    fastBonusCount: number; // Total fast bonuses
 }
 
 export const saveQuestionResult = (result: QuestionResult): void => {
@@ -124,7 +126,9 @@ export const getGlobalStats = (): GlobalStats => {
             wait3Plus: 0,
             wait6Plus: 0,
             wait9: 0,
-            practiceAttempts: 0
+            practiceAttempts: 0,
+            waitStats: {},
+            fastBonusCount: 0
         };
     }
 
@@ -136,7 +140,9 @@ export const getGlobalStats = (): GlobalStats => {
             wait3Plus: 0,
             wait6Plus: 0,
             wait9: 0,
-            practiceAttempts: 0
+            practiceAttempts: 0,
+            waitStats: {},
+            fastBonusCount: 0
         };
     }
 };
@@ -149,7 +155,9 @@ export const updateGlobalStats = (updates: Partial<GlobalStats>): void => {
         wait3Plus: updates.wait3Plus !== undefined ? current.wait3Plus + updates.wait3Plus : current.wait3Plus,
         wait6Plus: updates.wait6Plus !== undefined ? current.wait6Plus + updates.wait6Plus : current.wait6Plus,
         wait9: updates.wait9 !== undefined ? current.wait9 + updates.wait9 : current.wait9,
-        practiceAttempts: updates.practiceAttempts !== undefined ? current.practiceAttempts + updates.practiceAttempts : current.practiceAttempts
+        practiceAttempts: updates.practiceAttempts !== undefined ? current.practiceAttempts + updates.practiceAttempts : current.practiceAttempts,
+        waitStats: updates.waitStats ? { ...current.waitStats, ...updates.waitStats } : current.waitStats,
+        fastBonusCount: updates.fastBonusCount !== undefined ? current.fastBonusCount + updates.fastBonusCount : current.fastBonusCount
     };
 
     localStorage.setItem(GLOBAL_STATS_KEY, JSON.stringify(updated));
@@ -564,8 +572,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         const { currentWaits, selectedWaits, questionStartTime, score, lives, mode, difficulty, correctCount, timeLeft } = get();
 
         // Check if arrays are equal
-        const isCorrect = JSON.stringify(currentWaits.sort((a, b) => a - b)) ===
-            JSON.stringify(selectedWaits.sort((a, b) => a - b));
+        const sortedCurrent = [...currentWaits].sort((a, b) => a - b);
+        const sortedSelected = [...selectedWaits].sort((a, b) => a - b);
+        const isCorrect = JSON.stringify(sortedCurrent) === JSON.stringify(sortedSelected);
 
         if (isCorrect) {
             const timeSpent = (Date.now() - questionStartTime) / 1000;
@@ -651,14 +660,24 @@ export const useGameStore = create<GameState>((set, get) => ({
                     fastBonuses: fastBonus > 0 ? 1 : 0
                 });
 
-                // Update global stats
-                const waitCount = currentWaits.length;
-                updateGlobalStats({
+                // Update Global Stats
+                const globalUpdates: Partial<GlobalStats> = {
                     totalCorrect: 1,
-                    wait3Plus: waitCount >= 3 ? 1 : 0,
-                    wait6Plus: waitCount >= 6 ? 1 : 0,
-                    wait9: waitCount === 9 ? 1 : 0
-                });
+                    wait3Plus: currentWaits.length >= 3 ? 1 : 0,
+                    wait6Plus: currentWaits.length >= 6 ? 1 : 0,
+                    wait9: currentWaits.length === 9 ? 1 : 0,
+                    fastBonusCount: fastBonus > 0 ? 1 : 0
+                };
+
+                // Update waitStats
+                const currentGlobal = getGlobalStats();
+                const waitCount = currentWaits.length;
+                const currentWaitCount = currentGlobal.waitStats[waitCount] || 0;
+                globalUpdates.waitStats = {
+                    [waitCount]: currentWaitCount + 1
+                };
+
+                updateGlobalStats(globalUpdates);
             }
 
             return {
@@ -820,7 +839,17 @@ export const useGameStore = create<GameState>((set, get) => ({
             if (unlockedTrophies.includes(trophy.id)) continue;
 
             // Check if trophy should be unlocked
-            if (checkTrophyUnlock(trophy.id, gameState, modeStats, globalStats)) {
+            const trophyCheckState = {
+                ...gameState,
+                modeStats,
+                globalStats,
+                unlockedTrophies,
+                isTimeUp: get().isTimeUp,
+                correctCount: get().correctCount,
+                remainingTime: get().timeLeft * 1000 // Convert back to ms for consistency if needed, or adjust check logic
+            };
+
+            if (checkTrophyUnlock(trophy, trophyCheckState)) {
                 newlyUnlocked.push(trophy.id);
                 newDates[trophy.id] = now; // Record unlock timestamp
             }

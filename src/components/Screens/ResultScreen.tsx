@@ -387,7 +387,12 @@ export const ResultScreen: React.FC = () => {
                                 transition={{ delay: index * 0.3, duration: 0.5 }}
                                 className={styles.trophyToast}
                             >
-                                <div className={styles.trophyToastIcon}>{trophy.icon}</div>
+                                <div className={styles.trophyToastIcon}>
+                                    {trophy.tier === 'bronze' && '🥉'}
+                                    {trophy.tier === 'silver' && '🥈'}
+                                    {trophy.tier === 'gold' && '🥇'}
+                                    {trophy.tier === 'platinum' && '🏆'}
+                                </div>
                                 <div className={styles.trophyToastContent}>
                                     <div className={styles.trophyToastLabel}>TROPHY UNLOCKED!</div>
                                     <div className={styles.trophyToastTitle}>{trophy.title}</div>
