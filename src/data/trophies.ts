@@ -1123,7 +1123,8 @@ export const checkTrophyUnlock = (
 
     case 'fast_bonus': {
       const [targetCount] = params;
-      return globalStats.fastBonusCount >= targetCount;
+      // Fast bonus is only available in challenge mode
+      return mode === 'challenge' && globalStats.fastBonusCount >= targetCount;
     }
 
     case 'platinum': {

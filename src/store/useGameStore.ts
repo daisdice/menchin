@@ -603,7 +603,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                     score: score + points,
                     correctCount: newCorrectCount,
                     sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes,
-                    fastBonusCount: fastBonus > 0 ? get().fastBonusCount + 1 : get().fastBonusCount
+                    fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? get().fastBonusCount + 1 : get().fastBonusCount
                 });
             }
 
