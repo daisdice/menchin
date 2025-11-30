@@ -657,7 +657,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                     totalQuestions: 1,
                     correctAnswers: 1,
                     totalResponseTime: timeSpent,
-                    fastBonuses: fastBonus > 0 ? 1 : 0
+                    fastBonuses: (mode === 'challenge' && fastBonus > 0) ? 1 : 0
                 });
 
                 // Update Global Stats
@@ -666,7 +666,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                     wait3Plus: currentWaits.length >= 3 ? 1 : 0,
                     wait6Plus: currentWaits.length >= 6 ? 1 : 0,
                     wait9: currentWaits.length === 9 ? 1 : 0,
-                    fastBonusCount: fastBonus > 0 ? 1 : 0
+                    fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? 1 : 0
                 };
 
                 // Update waitStats
