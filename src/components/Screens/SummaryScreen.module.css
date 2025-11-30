@@ -302,6 +302,13 @@
     border-bottom: none;
 }
 
+.tableSubValue {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
 /* Actions */
 .actions {
     display: flex;

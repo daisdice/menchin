@@ -151,7 +151,10 @@ export const SummaryScreen: React.FC = () => {
                                 return (
                                     <tr key={waitCount}>
                                         <td>{waitCount}</td>
-                                        <td>{s.total > 0 ? ((s.correct / s.total) * 100).toFixed(1) : '0.0'}% ({s.correct}/{s.total})</td>
+                                        <td>
+                                            <div>{s.total > 0 ? ((s.correct / s.total) * 100).toFixed(1) : '0.0'}%</div>
+                                            <div className={styles.tableSubValue}>({s.correct}/{s.total})</div>
+                                        </td>
                                         <td>{s.total > 0 ? (s.time / s.total).toFixed(2) : '0.00'}s</td>
                                     </tr>
                                 );
@@ -189,7 +192,10 @@ export const SummaryScreen: React.FC = () => {
                                     return (
                                         <tr key={diff.id}>
                                             <td>{diff.label}</td>
-                                            <td>{accuracy.toFixed(1)}% ({s.correct}/{s.total})</td>
+                                            <td>
+                                                <div>{accuracy.toFixed(1)}%</div>
+                                                <div className={styles.tableSubValue}>({s.correct}/{s.total})</div>
+                                            </td>
                                             <td>{avgTime.toFixed(2)}s</td>
                                         </tr>
                                     );
