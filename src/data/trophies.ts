@@ -356,22 +356,22 @@ export const TROPHIES: Trophy[] = [
 
   // Cumulative FAST Bonus (3)
   {
-    id: 'FAST_BONUS_BRONZE',
-    title: 'FAST Bonus Bronze',
+    id: 'CHALLENGE_FAST_BONUS_BRONZE',
+    title: 'CHALLENGE Fast Bonus Bronze',
     type: 'fast_bonus',
     check_params: [15],
     tier: 'bronze'
   },
   {
-    id: 'FAST_BONUS_SILVER',
-    title: 'FAST Bonus Silver',
+    id: 'CHALLENGE_FAST_BONUS_SILVER',
+    title: 'CHALLENGE Fast Bonus Silver',
     type: 'fast_bonus',
     check_params: [50],
     tier: 'silver'
   },
   {
-    id: 'FAST_BONUS_GOLD',
-    title: 'FAST Bonus Gold',
+    id: 'CHALLENGE_FAST_BONUS_GOLD',
+    title: 'CHALLENGE Fast Bonus Gold',
     type: 'fast_bonus',
     check_params: [100],
     tier: 'gold'
@@ -689,25 +689,25 @@ export const TROPHIES: Trophy[] = [
   // ========== GLOBAL (Mode/Difficulty Agnostic) ==========
   // Total Correct Answers (9)
   {
-    id: 'GLOBAL_CORRECT_BRONZE',
-    title: 'Total Correct Bronze',
+    id: 'GLOBAL_CORRECT_15',
+    title: 'Total Correct 15',
     type: 'total_correct',
     check_params: [15],
     tier: 'bronze'
   },
   {
-    id: 'GLOBAL_CORRECT_SILVER',
-    title: 'Total Correct Silver',
+    id: 'GLOBAL_CORRECT_50',
+    title: 'Total Correct 50',
     type: 'total_correct',
     check_params: [50],
-    tier: 'silver'
+    tier: 'bronze'
   },
   {
-    id: 'GLOBAL_CORRECT_GOLD',
-    title: 'Total Correct Gold',
+    id: 'GLOBAL_CORRECT_100',
+    title: 'Total Correct 100',
     type: 'total_correct',
     check_params: [100],
-    tier: 'gold'
+    tier: 'bronze'
   },
   {
     id: 'GLOBAL_CORRECT_150',
