@@ -722,6 +722,145 @@ export const TROPHIES: Trophy[] = [
         tier: 'gold'
     },
 
+    // Additional Correct Answers Milestones (6)
+    {
+        id: 'GLOBAL_CORRECT_150',
+        title: '正解数 150',
+        description: '累計150問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'bronze'
+    },
+    {
+        id: 'GLOBAL_CORRECT_200',
+        title: '正解数 200',
+        description: '累計200問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'silver'
+    },
+    {
+        id: 'GLOBAL_CORRECT_300',
+        title: '正解数 300',
+        description: '累計300問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'silver'
+    },
+    {
+        id: 'GLOBAL_CORRECT_500',
+        title: '正解数 500',
+        description: '累計500問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'gold'
+    },
+    {
+        id: 'GLOBAL_CORRECT_750',
+        title: '正解数 750',
+        description: '累計750問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'gold'
+    },
+    {
+        id: 'GLOBAL_CORRECT_1000',
+        title: '正解数 1000',
+        description: '累計1000問正解',
+        icon: '🎓',
+        hidden: false,
+        category: 'global',
+        tier: 'gold'
+    },
+
+    // Mode Play Count (9)
+    {
+        id: 'CHALLENGE_PLAYS_BRONZE',
+        title: 'チャレンジャー Bronze',
+        description: 'チャレンジモードを累計10回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'challenge',
+        tier: 'bronze'
+    },
+    {
+        id: 'CHALLENGE_PLAYS_SILVER',
+        title: 'チャレンジャー Silver',
+        description: 'チャレンジモードを累計30回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'challenge',
+        tier: 'silver'
+    },
+    {
+        id: 'CHALLENGE_PLAYS_GOLD',
+        title: 'チャレンジャー Gold',
+        description: 'チャレンジモードを累計100回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'challenge',
+        tier: 'gold'
+    },
+    {
+        id: 'SPRINT_PLAYS_BRONZE',
+        title: 'スプリンター Bronze',
+        description: 'スプリントモードを累計10回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'sprint',
+        tier: 'bronze'
+    },
+    {
+        id: 'SPRINT_PLAYS_SILVER',
+        title: 'スプリンター Silver',
+        description: 'スプリントモードを累計30回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'sprint',
+        tier: 'silver'
+    },
+    {
+        id: 'SPRINT_PLAYS_GOLD',
+        title: 'スプリンター Gold',
+        description: 'スプリントモードを累計100回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'sprint',
+        tier: 'gold'
+    },
+    {
+        id: 'SURVIVAL_PLAYS_BRONZE',
+        title: 'サバイバリスト Bronze',
+        description: 'サバイバルモードを累計10回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'survival',
+        tier: 'bronze'
+    },
+    {
+        id: 'SURVIVAL_PLAYS_SILVER',
+        title: 'サバイバリスト Silver',
+        description: 'サバイバルモードを累計30回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'survival',
+        tier: 'silver'
+    },
+    {
+        id: 'SURVIVAL_PLAYS_GOLD',
+        title: 'サバイバリスト Gold',
+        description: 'サバイバルモードを累計100回プレイ',
+        icon: '🎮',
+        hidden: false,
+        category: 'survival',
+        tier: 'gold'
+    },
+
     // 3+ Tile Waits (3)
     {
         id: 'WAIT3_BRONZE',
@@ -980,9 +1119,49 @@ export const checkTrophyUnlock = (
         const thresholds: Record<string, number> = {
             'GLOBAL_CORRECT_BRONZE': 15,
             'GLOBAL_CORRECT_SILVER': 50,
-            'GLOBAL_CORRECT_GOLD': 100
+            'GLOBAL_CORRECT_GOLD': 100,
+            'GLOBAL_CORRECT_150': 150,
+            'GLOBAL_CORRECT_200': 200,
+            'GLOBAL_CORRECT_300': 300,
+            'GLOBAL_CORRECT_500': 500,
+            'GLOBAL_CORRECT_750': 750,
+            'GLOBAL_CORRECT_1000': 1000
         };
         return globalStats.totalCorrect >= thresholds[trophyId];
+    }
+
+    // Mode Play Count
+    if (trophyId.startsWith('CHALLENGE_PLAYS_')) {
+        const thresholds: Record<string, number> = {
+            'CHALLENGE_PLAYS_BRONZE': 10,
+            'CHALLENGE_PLAYS_SILVER': 30,
+            'CHALLENGE_PLAYS_GOLD': 100
+        };
+        const totalAttempts = ['beginner', 'amateur', 'normal', 'expert', 'master']
+            .reduce((sum, diff) => sum + (modeStats[`challenge_${diff}`]?.attempts || 0), 0);
+        return totalAttempts >= thresholds[trophyId];
+    }
+
+    if (trophyId.startsWith('SPRINT_PLAYS_')) {
+        const thresholds: Record<string, number> = {
+            'SPRINT_PLAYS_BRONZE': 10,
+            'SPRINT_PLAYS_SILVER': 30,
+            'SPRINT_PLAYS_GOLD': 100
+        };
+        const totalAttempts = ['beginner', 'amateur', 'normal', 'expert', 'master']
+            .reduce((sum, diff) => sum + (modeStats[`sprint_${diff}`]?.attempts || 0), 0);
+        return totalAttempts >= thresholds[trophyId];
+    }
+
+    if (trophyId.startsWith('SURVIVAL_PLAYS_')) {
+        const thresholds: Record<string, number> = {
+            'SURVIVAL_PLAYS_BRONZE': 10,
+            'SURVIVAL_PLAYS_SILVER': 30,
+            'SURVIVAL_PLAYS_GOLD': 100
+        };
+        const totalAttempts = ['beginner', 'amateur', 'normal', 'expert', 'master']
+            .reduce((sum, diff) => sum + (modeStats[`survival_${diff}`]?.attempts || 0), 0);
+        return totalAttempts >= thresholds[trophyId];
     }
 
     if (trophyId.startsWith('WAIT3_')) {
