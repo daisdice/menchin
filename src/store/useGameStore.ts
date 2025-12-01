@@ -252,6 +252,7 @@ interface GameState {
     fastBonusCount: number; // Track number of FAST bonuses in current game
     isTimeUp: boolean; // Track if time ran out
     isNewRecord: boolean; // Track if current score is a new record
+    previousBestScore: number | undefined; // Best score at start of game
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -326,6 +327,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     fastBonusCount: 0,
     isTimeUp: false,
     isNewRecord: false,
+    previousBestScore: undefined,
 
     gameEndTime: 0,
 
@@ -359,6 +361,12 @@ export const useGameStore = create<GameState>((set, get) => ({
                 break;
         }
 
+
+
+        // Get previous best score
+        const stats = getModeStats(mode, difficulty);
+        const previousBestScore = stats.bestScore;
+
         const gameEndTime = 0; // Don't start timer yet, wait for countdown
 
         set({
@@ -379,7 +387,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             hasErrors: false,
             fastBonusCount: 0,
             isTimeUp: false,
-            isNewRecord: false
+            isNewRecord: false,
+            previousBestScore
         });
 
         // Update practice mode stats

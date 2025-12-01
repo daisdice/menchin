@@ -9,7 +9,7 @@ import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear, newlyUnlockedTrophies, clearNewlyUnlockedTrophies, isNewRecord } = useGameStore();
+    const { mode, difficulty, score, isClear, lastScoreBreakdown, isNewRecord, newlyUnlockedTrophies, previousBestScore, clearNewlyUnlockedTrophies, resetGame } = useGameStore();
 
     const handleRetry = () => {
         clearNewlyUnlockedTrophies();
@@ -128,6 +128,19 @@ export const ResultScreen: React.FC = () => {
                             <div className={styles.divider} />
 
                             <motion.div
+                                className={styles.scoreRow}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={1.2}
+                            >
+                                <span className={styles.label}>PREVIOUS BEST</span>
+                                <span className={styles.value}>
+                                    {previousBestScore === undefined || previousBestScore === Infinity ? '---' : `${previousBestScore.toFixed(2)}s`}
+                                </span>
+                            </motion.div>
+
+                            <motion.div
                                 className={`${styles.scoreRow} ${styles.totalRow}`}
                                 variants={itemVariants}
                                 initial="hidden"
@@ -159,36 +172,50 @@ export const ResultScreen: React.FC = () => {
                             </motion.div>
                         </>
                     ) : mode === 'survival' ? (
-                        <motion.div
-                            className={`${styles.scoreRow} ${styles.totalRow}`}
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            custom={0}
-                        >
-                            <div className={styles.totalScoreContainer}>
-                                <span className={styles.totalLabel}>CLEARED</span>
-                                <div className={styles.totalValueContainer}>
-                                    <motion.span
-                                        className={styles.totalValue}
-                                        initial={{ scale: 1.1 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ duration: 0.1 }}
-                                    >
-                                        {score} Hands
-                                    </motion.span>
-                                    {isNewRecord && (
+                        <>
+                            <motion.div
+                                className={styles.scoreRow}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={-0.5}
+                            >
+                                <span className={styles.label}>PREVIOUS BEST</span>
+                                <span className={styles.value}>
+                                    {previousBestScore === undefined || previousBestScore === 0 ? '---' : `${previousBestScore} Hands`}
+                                </span>
+                            </motion.div>
+                            <motion.div
+                                className={`${styles.scoreRow} ${styles.totalRow}`}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={0}
+                            >
+                                <div className={styles.totalScoreContainer}>
+                                    <span className={styles.totalLabel}>CLEARED</span>
+                                    <div className={styles.totalValueContainer}>
                                         <motion.span
-                                            initial={{ scale: 0, opacity: 0 }}
-                                            animate={{ scale: 1, opacity: 1 }}
-                                            className={styles.newRecordBadge}
+                                            className={styles.totalValue}
+                                            initial={{ scale: 1.1 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ duration: 0.1 }}
                                         >
-                                            NEW RECORD!
+                                            {score} Hands
                                         </motion.span>
-                                    )}
+                                        {isNewRecord && (
+                                            <motion.span
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                className={styles.newRecordBadge}
+                                            >
+                                                NEW RECORD!
+                                            </motion.span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
+                            </motion.div>
+                        </>
 
                     ) : mode === 'practice' ? (
                         <>
@@ -299,6 +326,19 @@ export const ResultScreen: React.FC = () => {
 
                             {/* Divider */}
                             <div className={styles.divider} />
+
+                            <motion.div
+                                className={styles.scoreRow}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                custom={3.5}
+                            >
+                                <span className={styles.label}>PREVIOUS BEST</span>
+                                <span className={styles.value}>
+                                    {previousBestScore === undefined || previousBestScore === 0 ? '---' : Math.floor(previousBestScore)}
+                                </span>
+                            </motion.div>
 
                             {/* Total Score */}
                             <motion.div
