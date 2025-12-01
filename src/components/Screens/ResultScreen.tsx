@@ -26,20 +26,20 @@ export const ResultScreen: React.FC = () => {
 
     const handleShare = () => {
         const status = isClear ? 'CLEARED! 🎉' : 'FAILED... 😢';
-        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\\n\\n`;
+        let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n`;
 
         if (mode === 'sprint') {
-            text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\\n`;
+            text += `⏱️ CLEAR TIME: ${score.toFixed(2)}s\n`;
         } else if (mode === 'survival') {
-            text += `🔥 SURVIVED: ${score} Hands\\n`;
+            text += `🔥 SURVIVED: ${score} Hands\n`;
         } else {
-            text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\\n`;
+            text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
             if (lastScoreBreakdown) {
-                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\\n`;
+                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
             }
         }
 
-        text += `\\nhttps://daisdice.github.io/menchin/\\n#CHINIT #Mahjong`;
+        text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
