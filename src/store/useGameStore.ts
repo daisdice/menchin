@@ -349,7 +349,13 @@ export const useGameStore = create<GameState>((set, get) => ({
             case 'challenge':
             default:
                 lives = 3;
-                duration = 120; // 120 seconds time limit
+                switch (difficulty) {
+                    case 'beginner': duration = 90; break;
+                    case 'amateur': duration = 120; break;
+                    case 'normal': duration = 180; break;
+                    case 'expert': duration = 240; break;
+                    case 'master': duration = 300; break;
+                }
                 break;
         }
 
@@ -389,19 +395,13 @@ export const useGameStore = create<GameState>((set, get) => ({
     endGame: (forceClear: boolean = false) => {
         set({ isNewRecord: false });
         if (forceClear) {
-            const { score, timeLeft, lives, difficulty } = get();
+            const { score, timeLeft, lives } = get();
 
             // Calculate bonuses for debug clear (New Formula)
             const timeBonus = timeLeft * 100;
             const lifeBonus = lives * 1000;
-            let clearBonus = 2000;
-            switch (difficulty) {
-                case 'beginner': clearBonus = 2000; break;
-                case 'amateur': clearBonus = 4000; break;
-                case 'normal': clearBonus = 6000; break;
-                case 'expert': clearBonus = 8000; break;
-                case 'master': clearBonus = 10000; break;
-            }
+            const clearBonus = 0; // No clear bonus for Challenge mode
+
             const totalScore = score + timeBonus + lifeBonus + clearBonus;
 
             set({
@@ -628,14 +628,8 @@ export const useGameStore = create<GameState>((set, get) => ({
                 // Calculate Result Bonuses (New Formula)
                 const timeBonus = timeLeft * 100;
                 const lifeBonus = lives * 1000;
-                let clearBonus = 2000;
-                switch (difficulty) {
-                    case 'beginner': clearBonus = 2000; break;
-                    case 'amateur': clearBonus = 4000; break;
-                    case 'normal': clearBonus = 6000; break;
-                    case 'expert': clearBonus = 8000; break;
-                    case 'master': clearBonus = 10000; break;
-                }
+                const clearBonus = 0; // No clear bonus for Challenge mode
+
                 const totalScore = score + points + timeBonus + lifeBonus + clearBonus;
 
                 set({
@@ -840,9 +834,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             }
         }
 
-        // Get global stats
         const globalStats = getGlobalStats();
-
         const newlyUnlocked: string[] = [];
         const now = Date.now();
         const newDates = { ...trophyUnlockDates };
