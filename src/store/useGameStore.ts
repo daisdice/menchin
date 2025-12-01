@@ -235,7 +235,7 @@ interface GameState {
     sprintTimes: number[]; // Track time spent per hand for SPRINT mode
     lastScoreBreakdown: {
         baseScore: number;
-        clearBonus: number;
+
         lifeBonus: number;
         timeBonus: number;
         totalScore: number;
@@ -400,9 +400,9 @@ export const useGameStore = create<GameState>((set, get) => ({
             // Calculate bonuses for debug clear (New Formula)
             const timeBonus = timeLeft * 100;
             const lifeBonus = lives * 1000;
-            const clearBonus = 0; // No clear bonus for Challenge mode
 
-            const totalScore = score + timeBonus + lifeBonus + clearBonus;
+
+            const totalScore = score + timeBonus + lifeBonus;
 
             set({
                 isPlaying: false,
@@ -411,7 +411,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 score: totalScore,
                 lastScoreBreakdown: {
                     baseScore: score,
-                    clearBonus,
+
                     lifeBonus,
                     timeBonus,
                     totalScore,
@@ -438,7 +438,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                         score: elapsedTime, // Store elapsed time as "score" for SPRINT
                         lastScoreBreakdown: {
                             baseScore: elapsedTime,
-                            clearBonus: 0,
+
                             lifeBonus: 0,
                             timeBonus: 0,
                             totalScore: elapsedTime,
@@ -457,7 +457,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                         score: correctCount,
                         lastScoreBreakdown: {
                             baseScore: correctCount,
-                            clearBonus: 0,
+
                             lifeBonus: 0,
                             timeBonus: 0,
                             totalScore: correctCount,
@@ -475,7 +475,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                         score: correctCount,
                         lastScoreBreakdown: {
                             baseScore: correctCount,
-                            clearBonus: 0,
+
                             lifeBonus: 0,
                             timeBonus: 0,
                             totalScore: correctCount,
@@ -491,7 +491,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                         isGameOver: true,
                         lastScoreBreakdown: {
                             baseScore: score,
-                            clearBonus: 0,
+
                             lifeBonus: 0,
                             timeBonus: 0,
                             totalScore: score,
@@ -628,16 +628,16 @@ export const useGameStore = create<GameState>((set, get) => ({
                 // Calculate Result Bonuses (New Formula)
                 const timeBonus = timeLeft * 100;
                 const lifeBonus = lives * 1000;
-                const clearBonus = 0; // No clear bonus for Challenge mode
 
-                const totalScore = score + points + timeBonus + lifeBonus + clearBonus;
+
+                const totalScore = score + points + timeBonus + lifeBonus;
 
                 set({
                     score: totalScore,
                     isClear: true,
                     lastScoreBreakdown: {
                         baseScore: score + points,
-                        clearBonus,
+
                         lifeBonus,
                         timeBonus,
                         totalScore,

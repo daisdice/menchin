@@ -35,7 +35,7 @@ export const ResultScreen: React.FC = () => {
         } else {
             text += `🏆 TOTAL SCORE: ${Math.floor(score)} pts\n`;
             if (lastScoreBreakdown) {
-                text += `(Base: ${lastScoreBreakdown.baseScore}, Clear: ${lastScoreBreakdown.clearBonus}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
+                text += `(Base: ${lastScoreBreakdown.baseScore}, Life: ${lastScoreBreakdown.lifeBonus}, Time: ${lastScoreBreakdown.timeBonus})\n`;
             }
         }
 
@@ -63,9 +63,8 @@ export const ResultScreen: React.FC = () => {
             setDisplayScore(0); // Reset to 0 before animation
             const sequence = [
                 { val: lastScoreBreakdown.baseScore, delay: 0 },
-                { val: lastScoreBreakdown.clearBonus, delay: 500 },
-                { val: lastScoreBreakdown.lifeBonus, delay: 1000 },
-                { val: lastScoreBreakdown.timeBonus, delay: 1500 }
+                { val: lastScoreBreakdown.lifeBonus, delay: 500 },
+                { val: lastScoreBreakdown.timeBonus, delay: 1000 }
             ];
 
             sequence.forEach((item) => {
@@ -246,16 +245,7 @@ export const ResultScreen: React.FC = () => {
                             {/* Bonuses (Only if breakdown exists and not SPRINT) */}
                             {lastScoreBreakdown && (
                                 <>
-                                    <motion.div
-                                        className={styles.scoreRow}
-                                        variants={itemVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        custom={1}
-                                    >
-                                        <span className={styles.label}>CLEAR BONUS</span>
-                                        <span className={styles.value}>+{Math.floor(lastScoreBreakdown.clearBonus)}</span>
-                                    </motion.div>
+
 
                                     {lastScoreBreakdown.lives > 0 && (
                                         <motion.div
