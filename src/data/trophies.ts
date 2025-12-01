@@ -192,7 +192,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_BEGINNER_BRONZE',
     title: 'CHALLENGE Beginner Score Bronze',
     type: 'challenge_score',
-    check_params: [10000, 'beginner'],
+    check_params: [7000, 'beginner'],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -200,7 +200,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_BEGINNER_SILVER',
     title: 'CHALLENGE Beginner Score Silver',
     type: 'challenge_score',
-    check_params: [13000, 'beginner'],
+    check_params: [9000, 'beginner'],
     tier: 'silver',
     category: 'challenge'
   },
@@ -208,7 +208,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_BEGINNER_GOLD',
     title: 'CHALLENGE Beginner Score Gold',
     type: 'challenge_score',
-    check_params: [16000, 'beginner'],
+    check_params: [11000, 'beginner'],
     tier: 'gold',
     category: 'challenge'
   },
@@ -217,7 +217,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_AMATEUR_BRONZE',
     title: 'CHALLENGE Amateur Score Bronze',
     type: 'challenge_score',
-    check_params: [12000, 'amateur'],
+    check_params: [10000, 'amateur'],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -225,7 +225,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_AMATEUR_SILVER',
     title: 'CHALLENGE Amateur Score Silver',
     type: 'challenge_score',
-    check_params: [15000, 'amateur'],
+    check_params: [12000, 'amateur'],
     tier: 'silver',
     category: 'challenge'
   },
@@ -233,7 +233,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_AMATEUR_GOLD',
     title: 'CHALLENGE Amateur Score Gold',
     type: 'challenge_score',
-    check_params: [18000, 'amateur'],
+    check_params: [14000, 'amateur'],
     tier: 'gold',
     category: 'challenge'
   },
@@ -242,7 +242,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_NORMAL_BRONZE',
     title: 'CHALLENGE Normal Score Bronze',
     type: 'challenge_score',
-    check_params: [14000, 'normal'],
+    check_params: [12000, 'normal'],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -250,7 +250,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_NORMAL_SILVER',
     title: 'CHALLENGE Normal Score Silver',
     type: 'challenge_score',
-    check_params: [17000, 'normal'],
+    check_params: [15000, 'normal'],
     tier: 'silver',
     category: 'challenge'
   },
@@ -258,7 +258,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_NORMAL_GOLD',
     title: 'CHALLENGE Normal Score Gold',
     type: 'challenge_score',
-    check_params: [20000, 'normal'],
+    check_params: [18000, 'normal'],
     tier: 'gold',
     category: 'challenge'
   },
@@ -292,7 +292,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_MASTER_BRONZE',
     title: 'CHALLENGE Master Score Bronze',
     type: 'challenge_score',
-    check_params: [18000, 'master'],
+    check_params: [20000, 'master'],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -300,7 +300,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_MASTER_SILVER',
     title: 'CHALLENGE Master Score Silver',
     type: 'challenge_score',
-    check_params: [21000, 'master'],
+    check_params: [23000, 'master'],
     tier: 'silver',
     category: 'challenge'
   },
@@ -308,7 +308,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_SCORE_MASTER_GOLD',
     title: 'CHALLENGE Master Score Gold',
     type: 'challenge_score',
-    check_params: [24000, 'master'],
+    check_params: [26000, 'master'],
     tier: 'gold',
     category: 'challenge'
   },
