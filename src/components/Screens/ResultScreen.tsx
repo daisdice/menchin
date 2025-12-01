@@ -13,11 +13,13 @@ export const ResultScreen: React.FC = () => {
     const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear, newlyUnlockedTrophies, clearNewlyUnlockedTrophies } = useGameStore();
     const { saveScore } = useAppStore();
 
+
     const isNewRecord = React.useMemo(() => {
         const currentScores = useAppStore.getState().highScores[difficulty] || [];
-        const currentHigh = currentScores.length > 0 ? currentScores[0].score : 0;
-        return score > currentHigh;
-    }, [score, difficulty]);
+        const currentHigh = currentScores.length > 0 ? currentScores[0].score : (mode === 'sprint' ? Infinity : 0);
+        // Sprint mode: lower time is better
+        return mode === 'sprint' ? score < currentHigh : score > currentHigh;
+    }, [score, difficulty, mode]);
 
     useEffect(() => {
         saveScore(difficulty, score);
