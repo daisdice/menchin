@@ -504,7 +504,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_BEGINNER_BRONZE',
     title: 'SPRINT Beginner Time Bronze',
     type: 'sprint_time',
-    check_params: [90, 'beginner'],
+    check_params: [70, 'beginner'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -512,7 +512,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_BEGINNER_SILVER',
     title: 'SPRINT Beginner Time Silver',
     type: 'sprint_time',
-    check_params: [60, 'beginner'],
+    check_params: [50, 'beginner'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -529,7 +529,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_AMATEUR_BRONZE',
     title: 'SPRINT Amateur Time Bronze',
     type: 'sprint_time',
-    check_params: [100, 'amateur'],
+    check_params: [80, 'amateur'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -537,7 +537,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_AMATEUR_SILVER',
     title: 'SPRINT Amateur Time Silver',
     type: 'sprint_time',
-    check_params: [70, 'amateur'],
+    check_params: [60, 'amateur'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -554,7 +554,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_NORMAL_BRONZE',
     title: 'SPRINT Normal Time Bronze',
     type: 'sprint_time',
-    check_params: [110, 'normal'],
+    check_params: [120, 'normal'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -562,7 +562,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_NORMAL_SILVER',
     title: 'SPRINT Normal Time Silver',
     type: 'sprint_time',
-    check_params: [80, 'normal'],
+    check_params: [90, 'normal'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -570,7 +570,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_NORMAL_GOLD',
     title: 'SPRINT Normal Time Gold',
     type: 'sprint_time',
-    check_params: [50, 'normal'],
+    check_params: [60, 'normal'],
     tier: 'gold',
     category: 'sprint'
   },
@@ -579,7 +579,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_BRONZE',
     title: 'SPRINT Expert Time Bronze',
     type: 'sprint_time',
-    check_params: [120, 'expert'],
+    check_params: [140, 'expert'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -587,7 +587,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_SILVER',
     title: 'SPRINT Expert Time Silver',
     type: 'sprint_time',
-    check_params: [90, 'expert'],
+    check_params: [110, 'expert'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -595,7 +595,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_GOLD',
     title: 'SPRINT Expert Time Gold',
     type: 'sprint_time',
-    check_params: [60, 'expert'],
+    check_params: [80, 'expert'],
     tier: 'gold',
     category: 'sprint'
   },
@@ -604,7 +604,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_MASTER_BRONZE',
     title: 'SPRINT Master Time Bronze',
     type: 'sprint_time',
-    check_params: [130, 'master'],
+    check_params: [180, 'master'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -612,7 +612,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_MASTER_SILVER',
     title: 'SPRINT Master Time Silver',
     type: 'sprint_time',
-    check_params: [100, 'master'],
+    check_params: [150, 'master'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -620,7 +620,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_MASTER_GOLD',
     title: 'SPRINT Master Time Gold',
     type: 'sprint_time',
-    check_params: [70, 'master'],
+    check_params: [120, 'master'],
     tier: 'gold',
     category: 'sprint'
   },
