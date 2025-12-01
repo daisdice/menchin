@@ -133,6 +133,16 @@ export const generateTrophyDescription = (trophy: Trophy): string => {
 };
 
 export const TROPHIES: Trophy[] = [
+  // Platinum Trophy
+  {
+    id: 'PLATINUM_ALL_TROPHIES',
+    title: 'Chinitsu Master',
+    type: 'platinum',
+    check_params: [],
+    tier: 'platinum',
+    category: 'other'
+  },
+
   // ========== CHALLENGE MODE ==========
   // Initial Clear (5)
   {
@@ -392,7 +402,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_FAST_BONUS_BRONZE',
     title: 'CHALLENGE Fast Bonus Bronze',
     type: 'fast_bonus',
-    check_params: [15],
+    check_params: [50],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -400,7 +410,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_FAST_BONUS_SILVER',
     title: 'CHALLENGE Fast Bonus Silver',
     type: 'fast_bonus',
-    check_params: [50],
+    check_params: [100],
     tier: 'silver',
     category: 'challenge'
   },
@@ -408,7 +418,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_FAST_BONUS_GOLD',
     title: 'CHALLENGE Fast Bonus Gold',
     type: 'fast_bonus',
-    check_params: [100],
+    check_params: [200],
     tier: 'gold',
     category: 'challenge'
   },
@@ -529,7 +539,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_AMATEUR_BRONZE',
     title: 'SPRINT Amateur Time Bronze',
     type: 'sprint_time',
-    check_params: [80, 'amateur'],
+    check_params: [100, 'amateur'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -537,7 +547,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_AMATEUR_SILVER',
     title: 'SPRINT Amateur Time Silver',
     type: 'sprint_time',
-    check_params: [60, 'amateur'],
+    check_params: [70, 'amateur'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -554,7 +564,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_NORMAL_BRONZE',
     title: 'SPRINT Normal Time Bronze',
     type: 'sprint_time',
-    check_params: [120, 'normal'],
+    check_params: [140, 'normal'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -562,7 +572,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_NORMAL_SILVER',
     title: 'SPRINT Normal Time Silver',
     type: 'sprint_time',
-    check_params: [90, 'normal'],
+    check_params: [100, 'normal'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -579,7 +589,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_BRONZE',
     title: 'SPRINT Expert Time Bronze',
     type: 'sprint_time',
-    check_params: [140, 'expert'],
+    check_params: [210, 'expert'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -587,7 +597,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_SILVER',
     title: 'SPRINT Expert Time Silver',
     type: 'sprint_time',
-    check_params: [110, 'expert'],
+    check_params: [150, 'expert'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -595,7 +605,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_EXPERT_GOLD',
     title: 'SPRINT Expert Time Gold',
     type: 'sprint_time',
-    check_params: [80, 'expert'],
+    check_params: [90, 'expert'],
     tier: 'gold',
     category: 'sprint'
   },
@@ -604,7 +614,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_MASTER_BRONZE',
     title: 'SPRINT Master Time Bronze',
     type: 'sprint_time',
-    check_params: [180, 'master'],
+    check_params: [240, 'master'],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -612,7 +622,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_TIME_MASTER_SILVER',
     title: 'SPRINT Master Time Silver',
     type: 'sprint_time',
-    check_params: [150, 'master'],
+    check_params: [180, 'master'],
     tier: 'silver',
     category: 'sprint'
   },
@@ -766,10 +776,10 @@ export const TROPHIES: Trophy[] = [
   // ========== GLOBAL (Mode/Difficulty Agnostic) ==========
   // Total Correct Answers (9)
   {
-    id: 'GLOBAL_CORRECT_15',
-    title: 'Total Correct 15',
+    id: 'GLOBAL_CORRECT_20',
+    title: 'Total Correct 20',
     type: 'total_correct',
-    check_params: [15],
+    check_params: [20],
     tier: 'bronze',
     category: 'other'
   },
@@ -843,7 +853,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_PLAYS_BRONZE',
     title: 'Challenger Bronze',
     type: 'challenge_plays',
-    check_params: [10],
+    check_params: [20],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -851,7 +861,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_PLAYS_SILVER',
     title: 'Challenger Silver',
     type: 'challenge_plays',
-    check_params: [30],
+    check_params: [50],
     tier: 'silver',
     category: 'challenge'
   },
@@ -867,7 +877,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_PLAYS_BRONZE',
     title: 'Sprinter Bronze',
     type: 'sprint_plays',
-    check_params: [10],
+    check_params: [20],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -875,7 +885,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_PLAYS_SILVER',
     title: 'Sprinter Silver',
     type: 'sprint_plays',
-    check_params: [30],
+    check_params: [50],
     tier: 'silver',
     category: 'sprint'
   },
@@ -891,7 +901,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SURVIVAL_PLAYS_BRONZE',
     title: 'Survivalist Bronze',
     type: 'survival_plays',
-    check_params: [10],
+    check_params: [20],
     tier: 'bronze',
     category: 'survival'
   },
@@ -899,7 +909,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SURVIVAL_PLAYS_SILVER',
     title: 'Survivalist Silver',
     type: 'survival_plays',
-    check_params: [30],
+    check_params: [50],
     tier: 'silver',
     category: 'survival'
   },
@@ -917,7 +927,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT3_BRONZE',
     title: '3-Wait Master Bronze',
     type: 'wait_correct',
-    check_params: [3, 50],
+    check_params: [3, 100],
     tier: 'bronze',
     category: 'other'
   },
@@ -925,7 +935,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT3_SILVER',
     title: '3-Wait Master Silver',
     type: 'wait_correct',
-    check_params: [3, 200],
+    check_params: [3, 400],
     tier: 'silver',
     category: 'other'
   },
@@ -933,7 +943,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT3_GOLD',
     title: '3-Wait Master Gold',
     type: 'wait_correct',
-    check_params: [3, 500],
+    check_params: [3, 1000],
     tier: 'gold',
     category: 'other'
   },
@@ -971,16 +981,6 @@ export const TROPHIES: Trophy[] = [
     type: 'wait_exact_correct',
     check_params: [9, 1],
     tier: 'gold',
-    category: 'other'
-  },
-
-  // Platinum Trophy
-  {
-    id: 'PLATINUM_ALL_TROPHIES',
-    title: 'Chinitsu Master',
-    type: 'platinum',
-    check_params: [],
-    tier: 'platinum',
     category: 'other'
   }
 ];
