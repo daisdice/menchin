@@ -53,7 +53,27 @@ export const GameScreen: React.FC = () => {
                     useGameStore.setState({ gameEndTime: now, timeLeft: 0, questionStartTime: now });
                 } else {
                     // CHALLENGE or SURVIVAL mode: set end time for countdown timer
-                    const duration = mode === 'challenge' ? 120 : (mode === 'survival' ? 30 : 0);
+                    let duration = 0;
+                    if (mode === 'challenge') {
+                        switch (difficulty) {
+                            case 'beginner': duration = 90; break;
+                            case 'amateur': duration = 120; break;
+                            case 'normal': duration = 180; break;
+                            case 'expert': duration = 240; break;
+                            case 'master': duration = 300; break;
+                        }
+                    } else if (mode === 'survival') {
+                        switch (difficulty) {
+                            case 'beginner': duration = 30; break;
+                            case 'amateur': duration = 45; break;
+                            case 'normal': duration = 60; break;
+                            case 'expert': duration = 90; break;
+                            case 'master': duration = 120; break;
+                        }
+                    }
+
+                    console.log(`[GameScreen countdown] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
+
                     if (duration > 0) {
                         const newEndTime = now + duration * 1000;
                         useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration, questionStartTime: now });

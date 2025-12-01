@@ -342,7 +342,13 @@ export const useGameStore = create<GameState>((set, get) => ({
                 break;
             case 'survival':
                 lives = 1;
-                duration = 30;
+                switch (difficulty) {
+                    case 'beginner': duration = 30; break;
+                    case 'amateur': duration = 45; break;
+                    case 'normal': duration = 60; break;
+                    case 'expert': duration = 90; break;
+                    case 'master': duration = 120; break;
+                }
                 break;
             case 'practice':
                 lives = 99;
@@ -361,11 +367,17 @@ export const useGameStore = create<GameState>((set, get) => ({
                 break;
         }
 
+        console.log(`[startGame] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
 
 
-        // Get previous best score
-        const stats = getModeStats(mode, difficulty);
-        const previousBestScore = stats.bestScore;
+
+
+        // Get previous best score (not available for practice mode)
+        let previousBestScore: number | undefined = undefined;
+        if (mode !== 'practice') {
+            const stats = getModeStats(mode, difficulty);
+            previousBestScore = stats.bestScore;
+        }
 
         const gameEndTime = 0; // Don't start timer yet, wait for countdown
 
@@ -792,7 +804,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     startGameTimer: () => {
-        const { mode } = get();
+        const { mode, difficulty } = get();
         const now = Date.now();
         let gameEndTime = 0;
         let timeLeft = 0;
@@ -801,7 +813,27 @@ export const useGameStore = create<GameState>((set, get) => ({
             gameEndTime = now;
             timeLeft = 0;
         } else {
-            const duration = mode === 'challenge' ? 120 : (mode === 'survival' ? 30 : 0);
+            let duration = 0;
+            if (mode === 'challenge') {
+                switch (difficulty) {
+                    case 'beginner': duration = 90; break;
+                    case 'amateur': duration = 120; break;
+                    case 'normal': duration = 180; break;
+                    case 'expert': duration = 240; break;
+                    case 'master': duration = 300; break;
+                }
+            } else if (mode === 'survival') {
+                switch (difficulty) {
+                    case 'beginner': duration = 30; break;
+                    case 'amateur': duration = 45; break;
+                    case 'normal': duration = 60; break;
+                    case 'expert': duration = 90; break;
+                    case 'master': duration = 120; break;
+                }
+            }
+
+            console.log(`[startGameTimer] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
+
             if (duration > 0) {
                 gameEndTime = now + duration * 1000;
                 timeLeft = duration;
