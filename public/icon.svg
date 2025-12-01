@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: Turquoise Rounded Square -->
+  <rect x="32" y="32" width="448" height="448" rx="100" ry="100" fill="#4ECDC4" />
+  
+  <!-- Text Shadow (Hard Shadow style) -->
+  <text x="266" y="366" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="320" fill="rgba(0,0,0,0.1)">CH</text>
+  
+  <!-- Main Text: Yellow with White Stroke -->
+  <text x="256" y="356" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="320" fill="#FFD93D" stroke="white" stroke-width="12" paint-order="stroke">CH</text>
+</svg>
