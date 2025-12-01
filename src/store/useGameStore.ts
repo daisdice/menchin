@@ -251,6 +251,7 @@ interface GameState {
     hasErrors: boolean; // Track if any mistakes were made in current game
     fastBonusCount: number; // Track number of FAST bonuses in current game
     isTimeUp: boolean; // Track if time ran out
+    isNewRecord: boolean; // Track if current score is a new record
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -324,6 +325,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     hasErrors: false,
     fastBonusCount: 0,
     isTimeUp: false,
+    isNewRecord: false,
 
     gameEndTime: 0,
 
@@ -370,7 +372,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             sprintTimes: [],
             hasErrors: false,
             fastBonusCount: 0,
-            isTimeUp: false
+            isTimeUp: false,
+            isNewRecord: false
         });
 
         // Update practice mode stats
@@ -384,6 +387,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     endGame: (forceClear: boolean = false) => {
+        set({ isNewRecord: false });
         if (forceClear) {
             const { score, timeLeft, lives, difficulty } = get();
 
@@ -504,6 +508,18 @@ export const useGameStore = create<GameState>((set, get) => ({
         if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
             // Save Record (always for challenge, only on clear for sprint/survival)
             if (mode === 'challenge' || isClear) {
+                // Check if this is a new record BEFORE saving
+                const existingRecords = getRecords(mode, difficulty);
+                let isNewRecord = false;
+                if (existingRecords.length === 0) {
+                    isNewRecord = true;
+                } else {
+                    const currentBest = existingRecords[0].score;
+                    // Sprint mode: lower time is better
+                    isNewRecord = mode === 'sprint' ? score < currentBest : score > currentBest;
+                }
+                set({ isNewRecord });
+
                 const record: GameRecord = {
                     mode,
                     difficulty,

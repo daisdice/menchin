@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/useGameStore';
-import { useAppStore } from '../../store/useAppStore';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
 import { TrophyToastContainer } from '../UI/TrophyToastContainer';
@@ -10,20 +9,7 @@ import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear, newlyUnlockedTrophies, clearNewlyUnlockedTrophies } = useGameStore();
-    const { saveScore } = useAppStore();
-
-
-    const isNewRecord = React.useMemo(() => {
-        const currentScores = useAppStore.getState().highScores[difficulty] || [];
-        const currentHigh = currentScores.length > 0 ? currentScores[0].score : (mode === 'sprint' ? Infinity : 0);
-        // Sprint mode: lower time is better
-        return mode === 'sprint' ? score < currentHigh : score > currentHigh;
-    }, [score, difficulty, mode]);
-
-    useEffect(() => {
-        saveScore(difficulty, score);
-    }, [score, difficulty, saveScore]);
+    const { score, difficulty, mode, resetGame, lastScoreBreakdown, isClear, newlyUnlockedTrophies, clearNewlyUnlockedTrophies, isNewRecord } = useGameStore();
 
     const handleRetry = () => {
         clearNewlyUnlockedTrophies();
