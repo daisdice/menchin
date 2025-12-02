@@ -853,7 +853,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_PLAYS_BRONZE',
     title: 'Challenger Bronze',
     type: 'challenge_plays',
-    check_params: [20],
+    check_params: [10],
     tier: 'bronze',
     category: 'challenge'
   },
@@ -861,7 +861,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_PLAYS_SILVER',
     title: 'Challenger Silver',
     type: 'challenge_plays',
-    check_params: [50],
+    check_params: [25],
     tier: 'silver',
     category: 'challenge'
   },
@@ -869,7 +869,7 @@ export const TROPHIES: Trophy[] = [
     id: 'CHALLENGE_PLAYS_GOLD',
     title: 'Challenger Gold',
     type: 'challenge_plays',
-    check_params: [100],
+    check_params: [50],
     tier: 'gold',
     category: 'challenge'
   },
@@ -877,7 +877,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_PLAYS_BRONZE',
     title: 'Sprinter Bronze',
     type: 'sprint_plays',
-    check_params: [20],
+    check_params: [10],
     tier: 'bronze',
     category: 'sprint'
   },
@@ -885,7 +885,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_PLAYS_SILVER',
     title: 'Sprinter Silver',
     type: 'sprint_plays',
-    check_params: [50],
+    check_params: [25],
     tier: 'silver',
     category: 'sprint'
   },
@@ -893,7 +893,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SPRINT_PLAYS_GOLD',
     title: 'Sprinter Gold',
     type: 'sprint_plays',
-    check_params: [100],
+    check_params: [50],
     tier: 'gold',
     category: 'sprint'
   },
@@ -901,7 +901,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SURVIVAL_PLAYS_BRONZE',
     title: 'Survivalist Bronze',
     type: 'survival_plays',
-    check_params: [20],
+    check_params: [10],
     tier: 'bronze',
     category: 'survival'
   },
@@ -909,7 +909,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SURVIVAL_PLAYS_SILVER',
     title: 'Survivalist Silver',
     type: 'survival_plays',
-    check_params: [50],
+    check_params: [25],
     tier: 'silver',
     category: 'survival'
   },
@@ -917,7 +917,7 @@ export const TROPHIES: Trophy[] = [
     id: 'SURVIVAL_PLAYS_GOLD',
     title: 'Survivalist Gold',
     type: 'survival_plays',
-    check_params: [100],
+    check_params: [50],
     tier: 'gold',
     category: 'survival'
   },
@@ -935,7 +935,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT3_SILVER',
     title: '3-Wait Master Silver',
     type: 'wait_correct',
-    check_params: [3, 400],
+    check_params: [3, 200],
     tier: 'silver',
     category: 'other'
   },
@@ -943,7 +943,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT3_GOLD',
     title: '3-Wait Master Gold',
     type: 'wait_correct',
-    check_params: [3, 1000],
+    check_params: [3, 400],
     tier: 'gold',
     category: 'other'
   },
@@ -961,7 +961,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT6_SILVER',
     title: '6-Wait Master Silver',
     type: 'wait_correct',
-    check_params: [6, 200],
+    check_params: [6, 100],
     tier: 'silver',
     category: 'other'
   },
@@ -969,7 +969,7 @@ export const TROPHIES: Trophy[] = [
     id: 'WAIT6_GOLD',
     title: '6-Wait Master Gold',
     type: 'wait_correct',
-    check_params: [6, 500],
+    check_params: [6, 200],
     tier: 'gold',
     category: 'other'
   },
