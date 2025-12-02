@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: "CHIN'IT - Chinitsu Mahjong Trainer",
+        name: "CHIN'IT",
         short_name: "CHIN'IT",
-        description: 'Master Chinitsu Mahjong with this interactive trainer app.',
+        description: 'Aim to be a Chinitsu Master!',
         theme_color: '#4ECDC4',
         background_color: '#ffffff',
         display: 'standalone',
