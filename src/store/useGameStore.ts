@@ -367,11 +367,6 @@ export const useGameStore = create<GameState>((set, get) => ({
                 break;
         }
 
-        console.log(`[startGame] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
-
-
-
-
         // Get previous best score (not available for practice mode)
         let previousBestScore: number | undefined = undefined;
         if (mode !== 'practice') {
@@ -831,8 +826,6 @@ export const useGameStore = create<GameState>((set, get) => ({
                     case 'master': duration = 120; break;
                 }
             }
-
-            console.log(`[startGameTimer] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
 
             if (duration > 0) {
                 gameEndTime = now + duration * 1000;

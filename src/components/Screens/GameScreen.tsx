@@ -72,8 +72,6 @@ export const GameScreen: React.FC = () => {
                         }
                     }
 
-                    console.log(`[GameScreen countdown] mode=${mode}, difficulty=${difficulty}, duration=${duration}s`);
-
                     if (duration > 0) {
                         const newEndTime = now + duration * 1000;
                         useGameStore.setState({ gameEndTime: newEndTime, timeLeft: duration, questionStartTime: now });
