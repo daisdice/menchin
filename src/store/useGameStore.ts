@@ -625,7 +625,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             const newCorrectCount = correctCount + 1;
 
             if (mode === 'survival') {
-                const timeToAdd = currentWaits.length + 1;
+                const timeToAdd = currentWaits.length * 2;
                 const newGameEndTime = get().gameEndTime + timeToAdd * 1000;
                 set({
                     score: newCorrectCount,
@@ -722,7 +722,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 fastBonus,
                 timeSpent,
                 bonuses: mode === 'survival'
-                    ? [`+${currentWaits.length + 1} s`]
+                    ? [`+${currentWaits.length * 2} s`]
                     : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean),
                 gameEnding: (mode === 'challenge' && newCorrectCount >= 10) || isSprintEnd
             };
