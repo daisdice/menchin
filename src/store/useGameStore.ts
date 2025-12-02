@@ -253,6 +253,7 @@ interface GameState {
     isTimeUp: boolean; // Track if time ran out
     isNewRecord: boolean; // Track if current score is a new record
     previousBestScore: number | undefined; // Best score at start of game
+    sprintTimeAccumulator: number; // Accumulate time for incorrect answers in Sprint mode
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
@@ -328,6 +329,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     isTimeUp: false,
     isNewRecord: false,
     previousBestScore: undefined,
+    sprintTimeAccumulator: 0,
 
     gameEndTime: 0,
 
@@ -395,7 +397,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             fastBonusCount: 0,
             isTimeUp: false,
             isNewRecord: false,
-            previousBestScore
+            previousBestScore,
+            sprintTimeAccumulator: 0
         });
 
         // Update practice mode stats
@@ -601,7 +604,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     submitAnswer: () => {
-        const { currentWaits, selectedWaits, questionStartTime, score, lives, mode, difficulty, correctCount, timeLeft } = get();
+        const { currentWaits, selectedWaits, questionStartTime, score, lives, mode, difficulty, correctCount, timeLeft, sprintTimeAccumulator } = get();
 
         // Check if arrays are equal
         const sortedCurrent = [...currentWaits].sort((a, b) => a - b);
@@ -631,11 +634,17 @@ export const useGameStore = create<GameState>((set, get) => ({
                     timeLeft: timeLeft + timeToAdd
                 });
             } else {
+                // For Sprint mode: Add accumulated time from incorrect attempts to current timeSpent
+                const totalSprintTimeForHand = mode === 'sprint' ? sprintTimeAccumulator + timeSpent : timeSpent;
+
                 set({
                     score: score + points,
                     correctCount: newCorrectCount,
-                    sprintTimes: mode === 'sprint' ? [...get().sprintTimes, timeSpent] : get().sprintTimes,
-                    fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? get().fastBonusCount + 1 : get().fastBonusCount
+                    sprintTimes: mode === 'sprint' ? [...get().sprintTimes, totalSprintTimeForHand] : get().sprintTimes,
+                    fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? get().fastBonusCount + 1 : get().fastBonusCount,
+                    // Reset questionStartTime for next question in Sprint mode (for cumulative tracking)
+                    questionStartTime: mode === 'sprint' ? Date.now() : get().questionStartTime,
+                    sprintTimeAccumulator: 0 // Reset accumulator after correct answer
                 });
             }
 
@@ -727,10 +736,14 @@ export const useGameStore = create<GameState>((set, get) => ({
                 newLives = lives - 1;
             }
 
+            const timeSpent = (Date.now() - questionStartTime) / 1000;
+
             set({
                 lives: newLives,
                 incorrectCount: get().incorrectCount + 1,
-                hasErrors: true
+                hasErrors: true,
+                // Accumulate time for Sprint mode
+                sprintTimeAccumulator: mode === 'sprint' ? get().sprintTimeAccumulator + timeSpent : 0
             });
 
             // Save question result for statistics (exclude practice mode)
