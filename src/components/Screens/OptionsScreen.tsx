@@ -41,7 +41,7 @@ export const OptionsScreen: React.FC = () => {
                         ) : (
                             <div className={styles.confirmBox}>
                                 <p className={styles.confirmMessage}>
-                                    すべてのデータ（ハイスコア、アンロック状況）が削除されます。<br />
+                                    すべてのデータ（RECORD, SUMMARY, TROPHY）が削除されます。<br />
                                     本当によろしいですか？
                                 </p>
                                 <div className={styles.confirmButtons}>
