@@ -5,6 +5,7 @@ import { useGameStore } from '../../store/useGameStore';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
 import { TrophyToastContainer } from '../UI/TrophyToastContainer';
+import { Toast } from '../UI/Toast';
 import styles from './ResultScreen.module.css';
 
 export const ResultScreen: React.FC = () => {
@@ -24,7 +25,9 @@ export const ResultScreen: React.FC = () => {
         navigate('/');
     };
 
-    const handleShare = () => {
+    const [showToast, setShowToast] = React.useState(false);
+
+    const handleShare = async () => {
         const status = isClear ? 'CLEARED! 🎉' : 'FAILED... 😢';
         let text = `🀄 CHIN'IT (${mode.toUpperCase()} - ${difficulty.toUpperCase()}) ${status}\n\n`;
 
@@ -40,8 +43,32 @@ export const ResultScreen: React.FC = () => {
         }
 
         text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "CHIN'IT",
+                    text: text,
+                });
+            } catch (err) {
+                console.error('Error sharing:', err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(text);
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                // Fallback to Twitter intent if clipboard fails or as a secondary option?
+                // For now, let's keep the original Twitter behavior as a last resort or just rely on clipboard.
+                // The original code opened a Twitter URL. Let's keep that logic if share/clipboard fails?
+                // Actually, the requirement says "PCではクリップボードコピー".
+                // Let's stick to clipboard for now.
+                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                window.open(url, '_blank');
+            }
+        }
     };
 
     // Animation variants
@@ -395,6 +422,12 @@ export const ResultScreen: React.FC = () => {
             {newlyUnlockedTrophies.length > 0 && (
                 <TrophyToastContainer trophyIds={newlyUnlockedTrophies} />
             )}
+
+            <Toast
+                message="Copied to clipboard!"
+                isVisible={showToast}
+                icon="📋"
+            />
         </div>
     );
 };
