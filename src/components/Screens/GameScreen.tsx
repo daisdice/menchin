@@ -31,6 +31,7 @@ export const GameScreen: React.FC = () => {
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
     const [countdown, setCountdown] = useState<number | null>(null);
+    const [showQuitConfirm, setShowQuitConfirm] = useState(false);
 
     // Reset countdown when game starts
     useEffect(() => {
@@ -159,6 +160,22 @@ export const GameScreen: React.FC = () => {
         }
     }, []);
 
+    // Handle quit button click
+    const handleQuitClick = useCallback(() => {
+        setShowQuitConfirm(true);
+    }, []);
+
+    // Handle quit confirmation
+    const handleQuitConfirm = useCallback(() => {
+        setShowQuitConfirm(false);
+        useGameStore.getState().endGame(false, true);
+    }, []);
+
+    // Handle quit cancel
+    const handleQuitCancel = useCallback(() => {
+        setShowQuitConfirm(false);
+    }, []);
+
     const handleSubmit = useCallback(() => {
         const result = submitAnswer();
         if (result.correct) {
@@ -185,8 +202,13 @@ export const GameScreen: React.FC = () => {
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.modeInfo}>
-                    <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
-                    <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
+                    <div>
+                        <span className={styles.modeLabel}>{mode.toUpperCase()}</span>
+                        <span className={styles.difficultyLabel}>{difficulty.toUpperCase()}</span>
+                    </div>
+                    <button className={styles.quitButton} onClick={handleQuitClick} aria-label="Quit game">
+                        🏳️
+                    </button>
                 </div>
                 <div className={styles.statsGroup} style={(mode === 'sprint' || mode === 'survival' || mode === 'practice') ? { justifyContent: 'center' } : {}}>
                     {mode !== 'sprint' && mode !== 'survival' && mode !== 'practice' && (
@@ -232,11 +254,6 @@ export const GameScreen: React.FC = () => {
                     <GameButton variant="primary" size="lg" onClick={handleSubmit} className={styles.submitBtn} fullWidth>
                         ANSWER
                     </GameButton>
-                    {mode === 'practice' && (
-                        <GameButton variant="danger" size="lg" onClick={() => useGameStore.getState().endGame()} fullWidth className={styles.submitBtn}>
-                            END
-                        </GameButton>
-                    )}
                 </div>
             </div>
             {/* Countdown Overlay */}
@@ -251,6 +268,34 @@ export const GameScreen: React.FC = () => {
                     </div>
                 </div>
             )}
+            {/* Quit Confirmation Dialog */}
+            <AnimatePresence>
+                {showQuitConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={styles.quitOverlay}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            className={styles.quitDialog}
+                        >
+                            <p className={styles.quitMessage}>GIVE UP?</p>
+                            <div className={styles.quitButtons}>
+                                <GameButton variant="secondary" size="md" onClick={handleQuitCancel}>
+                                    NO
+                                </GameButton>
+                                <GameButton variant="danger" size="md" onClick={handleQuitConfirm}>
+                                    YES
+                                </GameButton>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             {/* Feedback Overlay */}
             <AnimatePresence>
                 {feedback && (

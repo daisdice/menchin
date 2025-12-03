@@ -23,6 +23,32 @@
     padding-bottom: var(--spacing-xs);
 }
 
+.modeInfo>div {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.quitButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    line-height: 1;
+}
+
+.quitButton:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.quitButton:active {
+    transform: scale(0.95);
+}
+
 .modeLabel {
     font-size: 0.9rem;
     font-weight: 800;
@@ -266,6 +292,51 @@
     color: var(--color-text-light);
     font-weight: 700;
     margin-top: var(--spacing-xs);
+}
+
+.quitOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: calc(var(--z-overlay) + 2);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.quitDialog {
+    background-color: var(--color-surface);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-width: 280px;
+    max-width: 90%;
+}
+
+.quitMessage {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-align: center;
+    margin: 0;
+}
+
+.quitButtons {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.quitButtons button {
+    flex: 1;
 }
 
 @media (max-width: 600px) {
