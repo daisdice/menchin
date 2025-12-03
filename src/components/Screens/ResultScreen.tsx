@@ -122,13 +122,15 @@ export const ResultScreen: React.FC = () => {
                 </div>
 
                 {/* Status Section */}
-                <div className={styles.statusSection}>
-                    {isClear ? (
-                        <h1 className={styles.statusClear}>CLEAR!!</h1>
-                    ) : (
-                        <h1 className={styles.statusFailed}>FAILED...</h1>
-                    )}
-                </div>
+                {mode !== 'practice' && (
+                    <div className={styles.statusSection}>
+                        {isClear ? (
+                            <h1 className={styles.statusClear}>CLEAR!!</h1>
+                        ) : (
+                            <h1 className={styles.statusFailed}>FAILED...</h1>
+                        )}
+                    </div>
+                )}
 
                 {/* Score List (Vertical) */}
                 {/* Score List (Vertical) */}

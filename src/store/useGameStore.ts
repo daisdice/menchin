@@ -414,164 +414,119 @@ export const useGameStore = create<GameState>((set, get) => ({
     endGame: (forceClear: boolean = false, isGiveUp: boolean = false) => {
         set({ isNewRecord: false });
 
-        if (isGiveUp) {
-            const { score } = get();
-            set({
-                isPlaying: false,
-                isGameOver: true,
-                isClear: false, // Force FAILED on give up
-                score: score, // Keep current score
-                lastScoreBreakdown: {
-                    baseScore: score,
-                    lifeBonus: 0,
-                    timeBonus: 0,
-                    totalScore: score,
-                    timeLeft: 0,
-                    lives: 0,
-                    sprintTimes: get().sprintTimes
-                }
-            });
-            return;
-        }
+        // Common data for breakdown
+        const { score, timeLeft, lives, mode, correctCount, incorrectCount, sprintTimes, gameEndTime, isClear: alreadyClear } = get();
 
+        // Determine clear status based on mode and conditions
+        let isClear = alreadyClear;
         if (forceClear) {
-            const { score, timeLeft, lives } = get();
-
-            // Calculate bonuses for debug clear (New Formula)
-            const timeBonus = timeLeft * SCORE.TIME_BONUS_MULTIPLIER;
-            const lifeBonus = lives * SCORE.LIFE_BONUS_MULTIPLIER;
-
-
-            const totalScore = score + timeBonus + lifeBonus;
-
-            set({
-                isPlaying: false,
-                isGameOver: true,
-                isClear: true,
-                score: totalScore,
-                lastScoreBreakdown: {
-                    baseScore: score,
-
-                    lifeBonus,
-                    timeBonus,
-                    totalScore,
-                    timeLeft,
-                    lives
-                }
-            });
-        } else {
-            const { score, isClear, lastScoreBreakdown, mode, gameEndTime } = get();
-
-            if (isClear && lastScoreBreakdown) {
-                set({
-                    isPlaying: false,
-                    isGameOver: true
-                });
+            isClear = true;
+        } else if (isGiveUp) {
+            // Special handling for Survival on Give Up
+            if (mode === 'survival' && correctCount > 0) {
+                isClear = true;
             } else {
-                // For SPRINT mode, calculate elapsed time
-                if (mode === 'sprint') {
-                    const elapsedTime = (Date.now() - gameEndTime) / 1000; // in seconds
-                    set({
-                        isPlaying: false,
-                        isGameOver: true,
-                        isClear: true,
-                        score: elapsedTime, // Store elapsed time as "score" for SPRINT
-                        lastScoreBreakdown: {
-                            baseScore: elapsedTime,
-
-                            lifeBonus: 0,
-                            timeBonus: 0,
-                            totalScore: elapsedTime,
-                            timeLeft: 0,
-                            lives: 0,
-                            sprintTimes: get().sprintTimes
-                        }
-                    });
-                } else if (mode === 'survival') {
-                    const { correctCount } = get();
-                    const isClear = correctCount > 0;
-                    set({
-                        isPlaying: false,
-                        isGameOver: true,
-                        isClear,
-                        score: correctCount,
-                        lastScoreBreakdown: {
-                            baseScore: correctCount,
-
-                            lifeBonus: 0,
-                            timeBonus: 0,
-                            totalScore: correctCount,
-                            timeLeft: 0,
-                            lives: 0
-                        }
-                    });
-                } else if (mode === 'practice') {
-                    const { correctCount } = get();
-                    set({
-                        isPlaying: false,
-                        isGameOver: true,
-                        isClear: true,
-                        score: correctCount,
-                        lastScoreBreakdown: {
-                            baseScore: correctCount,
-
-                            lifeBonus: 0,
-                            timeBonus: 0,
-                            totalScore: correctCount,
-                            timeLeft: 0,
-                            lives: 0
-                        }
-                    });
-                } else {
-                    set({
-                        isPlaying: false,
-                        isGameOver: true,
-                        lastScoreBreakdown: {
-                            baseScore: score,
-
-                            lifeBonus: 0,
-                            timeBonus: 0,
-                            totalScore: score,
-                            timeLeft: 0,
-                            lives: 0
-                        }
-                    });
-                }
+                isClear = false;
+            }
+        } else {
+            // Normal game end checks
+            if (mode === 'sprint') {
+                isClear = correctCount >= LIMITS.CLEAR_COUNT;
+            } else if (mode === 'survival') {
+                isClear = correctCount > 0;
+            } else if (mode === 'practice') {
+                isClear = true; // Practice is always "done"
+            } else if (mode === 'challenge') {
+                isClear = correctCount >= LIMITS.CLEAR_COUNT;
             }
         }
 
+        let finalScore = score;
+        let finalTimeBonus = 0;
+        let finalLifeBonus = 0;
+        let finalTimeLeft = 0;
+        let finalLives = 0;
+
+        // Calculate final score and bonuses
+        if (mode === 'challenge') {
+            // Only calculate bonuses if NOT giving up, OR if forceClear
+            if (!isGiveUp || forceClear) {
+                // If cleared normally or forced
+                if (isClear) {
+                    finalTimeLeft = timeLeft;
+                    finalLives = lives;
+                    finalTimeBonus = timeLeft * SCORE.TIME_BONUS_MULTIPLIER;
+                    finalLifeBonus = lives * SCORE.LIFE_BONUS_MULTIPLIER;
+                    finalScore = score + finalTimeBonus + finalLifeBonus;
+                }
+            }
+            // If give up, keep current score (no bonuses)
+        } else if (mode === 'sprint') {
+            if (isClear) {
+                // If cleared, score is elapsed time
+                const elapsedTime = (Date.now() - gameEndTime) / 1000;
+                finalScore = elapsedTime;
+            } else {
+                // If failed/give up, score is meaningless for ranking, but keep it for display?
+                // Actually for sprint failed, we usually don't show time score.
+                finalScore = 0;
+            }
+        } else if (mode === 'survival') {
+            finalScore = correctCount;
+        } else if (mode === 'practice') {
+            finalScore = correctCount;
+        }
+
+        set({
+            isPlaying: false,
+            isGameOver: true,
+            isClear,
+            score: finalScore,
+            lastScoreBreakdown: {
+                baseScore: score, // Base score before bonuses
+                lifeBonus: finalLifeBonus,
+                timeBonus: finalTimeBonus,
+                totalScore: finalScore,
+                timeLeft: finalTimeLeft,
+                lives: finalLives,
+                sprintTimes: sprintTimes,
+                incorrectCount: incorrectCount,
+                totalQuestions: correctCount + incorrectCount
+            }
+        });
+
         // Save record for CHALLENGE, SPRINT, and SURVIVAL modes
-        const { mode, difficulty, score, isClear, hasErrors } = get();
-        if ((mode === 'challenge' || mode === 'sprint' || mode === 'survival')) {
+        const { mode: currentMode, difficulty: currentDifficulty, score: currentScore, isClear: currentIsClear, hasErrors: currentHasErrors } = get();
+        if ((currentMode === 'challenge' || currentMode === 'sprint' || currentMode === 'survival')) {
             // Save Record (always for challenge, only on clear for sprint/survival)
-            if (mode === 'challenge' || isClear) {
+            if (currentMode === 'challenge' || currentIsClear) {
                 // Check if this is a new record BEFORE saving
-                const existingRecords = getRecords(mode, difficulty);
+                const existingRecords = getRecords(currentMode, currentDifficulty);
                 let isNewRecord = false;
                 if (existingRecords.length === 0) {
                     isNewRecord = true;
                 } else {
                     const currentBest = existingRecords[0].score;
                     // Sprint mode: lower time is better
-                    isNewRecord = mode === 'sprint' ? score < currentBest : score > currentBest;
+                    isNewRecord = currentMode === 'sprint' ? currentScore < currentBest : currentScore > currentBest;
                 }
                 set({ isNewRecord });
 
                 const record: GameRecord = {
-                    mode,
-                    difficulty,
-                    score,
+                    mode: currentMode,
+                    difficulty: currentDifficulty,
+                    score: currentScore,
                     date: Date.now()
                 };
                 saveRecord(record);
             }
 
             // Update Mode Stats (only game-level stats)
-            updateModeStats(mode, difficulty, {
+            updateModeStats(currentMode, currentDifficulty, {
                 attempts: 1,
-                clears: isClear ? 1 : 0,
-                noMissClears: (isClear && !hasErrors) ? 1 : 0,
-                bestScore: (mode === 'sprint' && !isClear) ? undefined : score
+                clears: currentIsClear ? 1 : 0,
+                noMissClears: (currentIsClear && !currentHasErrors) ? 1 : 0,
+                bestScore: (currentMode === 'sprint' && !currentIsClear) ? undefined : currentScore
             });
 
             // Check and unlock trophies
