@@ -164,13 +164,13 @@ export const SummaryScreen: React.FC = () => {
                 </div>
 
                 <div className={styles.sectionHeader}>
-                    <h3 className={styles.sectionTitle}>STATS BY DIFFICULTY</h3>
+                    <h3 className={styles.sectionTitle}>STATS BY LEVEL</h3>
                 </div>
                 <div className={styles.tableContainer}>
                     <table className={styles.statsTable}>
                         <thead>
                             <tr>
-                                <th>DIFFICULTY</th>
+                                <th>LEVEL</th>
                                 <th>ACCURACY</th>
                                 <th>AVG TIME</th>
                             </tr>
