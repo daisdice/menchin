@@ -168,7 +168,7 @@ export const GameScreen: React.FC = () => {
     // Handle quit confirmation
     const handleQuitConfirm = useCallback(() => {
         setShowQuitConfirm(false);
-        useGameStore.getState().endGame();
+        useGameStore.getState().endGame(false, true);
     }, []);
 
     // Handle quit cancel

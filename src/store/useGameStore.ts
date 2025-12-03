@@ -258,7 +258,7 @@ interface GameState {
 
     // Actions
     startGame: (mode: GameMode, difficulty: Difficulty) => void;
-    endGame: (forceClear?: boolean) => void;
+    endGame: (forceClear?: boolean, isGiveUp?: boolean) => void;
     nextHand: () => void;
     toggleWait: (tile: Tile) => void;
     submitAnswer: () => { correct: boolean; correctWaits: Tile[]; points?: number; fastBonus?: number; timeSpent?: number; bonuses?: string[]; gameEnding?: boolean };
@@ -411,8 +411,29 @@ export const useGameStore = create<GameState>((set, get) => ({
         get().nextHand();
     },
 
-    endGame: (forceClear: boolean = false) => {
+    endGame: (forceClear: boolean = false, isGiveUp: boolean = false) => {
         set({ isNewRecord: false });
+
+        if (isGiveUp) {
+            const { score } = get();
+            set({
+                isPlaying: false,
+                isGameOver: true,
+                isClear: false, // Force FAILED on give up
+                score: score, // Keep current score
+                lastScoreBreakdown: {
+                    baseScore: score,
+                    lifeBonus: 0,
+                    timeBonus: 0,
+                    totalScore: score,
+                    timeLeft: 0,
+                    lives: 0,
+                    sprintTimes: get().sprintTimes
+                }
+            });
+            return;
+        }
+
         if (forceClear) {
             const { score, timeLeft, lives } = get();
 
@@ -485,8 +506,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                         }
                     });
                 } else if (mode === 'practice') {
-                    const { correctCount, incorrectCount } = get();
-                    const totalQuestions = correctCount + incorrectCount;
+                    const { correctCount } = get();
                     set({
                         isPlaying: false,
                         isGameOver: true,
@@ -499,9 +519,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                             timeBonus: 0,
                             totalScore: correctCount,
                             timeLeft: 0,
-                            lives: 0,
-                            incorrectCount,
-                            totalQuestions
+                            lives: 0
                         }
                     });
                 } else {
