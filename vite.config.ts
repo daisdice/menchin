@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      includeAssets: ['icon.png', 'pwa-*.png'],
       manifest: {
         name: "CHIN'IT",
         short_name: "CHIN'IT",
@@ -19,13 +19,28 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'icon.png',
+            sizes: '48x48',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-180.png',
+            sizes: '180x180',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-512.png',
             sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-1024.png',
+            sizes: '1024x1024',
             type: 'image/png'
           }
         ]
