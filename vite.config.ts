@@ -13,9 +13,10 @@ export default defineConfig({
         name: "CHIN'IT",
         short_name: "CHIN'IT",
         description: 'Aim to be a Chinitsu Master!',
-        theme_color: '#4ECDC4',
+        theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
+        orientation: 'portrait',
         icons: [
           {
             src: 'pwa-192x192.png',
