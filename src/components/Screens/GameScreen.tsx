@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/useGameStore';
 import { Tile } from '../UI/Tile';
 import { GameButton } from '../UI/GameButton';
 import { Card } from '../UI/Card';
+import { GameTimer } from './GameTimer';
+import { DURATION } from '../../utils/constants';
 import styles from './GameScreen.module.css';
 
 export const GameScreen: React.FC = () => {
@@ -28,7 +30,6 @@ export const GameScreen: React.FC = () => {
     } = useGameStore();
 
     const [feedback, setFeedback] = useState<{ type: 'correct' | 'incorrect'; message: string; subMessage?: string } | null>(null);
-    const [displayTime, setDisplayTime] = useState('120.00');
     const [countdown, setCountdown] = useState<number | null>(null);
 
     // Reset countdown when game starts
@@ -56,19 +57,19 @@ export const GameScreen: React.FC = () => {
                     let duration = 0;
                     if (mode === 'challenge') {
                         switch (difficulty) {
-                            case 'beginner': duration = 90; break;
-                            case 'amateur': duration = 120; break;
-                            case 'normal': duration = 180; break;
-                            case 'expert': duration = 240; break;
-                            case 'master': duration = 300; break;
+                            case 'beginner': duration = DURATION.CHALLENGE.BEGINNER; break;
+                            case 'amateur': duration = DURATION.CHALLENGE.AMATEUR; break;
+                            case 'normal': duration = DURATION.CHALLENGE.NORMAL; break;
+                            case 'expert': duration = DURATION.CHALLENGE.EXPERT; break;
+                            case 'master': duration = DURATION.CHALLENGE.MASTER; break;
                         }
                     } else if (mode === 'survival') {
                         switch (difficulty) {
-                            case 'beginner': duration = 30; break;
-                            case 'amateur': duration = 45; break;
-                            case 'normal': duration = 60; break;
-                            case 'expert': duration = 90; break;
-                            case 'master': duration = 120; break;
+                            case 'beginner': duration = DURATION.SURVIVAL.BEGINNER; break;
+                            case 'amateur': duration = DURATION.SURVIVAL.AMATEUR; break;
+                            case 'normal': duration = DURATION.SURVIVAL.NORMAL; break;
+                            case 'expert': duration = DURATION.SURVIVAL.EXPERT; break;
+                            case 'master': duration = DURATION.SURVIVAL.MASTER; break;
                         }
                     }
 
@@ -82,37 +83,7 @@ export const GameScreen: React.FC = () => {
         }
     }, [countdown, isPlaying, mode]);
 
-    // High precision timer
-    useEffect(() => {
-        if (countdown !== null) {
-            setDisplayTime('0.00');
-            return;
-        }
-        if (!isPlaying || gameEndTime === 0) return;
-        let animationFrameId: number;
-        const updateTimer = () => {
-            const now = Date.now();
-            // SPRINT mode: count up from start time
-            if (mode === 'sprint') {
-                const elapsed = now - gameEndTime;
-                const seconds = Math.floor(elapsed / 1000);
-                const centiseconds = Math.floor((elapsed % 1000) / 10);
-                setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
-                animationFrameId = requestAnimationFrame(updateTimer);
-            } else {
-                // CHALLENGE or SURVIVAL mode: count down to end time
-                const remaining = Math.max(0, gameEndTime - now);
-                const seconds = Math.floor(remaining / 1000);
-                const centiseconds = Math.floor((remaining % 1000) / 10);
-                setDisplayTime(`${seconds}.${centiseconds.toString().padStart(2, '0')}`);
-                if (remaining > 0) animationFrameId = requestAnimationFrame(updateTimer);
-            }
-        };
-        updateTimer();
-        return () => {
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        };
-    }, [isPlaying, gameEndTime, countdown, mode]);
+
 
     // Navigation on game over / not playing
     useEffect(() => {
@@ -151,62 +122,56 @@ export const GameScreen: React.FC = () => {
         }
     }, [isTimeUp, feedback, currentWaits]);
 
-    const handleSubmit = () => {
+    // Helper function to generate correct answer feedback
+    const getCorrectFeedback = useCallback((result: ReturnType<typeof submitAnswer>) => {
+        if (mode === 'sprint' || mode === 'practice') {
+            return {
+                type: 'correct' as const,
+                message: 'CORRECT!',
+                subMessage: `${result.timeSpent!.toFixed(2)}s`,
+            };
+        } else if (mode === 'survival') {
+            return {
+                type: 'correct' as const,
+                message: 'CORRECT!',
+                subMessage: result.bonuses ? result.bonuses[0] : '',
+            };
+        } else {
+            // CHALLENGE mode: show score and bonus
+            const baseScore = result.points! - (result.fastBonus || 0);
+            const baseScoreDisplay = `+${baseScore}`;
+            const bonusDisplay = result.fastBonus ? `FAST BONUS +${result.fastBonus}` : '';
+            return {
+                type: 'correct' as const,
+                message: 'CORRECT!',
+                subMessage: bonusDisplay ? `${baseScoreDisplay}\n${bonusDisplay}` : baseScoreDisplay,
+            };
+        }
+    }, [mode]);
+
+    // Helper function to handle post-feedback game progression
+    const handleFeedbackComplete = useCallback((gameEnding: boolean) => {
+        setFeedback(null);
+        if (gameEnding) {
+            useGameStore.getState().endGame();
+        } else if (useGameStore.getState().isPlaying) {
+            useGameStore.getState().nextHand();
+        }
+    }, []);
+
+    const handleSubmit = useCallback(() => {
         const result = submitAnswer();
         if (result.correct) {
-            // SPRINT mode: show time spent on this question
-            if (mode === 'sprint') {
-                setFeedback({
-                    type: 'correct',
-                    message: 'CORRECT!',
-                    subMessage: `${result.timeSpent!.toFixed(2)}s`,
-                });
-            } else if (mode === 'survival') {
-                setFeedback({
-                    type: 'correct',
-                    message: 'CORRECT!',
-                    subMessage: result.bonuses ? result.bonuses[0] : '',
-                });
-            } else if (mode === 'practice') {
-                setFeedback({
-                    type: 'correct',
-                    message: 'CORRECT!',
-                    subMessage: `${result.timeSpent!.toFixed(2)}s`,
-                });
-            } else {
-                // CHALLENGE mode: show score and bonus
-                const baseScore = result.points! - (result.fastBonus || 0);
-                const baseScoreDisplay = `+${baseScore}`;
-                const bonusDisplay = result.fastBonus ? `FAST BONUS +${result.fastBonus}` : '';
-                setFeedback({
-                    type: 'correct',
-                    message: 'CORRECT!',
-                    subMessage: bonusDisplay ? `${baseScoreDisplay}\n${bonusDisplay}` : baseScoreDisplay,
-                });
-            }
-            setTimeout(() => {
-                setFeedback(null);
-                if (result.gameEnding) {
-                    useGameStore.getState().endGame();
-                } else if (useGameStore.getState().isPlaying) {
-                    useGameStore.getState().nextHand();
-                }
-            }, 1000);
+            setFeedback(getCorrectFeedback(result));
+            setTimeout(() => handleFeedbackComplete(result.gameEnding || false), 1000);
         } else {
             setFeedback({
                 type: 'incorrect',
                 message: `WRONG... ANSWER: ${result.correctWaits.join(', ')}`,
             });
-            setTimeout(() => {
-                setFeedback(null);
-                if (result.gameEnding) {
-                    useGameStore.getState().endGame();
-                } else if (useGameStore.getState().isPlaying) {
-                    useGameStore.getState().nextHand();
-                }
-            }, 2000);
+            setTimeout(() => handleFeedbackComplete(result.gameEnding || false), 2000);
         }
-    };
+    }, [submitAnswer, getCorrectFeedback, handleFeedbackComplete]);
 
     return (
         <div className={styles.container}>
@@ -247,12 +212,7 @@ export const GameScreen: React.FC = () => {
                 </div>
             </div>
             {/* Timer */}
-            {(mode === 'challenge' || mode === 'sprint' || mode === 'survival') && (
-                <div className={styles.timerDisplay}>
-                    <div className={styles.timerLabel}>TIME</div>
-                    <div className={styles.timerValue}>{displayTime}</div>
-                </div>
-            )}
+            <GameTimer gameEndTime={gameEndTime} mode={mode} isPlaying={isPlaying} countdown={countdown} />
             {/* Game Area */}
             <div className={styles.gameArea}>
                 <Card className={styles.handCard}>

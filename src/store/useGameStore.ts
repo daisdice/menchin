@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Tile, Hand } from '../utils/mahjong';
 import { Mahjong } from '../utils/mahjong';
 import { TROPHIES, checkTrophyUnlock } from '../data/trophies';
+import { LIVES, DURATION, SCORE, HAND_CONFIG, STORAGE_KEYS, LIMITS } from '../utils/constants';
 
 export type Difficulty = 'beginner' | 'amateur' | 'normal' | 'expert' | 'master';
 export type GameMode = 'challenge' | 'sprint' | 'survival' | 'practice';
@@ -15,7 +16,7 @@ export interface GameRecord {
 
 // Record management functions
 const getStorageKey = (mode: GameRecord['mode'], difficulty: Difficulty): string => {
-    return `menchin_records_${mode}_${difficulty}`;
+    return `${STORAGE_KEYS.RECORDS_PREFIX}_${mode}_${difficulty}`;
 };
 
 export const saveRecord = (record: GameRecord): void => {
@@ -34,7 +35,7 @@ export const saveRecord = (record: GameRecord): void => {
     });
 
     // Keep only top 10
-    const top10 = updatedRecords.slice(0, 10);
+    const top10 = updatedRecords.slice(0, LIMITS.MAX_RECORDS);
 
     // Save to localStorage
     localStorage.setItem(key, JSON.stringify(top10));
@@ -78,9 +79,9 @@ export interface ModeStats {
 }
 
 // Statistics management functions
-const STATS_STORAGE_KEY = 'menchin_question_results';
-const MODE_STATS_KEY = 'menchin_mode_stats';
-const GLOBAL_STATS_KEY = 'menchin_global_stats';
+const STATS_STORAGE_KEY = STORAGE_KEYS.QUESTION_RESULTS;
+const MODE_STATS_KEY = STORAGE_KEYS.MODE_STATS;
+const GLOBAL_STATS_KEY = STORAGE_KEYS.GLOBAL_STATS;
 
 // Global statistics (across all modes and difficulties)
 export interface GlobalStats {
@@ -99,7 +100,7 @@ export const saveQuestionResult = (result: QuestionResult): void => {
     results.push(result);
 
     // Keep only last 10000 results to prevent storage overflow
-    if (results.length > 10000) {
+    if (results.length > LIMITS.MAX_QUESTION_RESULTS) {
         results.shift();
     }
 
@@ -268,9 +269,8 @@ interface GameState {
     clearNewlyUnlockedTrophies: () => void;
 }
 
-const INITIAL_LIVES = 3;
-const TROPHY_STORAGE_KEY = 'menchin_unlocked_trophies';
-const TROPHY_DATES_STORAGE_KEY = 'menchin_trophy_dates';
+const TROPHY_STORAGE_KEY = STORAGE_KEYS.UNLOCKED_TROPHIES;
+const TROPHY_DATES_STORAGE_KEY = STORAGE_KEYS.TROPHY_DATES;
 
 // Load unlocked trophies from localStorage
 const loadUnlockedTrophies = (): string[] => {
@@ -307,7 +307,7 @@ const saveTrophyDates = (dates: Record<string, number>): void => {
 export const useGameStore = create<GameState>((set, get) => ({
     isPlaying: false,
     score: 0,
-    lives: INITIAL_LIVES,
+    lives: LIVES.INITIAL,
     timeLeft: 0,
     currentHand: [],
     currentWaits: [],
@@ -334,37 +334,37 @@ export const useGameStore = create<GameState>((set, get) => ({
     gameEndTime: 0,
 
     startGame: (mode, difficulty) => {
-        let lives = INITIAL_LIVES;
+        let lives = LIVES.INITIAL;
         let duration = 0;
 
         switch (mode) {
             case 'sprint':
-                lives = 99;
+                lives = LIVES.SPRINT;
                 duration = 0; // No time limit, count up timer
                 break;
             case 'survival':
-                lives = 1;
+                lives = LIVES.SURVIVAL;
                 switch (difficulty) {
-                    case 'beginner': duration = 30; break;
-                    case 'amateur': duration = 45; break;
-                    case 'normal': duration = 60; break;
-                    case 'expert': duration = 90; break;
-                    case 'master': duration = 120; break;
+                    case 'beginner': duration = DURATION.SURVIVAL.BEGINNER; break;
+                    case 'amateur': duration = DURATION.SURVIVAL.AMATEUR; break;
+                    case 'normal': duration = DURATION.SURVIVAL.NORMAL; break;
+                    case 'expert': duration = DURATION.SURVIVAL.EXPERT; break;
+                    case 'master': duration = DURATION.SURVIVAL.MASTER; break;
                 }
                 break;
             case 'practice':
-                lives = 99;
+                lives = LIVES.PRACTICE;
                 duration = 0;
                 break;
             case 'challenge':
             default:
-                lives = 3;
+                lives = LIVES.INITIAL;
                 switch (difficulty) {
-                    case 'beginner': duration = 90; break;
-                    case 'amateur': duration = 120; break;
-                    case 'normal': duration = 180; break;
-                    case 'expert': duration = 240; break;
-                    case 'master': duration = 300; break;
+                    case 'beginner': duration = DURATION.CHALLENGE.BEGINNER; break;
+                    case 'amateur': duration = DURATION.CHALLENGE.AMATEUR; break;
+                    case 'normal': duration = DURATION.CHALLENGE.NORMAL; break;
+                    case 'expert': duration = DURATION.CHALLENGE.EXPERT; break;
+                    case 'master': duration = DURATION.CHALLENGE.MASTER; break;
                 }
                 break;
         }
@@ -417,8 +417,8 @@ export const useGameStore = create<GameState>((set, get) => ({
             const { score, timeLeft, lives } = get();
 
             // Calculate bonuses for debug clear (New Formula)
-            const timeBonus = timeLeft * 100;
-            const lifeBonus = lives * 1000;
+            const timeBonus = timeLeft * SCORE.TIME_BONUS_MULTIPLIER;
+            const lifeBonus = lives * SCORE.LIFE_BONUS_MULTIPLIER;
 
 
             const totalScore = score + timeBonus + lifeBonus;
@@ -567,19 +567,19 @@ export const useGameStore = create<GameState>((set, get) => ({
 
         switch (difficulty) {
             case 'beginner':
-                options = { tiles: 7, minWaits: 1, maxWaits: 5 };
+                options = HAND_CONFIG.BEGINNER;
                 break;
             case 'amateur':
-                options = { tiles: 10, minWaits: 1, maxWaits: 5 };
+                options = HAND_CONFIG.AMATEUR;
                 break;
             case 'normal':
-                options = { tiles: 13, minWaits: 1, maxWaits: 5 };
+                options = HAND_CONFIG.NORMAL;
                 break;
             case 'expert':
-                options = { tiles: 13, minWaits: 3, maxWaits: 7 };
+                options = HAND_CONFIG.EXPERT;
                 break;
             case 'master':
-                options = { tiles: 13, minWaits: 5, maxWaits: 9 };
+                options = HAND_CONFIG.MASTER;
                 break;
         }
 
@@ -615,9 +615,9 @@ export const useGameStore = create<GameState>((set, get) => ({
             const timeSpent = (Date.now() - questionStartTime) / 1000;
 
             // Calculate Score (New Formula)
-            const baseScore = currentWaits.length * 100;
+            const baseScore = currentWaits.length * SCORE.BASE_MULTIPLIER;
             const fastThreshold = 2 + currentWaits.length * 1; // 2秒 + 待ちの数 * 1秒
-            const fastBonus = timeSpent <= fastThreshold ? Math.floor(baseScore * 0.3) : 0;
+            const fastBonus = timeSpent <= fastThreshold ? Math.floor(baseScore * SCORE.FAST_BONUS_MULTIPLIER) : 0;
 
             // SPRINT mode: no score, only track time
             const points = mode === 'sprint' ? 0 : baseScore + fastBonus;
@@ -625,7 +625,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             const newCorrectCount = correctCount + 1;
 
             if (mode === 'survival') {
-                const timeToAdd = currentWaits.length * 2;
+                const timeToAdd = currentWaits.length * SCORE.SURVIVAL_TIME_BONUS_MULTIPLIER;
                 const newGameEndTime = get().gameEndTime + timeToAdd * 1000;
                 set({
                     score: newCorrectCount,
@@ -649,10 +649,10 @@ export const useGameStore = create<GameState>((set, get) => ({
             }
 
             // Check Clear Condition for CHALLENGE
-            if (mode === 'challenge' && newCorrectCount >= 10) {
+            if (mode === 'challenge' && newCorrectCount >= LIMITS.CLEAR_COUNT) {
                 // Calculate Result Bonuses (New Formula)
-                const timeBonus = timeLeft * 100;
-                const lifeBonus = lives * 1000;
+                const timeBonus = timeLeft * SCORE.TIME_BONUS_MULTIPLIER;
+                const lifeBonus = lives * SCORE.LIFE_BONUS_MULTIPLIER;
 
 
                 const totalScore = score + points + timeBonus + lifeBonus;
@@ -673,7 +673,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             }
 
             // Check Clear Condition for SPRINT
-            const isSprintEnd = mode === 'sprint' && newCorrectCount >= 10;
+            const isSprintEnd = mode === 'sprint' && newCorrectCount >= LIMITS.CLEAR_COUNT;
 
             // Save question result for statistics (exclude practice mode)
             if (mode !== 'practice') {
@@ -722,9 +722,9 @@ export const useGameStore = create<GameState>((set, get) => ({
                 fastBonus,
                 timeSpent,
                 bonuses: mode === 'survival'
-                    ? [`+${currentWaits.length * 2} s`]
+                    ? [`+${currentWaits.length * SCORE.SURVIVAL_TIME_BONUS_MULTIPLIER} s`]
                     : [fastBonus > 0 ? 'FAST' : ''].filter(Boolean),
-                gameEnding: (mode === 'challenge' && newCorrectCount >= 10) || isSprintEnd
+                gameEnding: (mode === 'challenge' && newCorrectCount >= LIMITS.CLEAR_COUNT) || isSprintEnd
             };
 
         } else {
@@ -799,7 +799,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         set({
             isPlaying: false,
             score: 0,
-            lives: INITIAL_LIVES,
+            lives: LIVES.INITIAL,
             timeLeft: 0,
             currentHand: [],
             currentWaits: [],

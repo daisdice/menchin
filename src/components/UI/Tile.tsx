@@ -11,7 +11,7 @@ interface TileProps {
     disabled?: boolean;
 }
 
-export const Tile: React.FC<TileProps> = ({ tile, onClick, selected, disabled }) => {
+export const Tile: React.FC<TileProps> = React.memo(({ tile, onClick, selected, disabled }) => {
     // Manzu characters 1-9
     const manzuChars = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
     const char = manzuChars[tile - 1];
@@ -32,4 +32,4 @@ export const Tile: React.FC<TileProps> = ({ tile, onClick, selected, disabled })
             </div>
         </motion.div>
     );
-};
+});
