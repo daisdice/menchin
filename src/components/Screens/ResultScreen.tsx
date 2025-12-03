@@ -256,7 +256,7 @@ export const ResultScreen: React.FC = () => {
                                 custom={0}
                             >
                                 <span className={styles.label}>CORRECT</span>
-                                <span className={styles.value}>{lastScoreBreakdown?.baseScore}</span>
+                                <span className={styles.value}>{lastScoreBreakdown?.totalScore}</span>
                             </motion.div>
                             <motion.div
                                 className={styles.scoreRow}
