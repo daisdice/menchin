@@ -58,7 +58,7 @@ export const getRecords = (mode: GameRecord['mode'], difficulty: Difficulty): Ga
 
 // Statistics data structures
 export interface QuestionResult {
-    mode: 'challenge' | 'sprint' | 'survival';
+    mode: 'challenge' | 'sprint' | 'survival' | 'practice';
     difficulty: Difficulty;
     waitCount: number;
     correct: boolean;
@@ -959,5 +959,24 @@ export const getDifficultyStats = (): Record<Difficulty, { correct: number; tota
     });
 
     return stats as Record<Difficulty, { correct: number; total: number; totalTime: number }>;
+};
+
+// Mode-based stats
+export const getStatsByMode = (): Record<'challenge' | 'sprint' | 'survival' | 'practice', { correct: number; total: number; totalTime: number }> => {
+    const questionResults = getQuestionResults();
+    const modes: ('challenge' | 'sprint' | 'survival' | 'practice')[] = ['challenge', 'sprint', 'survival', 'practice'];
+
+    const stats: Record<string, { correct: number; total: number; totalTime: number }> = {};
+
+    modes.forEach(mode => {
+        const filtered = questionResults.filter(r => r.mode === mode);
+        stats[mode] = {
+            correct: filtered.filter(r => r.correct).length,
+            total: filtered.length,
+            totalTime: filtered.reduce((sum, r) => sum + r.responseTime, 0)
+        };
+    });
+
+    return stats as Record<'challenge' | 'sprint' | 'survival' | 'practice', { correct: number; total: number; totalTime: number }>;
 };
 

@@ -9,7 +9,8 @@ import {
     getQuestionResults,
     getModeStats,
     getTrophyStats,
-    getDifficultyStats
+    getDifficultyStats,
+    getStatsByMode
 } from '../../store/useGameStore';
 import styles from './SummaryScreen.module.css';
 
@@ -192,6 +193,47 @@ export const SummaryScreen: React.FC = () => {
                                     return (
                                         <tr key={diff.id}>
                                             <td>{diff.label}</td>
+                                            <td>
+                                                <div>{accuracy.toFixed(1)}%</div>
+                                                <div className={styles.tableSubValue}>({s.correct}/{s.total})</div>
+                                            </td>
+                                            <td>{avgTime.toFixed(2)}s</td>
+                                        </tr>
+                                    );
+                                });
+                            })()}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>STATS BY MODE</h3>
+                </div>
+                <div className={styles.tableContainer}>
+                    <table className={styles.statsTable}>
+                        <thead>
+                            <tr>
+                                <th>MODE</th>
+                                <th>ACCURACY</th>
+                                <th>AVG TIME</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(() => {
+                                const modeStats = getStatsByMode();
+                                const modes: { id: 'challenge' | 'sprint' | 'survival' | 'practice'; label: string }[] = [
+                                    { id: 'challenge', label: 'CHALLENGE' },
+                                    { id: 'sprint', label: 'SPRINT' },
+                                    { id: 'survival', label: 'SURVIVAL' },
+                                    { id: 'practice', label: 'PRACTICE' }
+                                ];
+                                return modes.map(mode => {
+                                    const s = modeStats[mode.id];
+                                    const accuracy = s.total > 0 ? (s.correct / s.total * 100) : 0;
+                                    const avgTime = s.total > 0 ? (s.totalTime / s.total) : 0;
+                                    return (
+                                        <tr key={mode.id}>
+                                            <td>{mode.label}</td>
                                             <td>
                                                 <div>{accuracy.toFixed(1)}%</div>
                                                 <div className={styles.tableSubValue}>({s.correct}/{s.total})</div>
