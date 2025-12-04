@@ -648,45 +648,46 @@ export const useGameStore = create<GameState>((set, get) => ({
             // Check Clear Condition for SPRINT
             const isSprintEnd = mode === 'sprint' && newCorrectCount >= LIMITS.CLEAR_COUNT;
 
-            // Save question result for statistics (exclude practice mode)
-            if (mode !== 'practice') {
-                saveQuestionResult({
-                    mode,
-                    difficulty,
-                    waitCount: currentWaits.length,
-                    correct: true,
-                    responseTime: timeSpent,
-                    fastBonus: fastBonus > 0,
-                    timestamp: Date.now()
-                });
+            // Save question result for statistics
+            saveQuestionResult({
+                mode,
+                difficulty,
+                waitCount: currentWaits.length,
+                correct: true,
+                responseTime: timeSpent,
+                fastBonus: fastBonus > 0,
+                timestamp: Date.now()
+            });
 
-                // Update mode stats immediately
+            // Update mode stats immediately (only for non-practice modes)
+            if (mode !== 'practice') {
                 updateModeStats(mode, difficulty, {
                     totalQuestions: 1,
                     correctAnswers: 1,
                     totalResponseTime: timeSpent,
                     fastBonuses: (mode === 'challenge' && fastBonus > 0) ? 1 : 0
                 });
-
-                // Update Global Stats
-                const globalUpdates: Partial<GlobalStats> = {
-                    totalCorrect: 1,
-                    wait3Plus: currentWaits.length >= 3 ? 1 : 0,
-                    wait6Plus: currentWaits.length >= 6 ? 1 : 0,
-                    wait9: currentWaits.length === 9 ? 1 : 0,
-                    fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? 1 : 0
-                };
-
-                // Update waitStats
-                const currentGlobal = getGlobalStats();
-                const waitCount = currentWaits.length;
-                const currentWaitCount = currentGlobal.waitStats[waitCount] || 0;
-                globalUpdates.waitStats = {
-                    [waitCount]: currentWaitCount + 1
-                };
-
-                updateGlobalStats(globalUpdates);
             }
+
+            // Update Global Stats (for all modes including practice)
+            const globalUpdates: Partial<GlobalStats> = {
+                totalCorrect: 1,
+                wait3Plus: currentWaits.length >= 3 ? 1 : 0,
+                wait6Plus: currentWaits.length >= 6 ? 1 : 0,
+                wait9: currentWaits.length === 9 ? 1 : 0,
+                fastBonusCount: (mode === 'challenge' && fastBonus > 0) ? 1 : 0
+            };
+
+            // Update waitStats
+            const currentGlobal = getGlobalStats();
+            const waitCount = currentWaits.length;
+            const currentWaitCount = currentGlobal.waitStats[waitCount] || 0;
+            globalUpdates.waitStats = {
+                [waitCount]: currentWaitCount + 1
+            };
+
+            updateGlobalStats(globalUpdates);
+
 
             return {
                 correct: true,
@@ -719,20 +720,19 @@ export const useGameStore = create<GameState>((set, get) => ({
                 sprintTimeAccumulator: mode === 'sprint' ? get().sprintTimeAccumulator + timeSpent : 0
             });
 
-            // Save question result for statistics (exclude practice mode)
-            if (mode !== 'practice') {
-                const timeSpent = (Date.now() - questionStartTime) / 1000;
-                saveQuestionResult({
-                    mode,
-                    difficulty,
-                    waitCount: currentWaits.length,
-                    correct: false,
-                    responseTime: timeSpent,
-                    fastBonus: false,
-                    timestamp: Date.now()
-                });
+            // Save question result for statistics
+            saveQuestionResult({
+                mode,
+                difficulty,
+                waitCount: currentWaits.length,
+                correct: false,
+                responseTime: timeSpent,
+                fastBonus: false,
+                timestamp: Date.now()
+            });
 
-                // Update mode stats immediately
+            // Update mode stats immediately (only for non-practice modes)
+            if (mode !== 'practice') {
                 updateModeStats(mode, difficulty, {
                     totalQuestions: 1,
                     correctAnswers: 0,
