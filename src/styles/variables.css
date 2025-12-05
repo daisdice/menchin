@@ -42,3 +42,22 @@
   --z-overlay: 100;
   --z-toast: 1000;
 }
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Colors - Dark Theme */
+  --color-bg: #1A1A1A;
+  --color-surface: #2D2D2D;
+  --color-text: #E0E0E0;
+  --color-text-light: #A0A0A0;
+
+  /* Accents - Adjusted for dark mode */
+  --color-accent-red: #FF8787;
+  --color-accent-cyan: #66D9CF;
+  --color-accent-yellow: #FFE66D;
+
+  /* Shadows - Stronger for dark mode */
+  --shadow-sm: 0 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 0 rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 0 rgba(0, 0, 0, 0.3);
+}

@@ -9,8 +9,11 @@ import { OptionsScreen } from './components/Screens/OptionsScreen';
 import { RecordScreen } from './components/Screens/RecordScreen';
 import { SummaryScreen } from './components/Screens/SummaryScreen';
 import { TrophyScreen } from './components/Screens/TrophyScreen';
+import { useThemeEffect } from './hooks/useThemeEffect';
 
 function App() {
+  useThemeEffect();
+
   return (
     <HashRouter>
       <MainLayout>

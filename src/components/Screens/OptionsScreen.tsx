@@ -27,6 +27,29 @@ export const OptionsScreen: React.FC = () => {
                 </div>
 
                 <div className={styles.optionsContainer}>
+                    {/* Theme Settings */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>表示設定</h3>
+                        <div className={styles.optionRow}>
+                            <span className={styles.optionLabel}>テーマ</span>
+                            <div className={styles.themeButtons}>
+                                <GameButton
+                                    variant={useAppStore((state) => state.settings.theme) === 'light' ? 'primary' : 'secondary'}
+                                    onClick={() => useAppStore.getState().setTheme('light')}
+                                >
+                                    ライト
+                                </GameButton>
+                                <GameButton
+                                    variant={useAppStore((state) => state.settings.theme) === 'dark' ? 'primary' : 'secondary'}
+                                    onClick={() => useAppStore.getState().setTheme('dark')}
+                                >
+                                    ダーク
+                                </GameButton>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Data Management */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>データ管理</h3>
 

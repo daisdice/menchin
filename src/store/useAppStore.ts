@@ -11,11 +11,13 @@ interface AppState {
     highScores: Record<Difficulty, ScoreRecord[]>;
     settings: {
         soundEnabled: boolean;
+        theme: 'light' | 'dark';
     };
 
     // Actions
     saveScore: (difficulty: Difficulty, score: number) => boolean; // Returns true if new record
     toggleSound: () => void;
+    setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -30,6 +32,7 @@ export const useAppStore = create<AppState>()(
             },
             settings: {
                 soundEnabled: true,
+                theme: 'light',
             },
 
             saveScore: (difficulty, score) => {
@@ -62,6 +65,14 @@ export const useAppStore = create<AppState>()(
                 set((state) => ({
                     settings: { ...state.settings, soundEnabled: !state.settings.soundEnabled },
                 }));
+            },
+
+            setTheme: (theme) => {
+                set((state) => ({
+                    settings: { ...state.settings, theme },
+                }));
+                // Update HTML data-theme attribute
+                document.documentElement.setAttribute('data-theme', theme);
             },
         }),
         {

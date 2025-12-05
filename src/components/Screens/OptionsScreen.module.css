@@ -59,6 +59,27 @@
     border-bottom: 2px solid var(--color-border);
 }
 
+/* Theme Settings */
+.optionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+}
+
+.optionLabel {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.themeButtons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
 .confirmBox {
     display: flex;
     flex-direction: column;
