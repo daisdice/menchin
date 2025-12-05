@@ -232,3 +232,8 @@
         font-size: 2rem;
     }
 }
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .newRecordBadge {
+    color: #1A1A1A;
+}

@@ -78,12 +78,12 @@
 }
 
 /* Dark Mode Adjustments */
+[data-theme="dark"] .button {
+    color: #1A1A1A;
+}
+
 [data-theme="dark"] .secondary {
     background-color: #4A4A4A;
     color: #FFFFFF;
     box-shadow: 0 4px 0 #2A2A2A;
-}
-
-[data-theme="dark"] .accent {
-    color: #1A1A1A;
 }

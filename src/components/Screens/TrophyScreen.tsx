@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/useGameStore';
 import { TROPHIES, generateTrophyDescription } from '../../data/trophies';
 import { GameButton } from '../UI/GameButton';
+import { TrophyIcon } from '../UI/TrophyIcon';
 import styles from './TrophyScreen.module.css';
 
 type TabType = 'overall' | 'challenge' | 'sprint' | 'survival';
@@ -122,12 +123,7 @@ export const TrophyScreen: React.FC = () => {
                                 key={trophy.id}
                                 className={`${styles.trophyCard} ${!isUnlocked ? styles.locked : tierClass}`}
                             >
-                                <div className={styles.trophyIcon}>
-                                    {trophy.tier === 'bronze' && '🥉'}
-                                    {trophy.tier === 'silver' && '🥈'}
-                                    {trophy.tier === 'gold' && '🥇'}
-                                    {trophy.tier === 'platinum' && '🏆'}
-                                </div>
+                                <TrophyIcon tier={trophy.tier} />
                                 <div className={styles.trophyInfo}>
                                     <h3 className={styles.trophyTitle}>{trophy.title}</h3>
                                     <p className={styles.trophyDescription}>

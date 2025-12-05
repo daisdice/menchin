@@ -104,3 +104,8 @@
         font-size: 0.75rem;
     }
 }
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .modeDesc {
+    color: rgba(26, 26, 26, 0.8);
+}

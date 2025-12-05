@@ -72,3 +72,20 @@
         font-size: clamp(0.45rem, 1.6vw, 0.65rem);
     }
 }
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .tile {
+    background-color: #3A3A3A;
+    border-color: #4A4A4A;
+    box-shadow: 0 4px 0 #2A2A2A;
+}
+
+[data-theme="dark"] .selected {
+    background-color: #4A4A3A;
+    border-color: var(--color-accent-yellow);
+    box-shadow: 0 12px 0 #2A2A2A !important;
+}
+
+[data-theme="dark"] .disabled {
+    box-shadow: 0 2px 0 #2A2A2A;
+}

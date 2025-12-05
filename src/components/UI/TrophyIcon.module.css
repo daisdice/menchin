@@ -1,0 +1,39 @@
+.trophyIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.small {
+    min-width: 2rem;
+    height: 2rem;
+}
+
+.small .trophyImage {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.medium {
+    min-width: 3rem;
+    height: 3rem;
+}
+
+.medium .trophyImage {
+    width: 2rem;
+    height: 2rem;
+}
+
+.large {
+    min-width: 4rem;
+    height: 4rem;
+}
+
+.large .trophyImage {
+    width: 3rem;
+    height: 3rem;
+}
+
+.trophyImage {
+    object-fit: contain;
+}

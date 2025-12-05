@@ -234,3 +234,10 @@
         font-size: 0.75rem;
     }
 }
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .tabActive {
+    background-color: #3A9A93;
+    color: #1A1A1A;
+    border-color: #3A9A93;
+}

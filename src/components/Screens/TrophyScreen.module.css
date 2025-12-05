@@ -157,8 +157,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
+}
+
+.trophyImage {
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
 }
 
 .trophyInfo {
@@ -235,8 +239,13 @@
 
     .trophyIcon {
         font-size: 1.5rem;
-        min-width: 2.5rem;
-        height: 2.5rem;
+        min-width: 2rem;
+        height: 2rem;
+    }
+
+    .trophyImage {
+        width: 2rem;
+        height: 2rem;
     }
 
     .trophyTitle {
@@ -246,4 +255,15 @@
     .trophyDescription {
         font-size: 0.75rem;
     }
+}
+
+/* Dark Mode Adjustments */
+[data-theme="dark"] .tabActive {
+    background-color: #3A9A93;
+    color: #1A1A1A;
+    border-color: #3A9A93;
+}
+
+[data-theme="dark"] .trophyIcon {
+    background-color: rgba(255, 255, 255, 0.1);
 }

@@ -483,7 +483,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             isClear,
             score: finalScore,
             lastScoreBreakdown: {
-                baseScore: score, // Base score before bonuses
+                baseScore: score, // Base score before time/life bonuses
                 lifeBonus: finalLifeBonus,
                 timeBonus: finalTimeBonus,
                 totalScore: finalScore,
@@ -623,27 +623,13 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             // Check Clear Condition for CHALLENGE
             if (mode === 'challenge' && newCorrectCount >= LIMITS.CLEAR_COUNT) {
-                // Calculate Result Bonuses (New Formula)
-                const timeBonus = timeLeft * SCORE.TIME_BONUS_MULTIPLIER;
-                const lifeBonus = lives * SCORE.LIFE_BONUS_MULTIPLIER;
-
-
-                const totalScore = score + points + timeBonus + lifeBonus;
-
+                // Mark as clear, bonuses will be calculated in endGame
                 set({
-                    score: totalScore,
-                    isClear: true,
-                    lastScoreBreakdown: {
-                        baseScore: score + points,
-
-                        lifeBonus,
-                        timeBonus,
-                        totalScore,
-                        timeLeft,
-                        lives
-                    }
+                    score: score + points, // Just add the last question's points
+                    isClear: true
                 });
             }
+
 
             // Check Clear Condition for SPRINT
             const isSprintEnd = mode === 'sprint' && newCorrectCount >= LIMITS.CLEAR_COUNT;

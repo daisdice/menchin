@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TROPHIES } from '../../data/trophies';
+import { TrophyIcon } from './TrophyIcon';
 import styles from './TrophyToastContainer.module.css';
 
 interface TrophyToastContainerProps {
@@ -69,10 +70,7 @@ export const TrophyToastContainer: React.FC<TrophyToastContainerProps> = ({
                             className={styles.toast}
                         >
                             <div className={styles.icon}>
-                                {trophy.tier === 'bronze' && '🥉'}
-                                {trophy.tier === 'silver' && '🥈'}
-                                {trophy.tier === 'gold' && '🥇'}
-                                {trophy.tier === 'platinum' && '🏆'}
+                                <TrophyIcon tier={trophy.tier} size="small" />
                             </div>
                             <div className={styles.content}>
                                 <div className={styles.label}>TROPHY ACHIEVED!</div>
