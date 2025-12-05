@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.png', 'pwa-*.png'],
+      includeAssets: ['icon.png', 'pwa-*.png', 'trophies/*.png'],
       manifest: {
         name: "CHIN'IT",
         short_name: "CHIN'IT",
