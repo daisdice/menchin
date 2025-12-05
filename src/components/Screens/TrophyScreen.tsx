@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/useGameStore';
+import { useAppStore } from '../../store/useAppStore';
 import { TROPHIES, generateTrophyDescription } from '../../data/trophies';
 import { GameButton } from '../UI/GameButton';
 import { TrophyIcon } from '../UI/TrophyIcon';
 import styles from './TrophyScreen.module.css';
 
-type TabType = 'overall' | 'challenge' | 'sprint' | 'survival';
-type AchievementFilterType = 'all' | 'achieved' | 'notAchieved';
 
 export const TrophyScreen: React.FC = () => {
     const navigate = useNavigate();
     const { unlockedTrophies, trophyUnlockDates } = useGameStore();
-    const [activeTab, setActiveTab] = useState<TabType>('overall');
-    const [achievementFilter, setAchievementFilter] = useState<AchievementFilterType>('all');
+    const { uiState, setTrophyTab, setTrophyFilter } = useAppStore();
+    const activeTab = uiState.trophyTab;
+    const achievementFilter = uiState.trophyFilter;
 
     const formatDate = (timestamp: number) => {
         const date = new Date(timestamp);
@@ -66,25 +66,25 @@ export const TrophyScreen: React.FC = () => {
                     <div className={styles.tabGroup}>
                         <button
                             className={`${styles.tab} ${activeTab === 'overall' ? styles.tabActive : ''}`}
-                            onClick={() => setActiveTab('overall')}
+                            onClick={() => setTrophyTab('overall')}
                         >
                             OVERALL
                         </button>
                         <button
                             className={`${styles.tab} ${activeTab === 'challenge' ? styles.tabActive : ''}`}
-                            onClick={() => setActiveTab('challenge')}
+                            onClick={() => setTrophyTab('challenge')}
                         >
                             CHALLENGE
                         </button>
                         <button
                             className={`${styles.tab} ${activeTab === 'sprint' ? styles.tabActive : ''}`}
-                            onClick={() => setActiveTab('sprint')}
+                            onClick={() => setTrophyTab('sprint')}
                         >
                             SPRINT
                         </button>
                         <button
                             className={`${styles.tab} ${activeTab === 'survival' ? styles.tabActive : ''}`}
-                            onClick={() => setActiveTab('survival')}
+                            onClick={() => setTrophyTab('survival')}
                         >
                             SURVIVAL
                         </button>
@@ -93,19 +93,19 @@ export const TrophyScreen: React.FC = () => {
                     <div className={styles.tabGroup}>
                         <button
                             className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'all' ? styles.tabActive : ''}`}
-                            onClick={() => setAchievementFilter('all')}
+                            onClick={() => setTrophyFilter('all')}
                         >
                             ALL
                         </button>
                         <button
                             className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'achieved' ? styles.tabActive : ''}`}
-                            onClick={() => setAchievementFilter('achieved')}
+                            onClick={() => setTrophyFilter('achieved')}
                         >
                             ACHIEVED
                         </button>
                         <button
                             className={`${styles.tab} ${styles.tabSmall} ${achievementFilter === 'notAchieved' ? styles.tabActive : ''}`}
-                            onClick={() => setAchievementFilter('notAchieved')}
+                            onClick={() => setTrophyFilter('notAchieved')}
                         >
                             NOT ACHIEVED
                         </button>

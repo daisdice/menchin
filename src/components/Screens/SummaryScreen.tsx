@@ -12,13 +12,15 @@ import {
     getDifficultyStats,
     getStatsByMode
 } from '../../store/useGameStore';
+import { useAppStore } from '../../store/useAppStore';
 import styles from './SummaryScreen.module.css';
 
 type Tab = 'overall' | 'challenge' | 'sprint' | 'survival';
 
 export const SummaryScreen: React.FC = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<Tab>('overall');
+    const { uiState, setSummaryTab } = useAppStore();
+    const activeTab = uiState.summaryTab;
     const [activeDifficulty, setActiveDifficulty] = useState<Difficulty>('normal');
     const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
 
@@ -349,7 +351,7 @@ export const SummaryScreen: React.FC = () => {
                             <button
                                 key={tab}
                                 className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-                                onClick={() => setActiveTab(tab)}
+                                onClick={() => setSummaryTab(tab)}
                             >
                                 {tab.toUpperCase()}
                             </button>

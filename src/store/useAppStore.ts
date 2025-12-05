@@ -13,11 +13,21 @@ interface AppState {
         soundEnabled: boolean;
         theme: 'light' | 'dark';
     };
+    uiState: {
+        recordTab: 'challenge' | 'sprint' | 'survival';
+        summaryTab: 'overall' | 'challenge' | 'sprint' | 'survival';
+        trophyTab: 'overall' | 'challenge' | 'sprint' | 'survival';
+        trophyFilter: 'all' | 'achieved' | 'notAchieved';
+    };
 
     // Actions
     saveScore: (difficulty: Difficulty, score: number) => boolean; // Returns true if new record
     toggleSound: () => void;
     setTheme: (theme: 'light' | 'dark') => void;
+    setRecordTab: (tab: 'challenge' | 'sprint' | 'survival') => void;
+    setSummaryTab: (tab: 'overall' | 'challenge' | 'sprint' | 'survival') => void;
+    setTrophyTab: (tab: 'overall' | 'challenge' | 'sprint' | 'survival') => void;
+    setTrophyFilter: (filter: 'all' | 'achieved' | 'notAchieved') => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -33,6 +43,12 @@ export const useAppStore = create<AppState>()(
             settings: {
                 soundEnabled: true,
                 theme: 'light',
+            },
+            uiState: {
+                recordTab: 'challenge',
+                summaryTab: 'overall',
+                trophyTab: 'overall',
+                trophyFilter: 'all',
             },
 
             saveScore: (difficulty, score) => {
@@ -74,11 +90,35 @@ export const useAppStore = create<AppState>()(
                 // Update HTML data-theme attribute
                 document.documentElement.setAttribute('data-theme', theme);
             },
+
+            setRecordTab: (tab) => set((state) => ({
+                uiState: { ...state.uiState, recordTab: tab }
+            })),
+
+            setSummaryTab: (tab) => set((state) => ({
+                uiState: { ...state.uiState, summaryTab: tab }
+            })),
+
+            setTrophyTab: (tab) => set((state) => ({
+                uiState: { ...state.uiState, trophyTab: tab }
+            })),
+
+            setTrophyFilter: (filter) => set((state) => ({
+                uiState: { ...state.uiState, trophyFilter: filter }
+            })),
         }),
         {
             name: 'menchin-storage',
-            version: 2, // Increment version to trigger migration
-            migrate: (persistedState: any) => {
+            version: 3, // Increment version to trigger migration
+            migrate: (persistedState: any, version: number) => {
+                if (version < 3) {
+                    persistedState.uiState = {
+                        recordTab: 'challenge',
+                        summaryTab: 'overall',
+                        trophyTab: 'overall',
+                        trophyFilter: 'all',
+                    };
+                }
                 // Remove unlockedDifficulties from old data
                 if (persistedState && persistedState.unlockedDifficulties) {
                     delete persistedState.unlockedDifficulties;

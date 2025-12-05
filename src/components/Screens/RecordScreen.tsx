@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GameButton } from '../UI/GameButton';
 import { getRecords, type GameRecord } from '../../store/useGameStore';
+import { useAppStore } from '../../store/useAppStore';
 import type { Difficulty } from '../../store/useGameStore';
 import styles from './RecordScreen.module.css';
 
@@ -10,7 +11,8 @@ type RecordMode = 'challenge' | 'sprint' | 'survival';
 
 export const RecordScreen: React.FC = () => {
     const navigate = useNavigate();
-    const [selectedMode, setSelectedMode] = useState<RecordMode>('challenge');
+    const { uiState, setRecordTab } = useAppStore();
+    const selectedMode = uiState.recordTab;
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal');
 
     const modes: { id: RecordMode; label: string }[] = [
@@ -63,7 +65,7 @@ export const RecordScreen: React.FC = () => {
                             <button
                                 key={mode.id}
                                 className={`${styles.tab} ${selectedMode === mode.id ? styles.tabActive : ''}`}
-                                onClick={() => setSelectedMode(mode.id)}
+                                onClick={() => setRecordTab(mode.id)}
                             >
                                 {mode.label}
                             </button>
