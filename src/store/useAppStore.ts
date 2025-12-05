@@ -18,6 +18,8 @@ interface AppState {
         summaryTab: 'overall' | 'challenge' | 'sprint' | 'survival';
         trophyTab: 'overall' | 'challenge' | 'sprint' | 'survival';
         trophyFilter: 'all' | 'achieved' | 'notAchieved';
+        recordDifficulty: Difficulty;
+        summaryDifficulty: Difficulty;
     };
 
     // Actions
@@ -28,6 +30,8 @@ interface AppState {
     setSummaryTab: (tab: 'overall' | 'challenge' | 'sprint' | 'survival') => void;
     setTrophyTab: (tab: 'overall' | 'challenge' | 'sprint' | 'survival') => void;
     setTrophyFilter: (filter: 'all' | 'achieved' | 'notAchieved') => void;
+    setRecordDifficulty: (difficulty: Difficulty) => void;
+    setSummaryDifficulty: (difficulty: Difficulty) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -49,6 +53,8 @@ export const useAppStore = create<AppState>()(
                 summaryTab: 'overall',
                 trophyTab: 'overall',
                 trophyFilter: 'all',
+                recordDifficulty: 'normal',
+                summaryDifficulty: 'normal',
             },
 
             saveScore: (difficulty, score) => {
@@ -106,10 +112,18 @@ export const useAppStore = create<AppState>()(
             setTrophyFilter: (filter) => set((state) => ({
                 uiState: { ...state.uiState, trophyFilter: filter }
             })),
+
+            setRecordDifficulty: (difficulty) => set((state) => ({
+                uiState: { ...state.uiState, recordDifficulty: difficulty }
+            })),
+
+            setSummaryDifficulty: (difficulty) => set((state) => ({
+                uiState: { ...state.uiState, summaryDifficulty: difficulty }
+            })),
         }),
         {
             name: 'menchin-storage',
-            version: 3, // Increment version to trigger migration
+            version: 4, // Increment version to trigger migration
             migrate: (persistedState: any, version: number) => {
                 if (version < 3) {
                     persistedState.uiState = {
@@ -117,7 +131,15 @@ export const useAppStore = create<AppState>()(
                         summaryTab: 'overall',
                         trophyTab: 'overall',
                         trophyFilter: 'all',
+                        recordDifficulty: 'normal',
+                        summaryDifficulty: 'normal',
                     };
+                } else if (version < 4) {
+                    // Migration for version 4: Add difficulty fields if missing
+                    if (persistedState.uiState) {
+                        persistedState.uiState.recordDifficulty = 'normal';
+                        persistedState.uiState.summaryDifficulty = 'normal';
+                    }
                 }
                 // Remove unlockedDifficulties from old data
                 if (persistedState && persistedState.unlockedDifficulties) {

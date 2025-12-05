@@ -19,9 +19,9 @@ type Tab = 'overall' | 'challenge' | 'sprint' | 'survival';
 
 export const SummaryScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { uiState, setSummaryTab } = useAppStore();
+    const { uiState, setSummaryTab, setSummaryDifficulty } = useAppStore();
     const activeTab = uiState.summaryTab;
-    const [activeDifficulty, setActiveDifficulty] = useState<Difficulty>('normal');
+    const activeDifficulty = uiState.summaryDifficulty;
     const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
 
     useEffect(() => {
@@ -366,7 +366,7 @@ export const SummaryScreen: React.FC = () => {
                                 <button
                                     key={diff}
                                     className={`${styles.tab} ${styles.tabSmall} ${activeDifficulty === diff ? styles.tabActive : ''}`}
-                                    onClick={() => setActiveDifficulty(diff)}
+                                    onClick={() => setSummaryDifficulty(diff)}
                                 >
                                     {diff.toUpperCase()}
                                 </button>
