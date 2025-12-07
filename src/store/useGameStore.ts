@@ -182,7 +182,12 @@ export const getModeStats = (mode: 'challenge' | 'sprint' | 'survival', difficul
     }
 
     try {
-        return JSON.parse(stored) as ModeStats;
+        const stats = JSON.parse(stored) as ModeStats;
+        // Fix for JSON.stringify(Infinity) -> null
+        if (stats.bestScore === null) {
+            stats.bestScore = mode === 'sprint' ? Infinity : 0;
+        }
+        return stats;
     } catch {
         return {
             attempts: 0,

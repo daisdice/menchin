@@ -165,7 +165,7 @@ export const ResultScreen: React.FC = () => {
                             >
                                 <span className={styles.label}>PREVIOUS BEST</span>
                                 <span className={styles.value}>
-                                    {previousBestScore === undefined || previousBestScore === Infinity ? '---' : `${previousBestScore.toFixed(2)}s`}
+                                    {previousBestScore === undefined || previousBestScore === null || previousBestScore === Infinity ? '---' : `${previousBestScore.toFixed(2)}s`}
                                 </span>
                             </motion.div>
 
@@ -211,7 +211,7 @@ export const ResultScreen: React.FC = () => {
                             >
                                 <span className={styles.label}>PREVIOUS BEST</span>
                                 <span className={styles.value}>
-                                    {previousBestScore === undefined || previousBestScore === 0 ? '---' : `${previousBestScore} Hands`}
+                                    {previousBestScore === undefined || previousBestScore === null || previousBestScore === 0 ? '---' : `${previousBestScore} Hands`}
                                 </span>
                             </motion.div>
                             <motion.div
@@ -365,7 +365,7 @@ export const ResultScreen: React.FC = () => {
                             >
                                 <span className={styles.label}>PREVIOUS BEST</span>
                                 <span className={styles.value}>
-                                    {previousBestScore === undefined || previousBestScore === 0 ? '---' : Math.floor(previousBestScore)}
+                                    {previousBestScore === undefined || previousBestScore === null || previousBestScore === 0 ? '---' : Math.floor(previousBestScore)}
                                 </span>
                             </motion.div>
 
