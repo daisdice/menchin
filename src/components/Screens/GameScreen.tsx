@@ -249,7 +249,7 @@ export const GameScreen: React.FC = () => {
                         <p className={styles.instruction}>SELECT WAITS</p>
                         <div className={styles.numpad}>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                                <Tile key={num} tile={num} onClick={() => toggleWait(num)} selected={selectedWaits.includes(num)} />
+                                <Tile key={num} tile={num} onToggle={toggleWait} selected={selectedWaits.includes(num)} />
                             ))}
                         </div>
                     </div>
