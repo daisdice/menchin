@@ -417,6 +417,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     endGame: (forceClear: boolean = false, isGiveUp: boolean = false) => {
+        // Prevent multiple calls to endGame
+        if (get().isGameOver) return;
+
         set({ isNewRecord: false });
 
         // Common data for breakdown
