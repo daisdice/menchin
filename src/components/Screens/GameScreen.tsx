@@ -190,6 +190,29 @@ export const GameScreen: React.FC = () => {
         }
     }, [submitAnswer, getCorrectFeedback, handleFeedbackComplete]);
 
+    // KEYBOARD CONTROLS
+    useEffect(() => {
+        const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+            // Only allow controls if playing and not in countdown
+            if (!isPlaying || countdown !== null || showQuitConfirm) return;
+
+            // Numbers 1-9
+            if (e.key >= '1' && e.key <= '9') {
+                const num = parseInt(e.key, 10);
+                if (!isNaN(num)) {
+                    toggleWait(num);
+                }
+            }
+            // Enter to submit
+            else if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isPlaying, countdown, showQuitConfirm, toggleWait, handleSubmit]);
+
     return (
         <div className={styles.container}>
             {/* Debug Win Button - only in development */}
