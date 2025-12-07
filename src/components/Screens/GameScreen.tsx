@@ -237,24 +237,26 @@ export const GameScreen: React.FC = () => {
             <GameTimer gameEndTime={gameEndTime} mode={mode} isPlaying={isPlaying} countdown={countdown} />
             {/* Game Area */}
             <div className={styles.gameArea}>
-                <Card className={styles.handCard}>
-                    <div className={styles.handContainer}>
-                        {currentHand.map((tile, index) => (
-                            <Tile key={`${tile}-${index}`} tile={tile} disabled />
-                        ))}
+                <div className={styles.contentWrapper}>
+                    <Card className={styles.handCard}>
+                        <div className={styles.handContainer}>
+                            {currentHand.map((tile, index) => (
+                                <Tile key={`${tile}-${index}`} tile={tile} disabled />
+                            ))}
+                        </div>
+                    </Card>
+                    <div className={styles.controls}>
+                        <p className={styles.instruction}>SELECT WAITS</p>
+                        <div className={styles.numpad}>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                                <Tile key={num} tile={num} onClick={() => toggleWait(num)} selected={selectedWaits.includes(num)} />
+                            ))}
+                        </div>
                     </div>
-                </Card>
-                <div className={styles.controls}>
-                    <p className={styles.instruction}>SELECT WAITS</p>
-                    <div className={styles.numpad}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                            <Tile key={num} tile={num} onClick={() => toggleWait(num)} selected={selectedWaits.includes(num)} />
-                        ))}
-                    </div>
-                    <GameButton variant="primary" size="lg" onClick={handleSubmit} className={styles.submitBtn} fullWidth>
-                        ANSWER
-                    </GameButton>
                 </div>
+                <GameButton variant="primary" size="lg" onClick={handleSubmit} className={styles.submitBtn} fullWidth>
+                    ANSWER
+                </GameButton>
             </div>
             {/* Countdown Overlay */}
             {countdown !== null && (
