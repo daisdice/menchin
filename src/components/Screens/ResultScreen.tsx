@@ -42,7 +42,7 @@ export const ResultScreen: React.FC = () => {
             }
         }
 
-        text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #Mahjong`;
+        text += `\nhttps://daisdice.github.io/menchin/\n#CHINIT #麻雀`;
 
         if (navigator.share) {
             try {
